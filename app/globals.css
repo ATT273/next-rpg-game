@@ -16,14 +16,121 @@
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+/* COMMON */
+.btn {
+  padding: 10px;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.txt-green {
+  color: green;
+}
+
+.txt-purple {
+  color: purple;
+}
+
+.bg-green {
+  background-color: #b3dd9e !important;
+}
+
+.bg-red {
+  background-color: #d43445 !important;
+}
+
+.bg-dark-red {
+  background-color: var(--dark-red);
+}
+
+.btn-large {
+  width: 200px;
+  height: 2.5rem;
+}
+
+.btn-square {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.error {
+  flex-basis: 100%;
+  color: red;
+}
+
+/* FORM INPUT */
+.form-input {
+  width: 350px;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #3e3e3e;
+  border-radius: 5px;
+}
+
+/* HOME SCREEN BG */
+.first-screen .bg_image,
+.endgame-screen .bg_image {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+}
+
+.first-screen .version {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  bottom: 0;
+  left: 50%;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.first-screen .start-btn-group {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  bottom: 300px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.first-screen .btn_start {
+  width: 200px;
+  height: 70px;
+  background-color: white;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+/* CREATE CHARACTER */
+.create-character-wrapper>.title {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.create-character-wrapper {
+  width: 50%;
+  height: 100vh;
+  background-color: #3e3e3e;
+}
+
+.create-character-wrapper .form {
+  width: 100%;
+}
+
+.skill-item.active {
+  background-color: rgba(175, 243, 175, 0.3);
+}
+
+.skill-item .target-enemy {
+  color: red;
+}
+
+.skill-item .target-ally {
+  color: green;
 }
 
 @layer utilities {
