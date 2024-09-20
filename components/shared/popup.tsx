@@ -13,7 +13,7 @@ const bigSize = {
   width: '300px',
   height: '200px'
 }
-const PopUp = (props) => {
+const PopUp = (props: any) => {
   const { display, title, renderButtons, renderInfo, size } = props
   const [popupSize, setPopupSize] = useState(defaultSize)
   useEffect(() => {
@@ -28,8 +28,8 @@ const PopUp = (props) => {
 
   const renderPopUpButtons = () => {
     return (
-      <div className="popup__button button-group">
-        <button className='btn bg-green' onClick={handleReady}>READY!</button>
+      <div>
+        <button className='btn bg-green rounded-md' onClick={handleReady}>READY!</button>
       </div>
     )
   }
@@ -38,7 +38,7 @@ const PopUp = (props) => {
     const { content } = props
     return (
       <div className="popup__info">
-        <div>{content}</div>
+        <div className='font-semibold text-lg'>{content}</div>
       </div>
     )
   }
@@ -47,10 +47,10 @@ const PopUp = (props) => {
     props.handleReady()
   }
   return (
-    <div className="popup bg-red" style={{ ...intro, ...popupSize, display: display }}>
-      <div className="popup__container">
-        <h3 className='popup__title'>{title}</h3>
-        <div className="popup__content">
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-200 shadow-md" style={{ ...intro, ...popupSize, display: display }}>
+      <div className="flex flex-col justify-center items-center p-5 gap-5">
+        <h3 className='font-bold text-xl'>{title}</h3>
+        <div className="flex flex-col gap-3 justify-center items-center">
           {
             renderInfo &&
             renderPopUpInfo()

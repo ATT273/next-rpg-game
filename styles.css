@@ -135,8 +135,15 @@
 
 /* BATTLE SCREEN */
 .battle-screen {
-  background-image: url('/assets/images/background/dungeon.jpg');
+  background-image: url('./public/images/background/dungeon.jpg');
 }
+
+.player-inventory .item {
+  height: 100px;
+  width: 100px;
+  border: 2px solid black;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

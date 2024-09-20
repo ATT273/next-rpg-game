@@ -11,8 +11,8 @@ type Player = {
     stats: Stats,
     bonusStats: BonusStats,
     buffStats: BuffStats,
-    buffs: [],
-    items: [],
+    buffs: { [key: string]: number },
+    items: Items[],
     skills: Skills[]
 }
 type BuffStats = {
@@ -36,7 +36,10 @@ type BonusStats = {
     maxMP: number,
     atk: number,
     def: number,
-    spd: number
+    spd: number,
+    int?: number,
+    hp?: number,
+    mp?: number
 }
 
 type Skills = {
@@ -47,10 +50,25 @@ type Skills = {
     effects: { stats: string, value: number }[],
     duration: number | boolean
 }
+type Items = {
+    id: number,
+    type: string,
+    key: string,
+    name: string,
+    image: string,
+    price: number,
+    qty: number,
+    maxQty: number,
+    stats: {
+        [key: string]: number
+    }
+    isConsumable: boolean,
+}
 export type {
     Stats,
     BuffStats,
     Player,
     BonusStats,
-    Skills
+    Skills,
+    Items
 }

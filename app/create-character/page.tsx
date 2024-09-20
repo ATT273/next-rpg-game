@@ -69,9 +69,9 @@ const CreateCharacter = () => {
     const handleUpdateStats = (data: any) => {
         setCreatePlayer(prevState => ({ ...prevState, stats: { ...data } }))
     }
-    const handleCreate = () => {
-        useStore.getState().createPlayer(createPlayer)
-    }
+    // const handleCreate = () => {
+    //     useStore.getState().createPlayer(createPlayer)
+    // }
     return (
         <div className='create-character-wrapper m-auto p-3'>
             <h1 className='title font-bold text-3xl'>Create Your Character</h1>

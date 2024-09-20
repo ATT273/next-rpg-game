@@ -1,9 +1,9 @@
-import tiger from '../images/enemies/tiger.webp';
-import orc from '../images/enemies/orc.png';
-import dragon from '../images/enemies/dragon.jpg';
-import Slime from '../images/enemies/Slime_puddle.png';
-import Cobra from '../images/enemies/cobra.jpg';
-import Rat from '../images/enemies/zombie_rat.jpg';
+import tiger from '@/public/images/enemies/tiger.webp';
+import orc from '@/public/images/enemies/orc.png';
+import dragon from '@/public/images/enemies/dragon.jpg';
+import Slime from '@/public/images/enemies/Slime_puddle.png';
+import Cobra from '@/public/images/enemies/cobra.jpg';
+import Rat from '@/public/images/enemies/zombie_rat.jpg';
 
 const enemies = [
     {
@@ -15,7 +15,7 @@ const enemies = [
         score: 20,
         matchLvl: [1, 2, 3],
         stats: {
-            hp: 200,
+          hp: 20,
             maxHP: 20,
             maxMP: 10,
             mp: 10,
@@ -69,7 +69,7 @@ const enemies = [
         xp: 5,
         score: 3,
         stats: {
-            hp: 100,
+          hp: 10,
             mp: 10,
             maxHP: 10,
             maxMP: 10,
@@ -105,7 +105,7 @@ const enemies = [
         xp: 7,
         score: 5,
         stats: {
-            hp: 100,
+          hp: 10,
             mp: 10,
             maxHP: 10,
             maxMP: 10,
@@ -116,4 +116,26 @@ const enemies = [
     },
 ];
 
+const initialEnemies = {
+  type: 'com',
+  key: '',
+  name: '',
+  image: Rat,
+  matchLvl: [1, 2],
+  xp: 7,
+  score: 5,
+  stats: {
+    hp: 10,
+    mp: 10,
+    maxHP: 10,
+    maxMP: 10,
+    atk: 10,
+    def: 3,
+    spd: 2
+  }
+}
+
+export {
+  initialEnemies
+}
 export default enemies;
