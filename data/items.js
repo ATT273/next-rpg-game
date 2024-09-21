@@ -1,10 +1,10 @@
-import RustySword from '../images/items/Rusty_sword.png';
-import WoodenShield from '../images/items/wood_shield.png';
-import LeatherBoots from '../images/items/Leather_boot.png';
-import IronShield from '../images/items/Iron_Shield.png';
-import BroadSword from '../images/items/broad_sword.jpg';
-import ChestPlate from '../images/items/chest_plate.jpg';
-import HPPotion from '../images/items/hp_potion.jpg';
+import RustySword from '@/public/images/items/Rusty_sword.png';
+import WoodenShield from '@/public/images/items/wood_shield.png';
+import LeatherBoots from '@/public/images/items/Leather_boot.png';
+import IronShield from '@/public/images/items/Iron_Shield.png';
+import BroadSword from '@/public/images/items/broad_sword.jpg';
+import ChestPlate from '@/public/images/items/chest_plate.jpg';
+import HPPotion from '@/public/images/items/hp_potion.jpg';
 
 const items = [
     {
