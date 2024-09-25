@@ -1,10 +1,9 @@
 'use client'
 import React, { useState, useEffect, useRef, use } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import Game from '../../game'
+import Game from '../../../game'
 import { useRouter } from 'next/navigation'
 import useStore from '@/store/store';
-// import * as _ from 'lodash'
 import { Enemy } from '@/types/enemy';
 import { Player, Skills } from '@/types/player';
 import PopUp from '@/components/shared/popup'
@@ -45,18 +44,6 @@ const BattleScreen = () => {
 
   const [currentEvent, setCurrentEvent] = useState(0);
   const [currentEnemy, setCurrentEnemy] = useState('');
-  const [loot, setLoot] = useState({});
-
-  const [showWelcomeScreen, setShowWelcomeScreen] = useState(false);
-  const [showCreateCharacterScreen, setShowCreateCharacterScreen] = useState(false);
-  const [showFightScreen, setShowFightScreen] = useState(false);
-  const [showLootScreen, setShowLootScreen] = useState(false);
-  const [showIngameMenu, setShowIngameMenu] = useState(false);
-  const [showEndGameScreen, setShowEndGameScreen] = useState(false);
-  const [showHighScoresScreen, setShowHighScoresScreen] = useState(false);
-  const [isStartGame, setIsStartGame] = useState(false);
-  const [isContinueGame, setIsContinueGame] = useState(false);
-  const [saveGame, setSaveGame] = useState(null);
 
   useEffect(() => {
     if (playerStore) {
@@ -118,9 +105,9 @@ const BattleScreen = () => {
 
     // let id  = 1
     if (id === 0) {
-      getBattleData()
+      router.push('/battle')
     } else if (id === 1) {
-      getLootData()
+      router.push('/loot')
     } else if (id === 2) {
       // getShopData()
     }
@@ -133,20 +120,6 @@ const BattleScreen = () => {
       setEnemy(getEnemy)
       setShowPlayerActionBlock(true)
     }
-
-    onShowFightScreen()
-  }
-  const onShowFightScreen = () => {
-    setShowWelcomeScreen(false);
-    setShowFightScreen(true);
-    setShowLootScreen(false);
-  }
-
-  const getLootData = () => {
-    const lootItem = Game.getLootItem()
-    setLoot(lootItem);
-    // onShowLootScreen()
-    router.push('/loot')
   }
 
   const updateScore = (_score: number) => {

@@ -25,7 +25,7 @@ class Game {
 
   static normalAttack(attacker: Player | Enemy, target: Player | Enemy) {
     const _items = this.getPlayerItems(attacker, target);
-    const bonusStats = this.getBonusStats(_items);
+    const bonusStats = this.getBonusStats(_items ? _items : []);
     // const buffStats = attacker.type === 'player' ? attacker.buffStats : null;
     const atkAttacker = attacker.type === 'player' ? (attacker.stats.atk + bonusStats.atk + attacker.buffStats.atk) : attacker.stats.atk;
     const defTarget = target.type === 'player' ? (target.stats.def + bonusStats.def + target.buffStats.def) : target.stats.def;
@@ -79,7 +79,7 @@ class Game {
     return { attacker, target, type, combatLog }
   }
 
-  static calculateBuffDuration(player) {
+  static calculateBuffDuration(player: any) {
     let _buffs = player.buffs
     let _stats = ''
     let _value = 0
@@ -131,9 +131,10 @@ class Game {
     return _.cloneDeep(items[randomIdx]);
   }
   static getEvent(id: number) {
-    const filterEvents = events.filter(event => event.id !== id)
+    const eventIdsList = [1, 2, 3]
+    const filterEvents = eventIdsList.filter(event => event !== id)
     const randomIdx = Math.floor(Math.random() * (filterEvents.length));
-    return filterEvents[randomIdx].id
+    return filterEvents[randomIdx]
   }
 
   static getBonusStats(itemList: Items[]) {
@@ -144,7 +145,7 @@ class Game {
       maxHP: 0,
       maxMP: 0
     }
-    itemList.forEach(item => {
+    if (itemList.length > 0) itemList.forEach(item => {
       bonusStats.atk += item.stats.atk !== undefined ? item.stats.atk : 0
       bonusStats.def += item.stats.def !== undefined ? item.stats.def : 0
       // bonusStats.hp += item.stats.hp !== undefined ? item.stats.hp : 0
