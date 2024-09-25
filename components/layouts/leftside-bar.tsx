@@ -11,7 +11,7 @@ const LeftSideBar = () => {
     setPlayer(playerStore)
   }, [playerStore])
   return (
-    <div className='absolute top-0 left-0 md:w-[25rem] h-full bg-stone-300 p-3'>
+    <div className='character-detail__sidebar absolute top-0 left-0 md:w-[25rem] h-full bg-stone-700 p-3 z-10'>
       <CharacterStats playerStore={player} />
     </div>
   )

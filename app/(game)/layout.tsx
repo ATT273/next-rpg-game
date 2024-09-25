@@ -20,7 +20,6 @@ export default function RootLayout({
 
   return (
     <div className="w-full h-full">
-
       <LeftSideBar />
       <RightSideBar />
       {children}

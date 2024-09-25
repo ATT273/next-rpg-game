@@ -68,6 +68,109 @@
   border-radius: 5px;
 }
 
+/* SIDEBAR */
+.character-detail__sidebar .player-inventory {
+  /* height: 85px;
+  width: 160px; */
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 auto;
+}
+
+.character-detail__sidebar .player-inventory .item {
+  position: relative;
+  /* width: 50px;
+  height: 50px; */
+  border: 1.5px solid #fff;
+}
+
+.character-detail__sidebar .player-inventory .item .item-qty {
+  width: 12px;
+  height: 12px;
+  background-color: #fff;
+  color: #2a2a2a;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  font-size: 12px;
+  text-align: center;
+  line-height: 12px;
+}
+
+.character-detail__sidebar .player-inventory .item .three-dot-menu {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  right: 0;
+  top: 0;
+  background-color: #aeaeae;
+  z-index: 99;
+  visibility: hidden;
+  border-radius: 3px;
+}
+
+.character-detail__sidebar .player-inventory .item .item-menu {
+  position: absolute;
+  width: 100px;
+  padding: 5px;
+  top: 15px;
+  right: -85px;
+  background-color: #aeaeae;
+  border-radius: 3px;
+  box-sizing: border-box;
+  z-index: 99;
+}
+
+ul.item-menu li {
+  border-radius: 3px;
+  list-style: none;
+  cursor: pointer;
+}
+
+ul.item-menu li:hover {
+  background-color: #fff;
+  color: #2a2a2a;
+}
+
+.character-detail__sidebar .player-inventory .item .three-dot-menu::before {
+  content: "...";
+  position: absolute;
+  top: -8px;
+  left: 3px;
+  cursor: pointer;
+}
+
+.character-detail__sidebar .player-inventory .item:hover .three-dot-menu {
+  visibility: visible;
+}
+
+.character-detail__sidebar .player-inventory .item:hover .three-dot-menu:hover+.item-stats {
+  opacity: 0;
+  display: none;
+}
+
+/* .character-detail__sidebar .player-inventory .item .item-thumb {
+  width: 50px;
+  height: 50px;
+} */
+
+.character-detail__sidebar .player-inventory .item .item-stats {
+  width: 150px;
+  height: 100px;
+  position: absolute;
+  bottom: -100%;
+  left: 0;
+  padding: 5px;
+  opacity: 0;
+  display: none;
+  transition: opacity .5s;
+  z-index: 98;
+}
+
+.character-detail__sidebar .player-inventory .item img:hover~.item-stats {
+  opacity: 1;
+  display: block;
+}
 /* HOME SCREEN BG */
 .first-screen .bg_image,
 .endgame-screen .bg_image {
@@ -144,6 +247,10 @@
   border: 2px solid black;
 }
 
+/* LOOT SCREEN */
+.loot-screen {
+  background-image: url('./public/images/background/dungeon.jpg');
+}
 @layer utilities {
   .text-balance {
     text-wrap: balance;

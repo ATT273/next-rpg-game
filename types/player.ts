@@ -11,7 +11,7 @@ type Player = {
     stats: Stats,
     bonusStats: BonusStats,
     buffStats: BuffStats,
-    buffs: { [key: string]: number },
+    buffs: Record<string, number>,
     items: Items[],
     skills: Skills[]
 }

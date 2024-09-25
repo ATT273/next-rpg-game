@@ -1,4 +1,7 @@
+'use client'
+
 import { Items } from '@/types/player';
+import Image from 'next/image';
 import React, { useState } from 'react';
 
 function InventoryBlock({
@@ -28,7 +31,7 @@ function InventoryBlock({
       {
         item
           ? <div className='item'>
-            <img src={item.image} alt={item.key} className='item-thumb' />
+            <Image src={item.image} alt={item.key} className='item-thumb' />
             {item.qty > 1 && <div className='item-qty'>{item.qty}</div>}
             <div className='three-dot-menu' onClick={handleMenuBtnClick}></div>
             {
@@ -38,7 +41,7 @@ function InventoryBlock({
                 <li onClick={handleDropItem}>Drop item</li>
               </ul>
             }
-            <div className='item-stats'>
+            <div className='item-stats bg-stone-900 text-stone-100 border-amber-300 border-[3px]'>
               <p><b>{item.name.toUpperCase()}</b></p>
               <p>price: {item.price}</p>
               {

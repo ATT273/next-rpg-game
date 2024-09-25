@@ -51,13 +51,15 @@ const useStore = create<Store>()(
                 buffs: [],
                 items: []
             },
-
+            // lootItems: [],
+            currentEvent: 0,
             createPlayer: (payload: Player) => {
                 set((state: any) => ({ ...state, player: payload }))
             },
             updateStats: (payload: Stats) => set((state: any) => ({ player: { ...state.player, stats: payload } })),
             updateItems: (payload: Stats) => set((state: any) => ({ player: { ...state.player, items: payload } })),
-            updateBonusStats: (payload: BonusStats) => set((state: any) => ({ player: { ...state.player, bonusStats: payload } }))
+            updateBonusStats: (payload: BonusStats) => set((state: any) => ({ player: { ...state.player, bonusStats: payload } })),
+            setCurrentEvent: (payload: number) => set((state: any) => ({ ...state, currentEvent: payload }))
         }),
         {
             name: 'rpg_game',
