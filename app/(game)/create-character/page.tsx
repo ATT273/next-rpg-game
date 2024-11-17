@@ -73,9 +73,10 @@ const CreateCharacter = () => {
     //     useStore.getState().createPlayer(createPlayer)
     // }
     return (
-        <div className='create-character-wrapper m-auto p-3'>
-            <h1 className='title font-bold text-3xl'>Create Your Character</h1>
-            <div className='form flex flex-col items-center justify-start h-full'>
+        <div className='create-character-wrapper relative m-auto p-3'>
+            <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-2 w-full'>
+                <h1 className='title font-bold text-3xl text-center'>Create Your Character</h1>
+                <div className='flex flex-col items-center justify-start w-full'>
                 <AnimatePresence>
                     {
                         step === 1 &&
@@ -111,9 +112,10 @@ const CreateCharacter = () => {
                 <div className='skill'></div>
                 <div>
                     {
-                        step < 3 && <button type='submit' className='btn bg-green' onClick={handleNextStep}>Next</button>
+                            step < 3 && <button type='submit' className='btn bg-green text-xl rounded-md' onClick={handleNextStep}>Next</button>
                     }
                 </div>
+            </div>
             </div>
         </div>
     )

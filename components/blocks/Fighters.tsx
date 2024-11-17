@@ -3,18 +3,18 @@ import StatsBar from './StatsBar'
 import Image from 'next/image'
 
 function FighterStatsBlock(props: any) {
-  const { player, com } = props
+  const { player, com, currentTurn } = props
   return (
     <>
       {
         player.stats !== undefined &&
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-stretch">
           <div className="player grow flex flex-col items-center justify-center">
             <div className='image-container mb-3'>
               <Image className='size-64' src={player.image} alt="player_avatar" />
               {/* {player.buffs.length > 0 ? player.buffs[0].duration : '???'} */}
             </div>
-            <div className="flex flex-col justify-start w-[15rem] text-lg text-stone-100">
+              <div className="flex flex-col justify-start w-[15rem] text-lg">
               <div className="hp-mp">
                 <p><b>HP: </b> {player.stats.hp}/{player.stats.maxHP}</p>
                 <StatsBar stats={{ hp: player.stats.hp, maxHP: player.stats.maxHP }} name={'hp'} />
@@ -37,12 +37,15 @@ function FighterStatsBlock(props: any) {
               </div>
             </div>
           </div>
-          <div className='text-stone-100 font-bold text-3xl'>VS.</div>
+            <div className='flex flex-col items-center justify-between gap-2 h-[200px]'>
+              <div className='font-bold text-3xl'>Turn: {currentTurn.player}</div>
+              <div className='font-bold text-3xl'>VS.</div>
+            </div>
           <div className="com grow flex flex-col items-center justify-center">
             <div className='image-container mb-3'>
               <Image className='size-64' src={com.image} alt="com_avatar" />
             </div>
-            <div className="flex flex-col justify-start w-[15rem] text-lg text-stone-100">
+              <div className="flex flex-col justify-start w-[15rem] text-lg">
               <div className="hp-mp">
                 <p><b>HP: </b> {com.stats.hp}/{com.stats.maxHP}</p>
                 <StatsBar stats={{ hp: com.stats.hp, maxHP: com.stats.maxHP }} name={'hp'} />

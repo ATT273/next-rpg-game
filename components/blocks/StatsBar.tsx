@@ -6,8 +6,8 @@ function StatsBar(props: any) {
 
   return (
     <div style={{ position: 'relative' }}>
-      <div style={{ height: '10px', width: '100px', backgroundColor: 'gray' }}></div>
-      <div style={{ height: '10px', width: `${(stats[name] / stats[maxStat]) * 100}px`, position: 'absolute', top: '0px', left: '0px', backgroundColor: name === 'hp' ? 'red' : 'blue' }}></div>
+      <div className='w-[150px] h-[15px] bg-stone-300 rounded-full'></div>
+      <div style={{ height: '15px', width: `${(stats[name] / stats[maxStat]) * 150}px`, position: 'absolute', top: '0px', left: '0px' }} className='rounded-full bg-stone-700'></div>
     </div>
   )
 }

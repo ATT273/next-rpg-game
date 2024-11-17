@@ -7,13 +7,20 @@ import useStore from '@/store/store';
 import { Enemy } from '@/types/enemy';
 import { Player, Skills } from '@/types/player';
 import PopUp from '@/components/shared/popup'
-import PlayerActionsBlock from '@/components/blocks/PlayerActions'
-import BattleLog from '@/components/blocks/BattleLog'
-import FighterStatsBlock from '@/components/blocks/Fighters'
+// import PlayerActionsBlock from '@/components/blocks/PlayerActions'
+// import BattleLog from '@/components/blocks/BattleLog'
+// import FighterStatsBlock from '@/components/blocks/Fighters'
 import Spinner from '@/components/svg/spinner'
 import { initialEnemies } from '@/data/enemies'
+import { BATTLE_EVENT, LOOT_EVENT, SHOP_EVENT } from '@/data/data'
+import dynamic from 'next/dynamic'
+import { cookies } from 'next/headers'
 
-const initiateBuffs: any[] = []
+const PlayerActionsBlock = dynamic(() => import('@/components/blocks/PlayerActions'), { ssr: false })
+const BattleLog = dynamic(() => import('@/components/blocks/BattleLog'), { ssr: false })
+const FighterStatsBlock = dynamic(() => import('@/components/blocks/Fighters'), { ssr: false })
+
+const initiateBuffs: { [key: string]: number } = {}
 const BattleScreen = () => {
   const audioPlayer = useRef<HTMLAudioElement>(null);
   const [state, setState] = useState({
@@ -35,24 +42,40 @@ const BattleScreen = () => {
   })
   const playerStore = useStore((state: any) => state.player);
   const createPlayerStore = useStore(state => state.createPlayer);
-  const [player, setPlayer] = useState(playerStore);
+  const setCurrentEvent = useStore(state => state.setCurrentEvent);
+  const setScore = useStore(state => state.setScore);
+  const [player, setPlayer] = useState<Player>(playerStore);
   const [enemy, setEnemy] = useState<Enemy>(initialEnemies);
-  const [score, setScore] = useState(0);
-  const router = useRouter();
+  const [currentTurn, setCurrentTurn] = useState<{ player: number, enemy: number }>({ player: 1, enemy: 1 })
   const [isPlayerTurn, setIsPlayerTurn] = useState<boolean>();
-  const [showPlayerActionBlock, setShowPlayerActionBlock] = useState(true);
-
-  const [currentEvent, setCurrentEvent] = useState(0);
-  const [currentEnemy, setCurrentEnemy] = useState('');
+  // const [showPlayerActionBlock, setShowPlayerActionBlock] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     if (playerStore) {
+      if (playerStore.stats.hp <= 0) {
+        router.push('/game-over')
+      }
       setPlayer(playerStore)
     }
   }, [playerStore]);
   useEffect(() => {
-    getBattleData()
+    if (playerStore) {
+      setCurrentEvent(BATTLE_EVENT)
+      getBattleData()
+    }
   }, []);
+
+  const chooseFirstAttacker = () => {
+    const playerSpd = player.stats.spd
+    const enemySPd = enemy.stats.spd
+    if (playerSpd >= enemySPd) {
+      setIsPlayerTurn(true)
+    } else {
+      setIsPlayerTurn(false)
+    }
+  }
+
   // useEffect(() => {
   //   if (audioPlayer.current) {
   //     audioPlayer.current.volume = 0.5;
@@ -60,21 +83,20 @@ const BattleScreen = () => {
   // }, [audioPlayer]);
 
 
-  useEffect(() => {
-    if (player && enemy) {
-      if (enemy.hasOwnProperty('type') && player.hasOwnProperty('type')) {
+  // useEffect(() => {
+  //   if (player && enemy) {
+  //     if (enemy.hasOwnProperty('type') && player.hasOwnProperty('type')) {
 
-        checkWinCondition(player, enemy)
-      }
-    }
-  }, [enemy, player]);
+  //       checkWinCondition(player, enemy)
+  //     }
+  //   }
+  // }, [enemy, player]);
 
   useEffect(() => {
     if (isPlayerTurn) {
-      setShowPlayerActionBlock(true);
-
+      setCurrentTurn(prev => ({ ...prev, player: prev.player + 1 }))
     } else {
-      setShowPlayerActionBlock(false)
+      setCurrentTurn(prev => ({ ...prev, enemy: prev.enemy + 1 }))
     }
     if (isPlayerTurn !== undefined && enemy) {
       checkWinCondition(player, enemy)
@@ -85,7 +107,6 @@ const BattleScreen = () => {
   }, [isPlayerTurn])
 
   const handleReady = () => {
-
     setState(prev => ({
       ...prev,
       intrOpacity: 0,
@@ -94,38 +115,34 @@ const BattleScreen = () => {
       showReadyPopup: false,
       showBattleScreen: true,
     }))
-    setShowPlayerActionBlock(true);
-    setShowPlayerActionBlock(true);
   }
 
+  const turnCounter = () => {
+
+  }
   const getEvent = () => {
     // let id = 0;
-    let id = Game.getEvent(currentEvent);
-    setCurrentEvent(id);
+    let id = Game.getEvent(BATTLE_EVENT);
 
     // let id  = 1
-    if (id === 0) {
+    if (id === BATTLE_EVENT) {
       router.push('/battle')
-    } else if (id === 1) {
+    } else if (id === LOOT_EVENT) {
       router.push('/loot')
-    } else if (id === 2) {
-      // getShopData()
+    } else if (id === SHOP_EVENT) {
+      router.push('/shop')
     }
   }
 
   const getBattleData = () => {
-    const getEnemy = Object.assign({}, Game.getEnemy(currentEnemy, player.level))
+    setPlayer(playerStore)
+    const getEnemy = Object.assign({}, Game.getEnemy(enemy.key, player.level))
     if (getEnemy) {
-      setCurrentEnemy(getEnemy.key);
       setEnemy(getEnemy)
-      setShowPlayerActionBlock(true)
+      chooseFirstAttacker()
     }
   }
 
-  const updateScore = (_score: number) => {
-    const newScore = score + _score;
-    setScore(newScore);
-  }
 
   const handleEndturn = (atkerType: string) => {
 
@@ -145,9 +162,7 @@ const BattleScreen = () => {
 
   const renderFighters = () => {
     return (
-      <>
-        <FighterStatsBlock player={player} com={enemy} />
-      </>
+      <FighterStatsBlock player={player} com={enemy} currentTurn={currentTurn} />
     )
   }
 
@@ -200,10 +215,10 @@ const BattleScreen = () => {
     // let winStatus = {}
     const afterAtk = Game.normalAttack(attacker, target)
     if (attackerName === 'player') {
-      setPlayer(afterAtk.attacker);
+      setPlayer(afterAtk.attacker as Player);
       setEnemy(afterAtk.target as Enemy);
     } else {
-      setPlayer(afterAtk.target);
+      setPlayer(afterAtk.target as Player);
       setEnemy(afterAtk.attacker as Enemy);
     }
 
@@ -223,6 +238,7 @@ const BattleScreen = () => {
   // // USE SKILL
   const handleSkillBtnClick = (key: string) => {
     const skillUsed = player.skills.find((skill: Skills) => skill.key === key);
+    if (!skillUsed) return
     const afterAtk = Game.skillUsing(player, enemy, skillUsed);
     setPlayer(afterAtk.attacker);
     setEnemy(afterAtk.target);
@@ -253,17 +269,17 @@ const BattleScreen = () => {
       _player.levelExp = newLevelExp;
     }
     if (_player.stats.hp > 0) {
-      updateScore(enemy.score);
+      setScore(enemy.score);
     }
-    const newPlayerData = createPlayerStore(_player);
-    setPlayer(newPlayerData);
+    createPlayerStore(_player);
+    // setPlayer(newPlayerData);
     setState(prevState => ({ ...prevState, showNextBtn: false }));
     getEvent();
   }
 
   return (
-    <div className='battle-screen w-full h-full'>
-      <audio id='audioPlayer' ref={audioPlayer} src="/music/dungeon_theme_ost.mp3" autoPlay loop />
+    <div className='w-full h-full text-slate-900'>
+      {/* <audio id='audioPlayer' ref={audioPlayer} src="/music/dungeon_theme_ost.mp3" autoPlay loop /> */}
       {
         (player && enemy) &&
         <div className="fight-screen w-full h-full">
@@ -290,25 +306,29 @@ const BattleScreen = () => {
           <AnimatePresence>
             {
               state.showBattleScreen &&
-              <motion.div className="w-[calc(100vw-800px)] h-full m-auto p-6"
-                key={'main-content'}
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}>
-                {player !== null && renderFighters()}
-                {showPlayerActionBlock.toString()}
-                {showPlayerActionBlock
-                  ? <PlayerActionsBlock
-                    handleAtkButtonClick={handleAtkButtonClick}
-                    handleSkillBtnClick={handleSkillBtnClick}
-                    showComTurn={state.showComTurn}
-                    player={player}
-                  />
-                  : <Spinner size="4rem" color="#ffffff" />}
-                <BattleLog battleLogs={state.battleLogs} />
-                {
-                  state.showNextBtn &&
-                  <button className="btn bg-green w-200" style={{ margin: 'auto' }} onClick={handleNextBtnClick}>Next</button>
-                }
+                <motion.div
+                  className="w-[calc(100vw-800px)] h-full m-auto p-6"
+                  key={'main-content'}
+                  initial={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}>
+                    {
+                      player !== null && renderFighters()
+                    }
+                    {
+                      isPlayerTurn
+                        ? <PlayerActionsBlock
+                          handleAtkButtonClick={handleAtkButtonClick}
+                          handleSkillBtnClick={handleSkillBtnClick}
+                          showComTurn={state.showComTurn}
+                          player={player}
+                        />
+                        : <Spinner size="4rem" color="#ffffff" />
+                    }
+                    <BattleLog battleLogs={state.battleLogs} />
+                    {state.showNextBtn &&
+                      <div className='w-full text-center p-2'>
+                        <button className="btn bg-green w-200" style={{ margin: 'auto' }} onClick={handleNextBtnClick}>Next</button>
+                      </div>}
               </motion.div>
             }
           </AnimatePresence>

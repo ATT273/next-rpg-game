@@ -1,9 +1,9 @@
-import tiger from '@/public/images/enemies/tiger.webp';
+import tiger from '@/public/images/enemies/tiger.png';
 import orc from '@/public/images/enemies/orc.png';
-import dragon from '@/public/images/enemies/dragon.jpg';
-import Slime from '@/public/images/enemies/Slime_puddle.png';
-import Cobra from '@/public/images/enemies/cobra.jpg';
-import Rat from '@/public/images/enemies/zombie_rat.jpg';
+import dragon from '@/public/images/enemies/dragon.png';
+import Slime from '@/public/images/enemies/slime.png';
+import Cobra from '@/public/images/enemies/king_cobra.png';
+import Rat from '@/public/images/enemies/rat2.png';
 
 const enemies = [
     {
