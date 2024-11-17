@@ -1,6 +1,7 @@
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import '@/styles.css';
+import '@/public/styles.css';
 import LeftSideBar from "@/components/layouts/leftside-bar";
 import RightSideBar from "@/components/layouts/rightside-bar";
 
@@ -19,10 +20,12 @@ export default function RootLayout({
 }) {
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full px-[25rem]">
       <LeftSideBar />
       <RightSideBar />
+      <div className="h-full">
       {children}
+      </div>
     </div>
   );
 }

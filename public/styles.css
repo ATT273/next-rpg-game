@@ -81,7 +81,7 @@
   position: relative;
   /* width: 50px;
   height: 50px; */
-  border: 1.5px solid #fff;
+  /* border: 1.5px solid #fff; */
 }
 
 .character-detail__sidebar .player-inventory .item .item-qty {
@@ -189,7 +189,7 @@ ul.item-menu li:hover {
   transform: translateX(-50%);
 }
 
-.first-screen .start-btn-group {
+.start-btn-group {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -217,7 +217,7 @@ ul.item-menu li:hover {
 .create-character-wrapper {
   width: 50%;
   height: 100vh;
-  background-color: #3e3e3e;
+  /* background-color: #3e3e3e; */
 }
 
 .create-character-wrapper .form {
@@ -237,9 +237,9 @@ ul.item-menu li:hover {
 }
 
 /* BATTLE SCREEN */
-.battle-screen {
+/* .battle-screen {
   background-image: url('./public/images/background/dungeon.jpg');
-}
+} */
 
 .player-inventory .item {
   height: 100px;
@@ -248,9 +248,9 @@ ul.item-menu li:hover {
 }
 
 /* LOOT SCREEN */
-.loot-screen {
+/* .loot-screen {
   background-image: url('./public/images/background/dungeon.jpg');
-}
+} */
 @layer utilities {
   .text-balance {
     text-wrap: balance;

@@ -20,17 +20,20 @@ class Game {
   static getEnemy(key: string | '', level: number) {
     const filterEnemies = enemies.filter(enemy => enemy.key !== key && enemy.matchLvl.includes(level));
     const randomIdx = Math.floor(Math.random() * (filterEnemies.length));
-    return JSON.parse(JSON.stringify(filterEnemies[randomIdx]))
+    return _.cloneDeep(filterEnemies[randomIdx])
+    // return JSON.parse(JSON.stringify(filterEnemies[randomIdx]))
   }
 
   static normalAttack(attacker: Player | Enemy, target: Player | Enemy) {
     const _items = this.getPlayerItems(attacker, target);
     const bonusStats = this.getBonusStats(_items ? _items : []);
     // const buffStats = attacker.type === 'player' ? attacker.buffStats : null;
-    const atkAttacker = attacker.type === 'player' ? (attacker.stats.atk + bonusStats.atk + attacker.buffStats.atk) : attacker.stats.atk;
-    const defTarget = target.type === 'player' ? (target.stats.def + bonusStats.def + target.buffStats.def) : target.stats.def;
+    const atkBuff = _.find((attacker as Player).buffStats, buff => buff.name === "atk") || { value: 0 }
+    const defBuff = _.find((attacker as Player).buffStats, buff => buff.name === "def") || { value: 0 }
+    const atkOfAttacker = attacker.type === 'player' ? (attacker.stats.atk + bonusStats.atk + atkBuff.value) : attacker.stats.atk;
+    const defOfTarget = target.type === 'player' ? (target.stats.def + bonusStats.def + defBuff.value) : target.stats.def;
 
-    const dmgDealed = (atkAttacker - defTarget) > 0 ? atkAttacker - defTarget : 0
+    const dmgDealed = (atkOfAttacker - defOfTarget) > 0 ? atkOfAttacker - defOfTarget : 0
     let type = attacker.type
     target.stats.hp = (target.stats.hp - dmgDealed) < 0 ? 0 : target.stats.hp - dmgDealed
 
@@ -43,9 +46,9 @@ class Game {
     let combatLog = '';
     let type = '';
     if (skill.target === 'enemy') {
-      const atkAttacker = Math.abs(skill.effects[0].value);
-      const defTarget = target.stats.def;
-      const dmgDealed = (atkAttacker - defTarget) > 0 ? atkAttacker - defTarget : 0
+      const atkOfAttacker = Math.abs(skill.effects[0].value);
+      const defOfTarget = target.stats.def;
+      const dmgDealed = (atkOfAttacker - defOfTarget) > 0 ? atkOfAttacker - defOfTarget : 0
       type = attacker.type;
       target.stats.hp = (target.stats.hp - dmgDealed) < 0 ? 0 : target.stats.hp - dmgDealed;
       attacker.stats.mp -= skill.cost;
@@ -54,23 +57,43 @@ class Game {
     }
 
     if (skill.target === 'self') {
-      const buffStats = {
-        atk: 0,
-        def: 0,
-        spd: 0,
-        hp: 0,
-      }
-      // skill.duration -= 1
-      // let buffs = []
+      const buffStats = [
+        {
+          name: "hp",
+          value: 0,
+          duration: 0
+        },
+        {
+          name: "atk",
+          value: 0,
+          duration: 0
+        },
+        {
+          name: "def",
+          value: 0,
+          duration: 0
+        },
+        {
+          name: "spd",
+          value: 0,
+          duration: 0
+        },
+      ]
       Object.assign(attacker.buffs, { ...attacker.buffs, skill })
       skill.effects.forEach(fx => {
-        buffStats[fx.stats as keyof typeof buffStats] += fx.value;
+        buffStats.forEach(buff => {
+          if (fx.stats === buff.name) {
+            buff.value += fx.value
+          }
+        })
       })
 
-      attacker.buffStats = { ...buffStats };
-      if (buffStats.hp > 0) {
-        attacker.stats.hp += buffStats.hp;
-      }
+      attacker.buffStats = [...buffStats];
+      buffStats.forEach(buff => {
+        if (buff.name === "hp" && buff.value > 0) {
+          attacker.stats.hp += buff.value;
+        }
+      })
 
       attacker.stats.mp -= skill.cost;
       type = attacker.type;
@@ -111,7 +134,6 @@ class Game {
         message: 'You are defeated'
       }
     }
-
     if (com.stats.hp === 0) {
       return {
         status: 0,

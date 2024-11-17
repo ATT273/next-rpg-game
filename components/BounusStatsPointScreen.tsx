@@ -55,11 +55,11 @@ const BounusStatsPointScreen = ({ selectedClass, handleUpdateStats, handlePrevSt
 
   return (
     <div className='flex flex-col items-center'>
-      <h4 className='stats-note text-lg'>You have <span className='text-white'>{points}</span> points to assign to your stats</h4>
+      <h4 className='stats-note text-lg'>You have <span className='text-red-500'>{points}</span> points to assign to your stats</h4>
       {
         statsState
           ? <div className='p-3 mb-5 flex flex-col gap-3'>
-            <div className='flex gap-5 justify-center items-center text-white'>
+            <div className='flex gap-5 justify-center items-center text-slate-900'>
               <p className='text-xl font-bold min-w-24'>Hp: {statsState.hp}</p>
               <div className='flex gap-3'>
                 <button
@@ -68,56 +68,56 @@ const BounusStatsPointScreen = ({ selectedClass, handleUpdateStats, handlePrevSt
                   disabled={points === 0}
                 >+</button>
                 <button
-                  className='rounded-sm bg-white text-black p-1 h-8 w-8'
+                  className='rounded-sm bg-slate-400 text-black p-1 h-8 w-8'
                   style={{ opacity: statsState.hp > classStats.hp ? 1 : 0 }}
                   onClick={() => handleSubtractPoint('hp')}
                   disabled={points === 5 || statsState.hp === classStats.hp}>-</button>
               </div>
             </div>
-            <div className='flex gap-5 justify-center items-center text-white'>
+            <div className='flex gap-5 justify-center items-center text-slate-900'>
               <p className='text-xl font-bold min-w-24'>Atk: {statsState.atk}</p>
               <div className='flex gap-3'>
                 <button className='rounded-sm bg-red-500 p-1 h-8 w-8' onClick={() => handleAddPoint('atk')} disabled={points === 0}>+</button>
                 <button
-                  className='rounded-sm bg-white text-black p-1 h-8 w-8'
+                  className='rounded-sm bg-slate-400 text-black p-1 h-8 w-8'
                   style={{ opacity: statsState.atk > classStats.atk ? 1 : 0 }}
                   onClick={() => handleSubtractPoint('atk')}
                   disabled={points === 5 || statsState.atk === classStats.atk}
                 >-</button>
               </div>
             </div>
-            <div className='flex gap-5 justify-center items-center text-white'>
+            <div className='flex gap-5 justify-center items-center text-slate-900'>
               <p className='text-xl font-bold min-w-24'>Def: {classStats.def}</p>
               <div className='flex gap-3'>
                 <button className='rounded-sm bg-red-500 p-1 h-8 w-8' onClick={() => handleAddPoint('def')} disabled={points === 0}>+</button>
                 <button
-                  className='rounded-sm bg-white text-black p-1 h-8 w-8'
+                  className='rounded-sm bg-slate-400 text-black p-1 h-8 w-8'
                   style={{ opacity: statsState.def > classStats.def ? 1 : 0 }}
                   onClick={() => handleSubtractPoint('def')}
                   disabled={points === 5 || statsState.def === classStats.def}
                 >-</button>
               </div>
             </div>
-            <div className='flex gap-5 justify-center items-center text-white'>
+            <div className='flex gap-5 justify-center items-center text-slate-900'>
               <p className='text-xl font-bold min-w-24'>Int: {classStats.int}</p>
               <div className='flex gap-3'>
                 <button className='rounded-sm bg-red-500 p-1 h-8 w-8' onClick={() => handleAddPoint('int')} disabled={points === 0}>+</button>
 
                 <button
-                  className='rounded-sm bg-white text-black p-1 h-8 w-8'
+                  className='rounded-sm bg-slate-400 text-black p-1 h-8 w-8'
                   style={{ opacity: statsState.int > initialState.int ? 1 : 0 }}
                   onClick={() => handleSubtractPoint('int')}
                   disabled={points === 5 || statsState.int === classStats.int}
                 >-</button>
               </div>
             </div>
-            <div className='flex gap-5 justify-center items-center text-white text-xl font-bold'>
+            <div className='flex gap-5 justify-center items-center text-slate-900 text-xl font-bold'>
               <p className='text-xl font-bold min-w-24'>Spd: {classStats.spd}</p>
               <div className='flex gap-3'>
                 <button className='rounded-sm bg-red-500 p-1 h-8 w-8' onClick={() => handleAddPoint('spd')} disabled={points === 0}>+</button>
 
                 <button
-                  className='rounded-sm bg-white text-black p-1 h-8 w-8'
+                  className='rounded-sm bg-slate-400 text-black p-1 h-8 w-8'
                   style={{ opacity: statsState.spd > classStats.spd ? 1 : 0 }}
                   onClick={() => handleSubtractPoint('spd')}
                   disabled={points === 5 || statsState.spd === classStats.spd}

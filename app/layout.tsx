@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import '@/styles.css';
+import { Inter, Pirata_One } from "next/font/google";
+import '@/public/styles.css';
 const inter = Inter({ subsets: ["latin"] });
+const pirataOne = Pirata_One({ weight: "400", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Next RPG Game",
@@ -15,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`w-screen h-screen relative ${inter.className}`} >{children}</body>
+      <body className={`w-dvw h-dvh m-0 relative ${pirataOne.className}`} >{children}</body>
     </html>
   );
 }

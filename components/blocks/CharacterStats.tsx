@@ -1,7 +1,7 @@
 'use client'
 import { Player } from '@/types/player'
 import React, { Component, use, useEffect, useState } from 'react'
-import player_img from '@/public/images/player/player.jpg'
+import player_img from '@/public/images/player/player.png'
 import StatsBar from './StatsBar'
 import InventoryBlock from './Inventory'
 import Game from '../../game';
@@ -9,7 +9,7 @@ import * as _ from 'lodash';
 import useStore from '@/store/store'
 import Image from 'next/image'
 const CharacterStats = ({ playerStore }: { playerStore: Player }) => {
-  const { updateStats, udpateBonusStats, updatePlayer } = useStore((store: any) => store);
+  const { updateStats, udpateBonusStats, createPlayer } = useStore((store: any) => store);
   const [player, setPlayer] = useState(playerStore);
   const [isClient, setIsClient] = useState(false)
   useEffect(() => {
@@ -36,14 +36,14 @@ const CharacterStats = ({ playerStore }: { playerStore: Player }) => {
     _player.bonusStats = Game.getBonusStats(_player.items);
     const newStats = Game.consumeItem(_player, itemKey);
     _player.stats = { ..._player.stats, ...newStats };
-    updatePlayer(_player);
+    createPlayer(_player);
   }
 
-  const handleDropItem = (key: string, itemIndex: number) => {
+  const handleDropItem = (itemIndex: number) => {
     const _player = _.cloneDeep(player);
     _player.items.splice(itemIndex, 1);
     _player.bonusStats = Game.getBonusStats(_player.items);
-    updatePlayer(_player);
+    createPlayer(_player);
   }
   return (
     <React.Fragment>

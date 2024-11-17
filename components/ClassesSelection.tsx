@@ -18,7 +18,7 @@ const ClassesSelection = ({ handleUpdateClassData }: { handleUpdateClassData: ({
   useEffect(() => {
     // setSelectedSkill({});
     handleUpdateClassData({ plClass: classes[classKeys[activeClass] as keyof typeof classes].key, stats: { ...classes[classKeys[activeClass] as keyof typeof classes].stats }, skills: [] })
-    const _xValue = `${-(activeClass * 450)}px`;
+    const _xValue = `${-(activeClass * 350)}px`;
     setXValue(_xValue)
   }, [activeClass]);
 
@@ -36,9 +36,9 @@ const ClassesSelection = ({ handleUpdateClassData }: { handleUpdateClassData: ({
   }
 
   return (
-    <div className="character-classes__container w-full">
+    <div className="w-full">
       <div className='class-container w-full'>
-        <div className='class-image relative flex justify-center items-center h-full max-w-[450px] m-auto mb-5 overflow-hidden'>
+        <div className='class-image relative flex justify-center items-center h-full max-w-[350px] m-auto mb-5 overflow-hidden'>
           <motion.div
             className='flex flex-nowrap'
             animate={{ x: xValue }}>
@@ -48,7 +48,8 @@ const ClassesSelection = ({ handleUpdateClassData }: { handleUpdateClassData: ({
                   key={index}
                   src={classes[classKeys[index] as keyof typeof classes].image}
                   alt={classes[classKeys[index] as keyof typeof classes].key}
-                  width={450} />
+                  height={350}
+                />
               ))
             }
           </motion.div>
@@ -62,13 +63,13 @@ const ClassesSelection = ({ handleUpdateClassData }: { handleUpdateClassData: ({
           </div>
 
         </div>
-        <div className='class-info flex flex-col justify-center items-center'>
-          <div className='class-stats flex gap-6'>
-            <div><p className='text-white '><span className='font-semibold'>Hp:</span> {classes[classKeys[activeClass] as keyof typeof classes].stats.hp}</p></div>
-            <div><p className='text-white '><span className='font-semibold'>Atk:</span> {classes[classKeys[activeClass] as keyof typeof classes].stats.atk}</p></div>
-            <div><p className='text-white '><span className='font-semibold'>Def:</span> {classes[classKeys[activeClass] as keyof typeof classes].stats.def}</p></div>
-            <div><p className='text-white '><span className='font-semibold'>Int:</span> {classes[classKeys[activeClass] as keyof typeof classes].stats.int}</p></div>
-            <div><p className='text-white '><span className='font-semibold'>Spd:</span> {classes[classKeys[activeClass] as keyof typeof classes].stats.spd}</p></div>
+        <div className='flex flex-col justify-center items-center text-slate-900'>
+          <div className='class-stats flex gap-6 text-xl'>
+            <div><p><span className='font-semibold'>Hp:</span> {classes[classKeys[activeClass] as keyof typeof classes].stats.hp}</p></div>
+            <div><p><span className='font-semibold'>Atk:</span> {classes[classKeys[activeClass] as keyof typeof classes].stats.atk}</p></div>
+            <div><p><span className='font-semibold'>Def:</span> {classes[classKeys[activeClass] as keyof typeof classes].stats.def}</p></div>
+            <div><p><span className='font-semibold'>Int:</span> {classes[classKeys[activeClass] as keyof typeof classes].stats.int}</p></div>
+            <div><p><span className='font-semibold'>Spd:</span> {classes[classKeys[activeClass] as keyof typeof classes].stats.spd}</p></div>
           </div>
           <br />
           <SkillSelection skills={classes[classKeys[activeClass] as keyof typeof classes].skills} selectedSkill={selectedSkill.key} handleChooseSkill={handleSkillSelected} />

@@ -1,7 +1,7 @@
-import knight from '@/public/images/classes/knight.jpg';
-import warrior from '@/public/images/classes/warrior.jpg';
-import assassin from '@/public/images/classes/assassin.jpg';
-import mage from '@/public/images/classes/mage.jpg';
+import knight from '@/public/images/classes/knight.png';
+import warrior from '@/public/images/classes/warrior.png';
+import assassin from '@/public/images/classes/assassin.png';
+import mage from '@/public/images/classes/mage.png';
 
 const classes = {
     knight: {
