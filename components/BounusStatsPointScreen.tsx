@@ -87,7 +87,7 @@ const BounusStatsPointScreen = ({ selectedClass, handleUpdateStats, handlePrevSt
               </div>
             </div>
             <div className='flex gap-5 justify-center items-center text-slate-900'>
-              <p className='text-xl font-bold min-w-24'>Def: {classStats.def}</p>
+              <p className='text-xl font-bold min-w-24'>Def: {statsState.def}</p>
               <div className='flex gap-3'>
                 <button className='rounded-sm bg-red-500 p-1 h-8 w-8' onClick={() => handleAddPoint('def')} disabled={points === 0}>+</button>
                 <button
@@ -99,7 +99,7 @@ const BounusStatsPointScreen = ({ selectedClass, handleUpdateStats, handlePrevSt
               </div>
             </div>
             <div className='flex gap-5 justify-center items-center text-slate-900'>
-              <p className='text-xl font-bold min-w-24'>Int: {classStats.int}</p>
+              <p className='text-xl font-bold min-w-24'>Int: {statsState.int}</p>
               <div className='flex gap-3'>
                 <button className='rounded-sm bg-red-500 p-1 h-8 w-8' onClick={() => handleAddPoint('int')} disabled={points === 0}>+</button>
 
@@ -112,7 +112,7 @@ const BounusStatsPointScreen = ({ selectedClass, handleUpdateStats, handlePrevSt
               </div>
             </div>
             <div className='flex gap-5 justify-center items-center text-slate-900 text-xl font-bold'>
-              <p className='text-xl font-bold min-w-24'>Spd: {classStats.spd}</p>
+              <p className='text-xl font-bold min-w-24'>Spd: {statsState.spd}</p>
               <div className='flex gap-3'>
                 <button className='rounded-sm bg-red-500 p-1 h-8 w-8' onClick={() => handleAddPoint('spd')} disabled={points === 0}>+</button>
 

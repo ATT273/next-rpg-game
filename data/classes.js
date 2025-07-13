@@ -36,7 +36,7 @@ const classes = {
                 key: 'iron_skin',
                 name: 'Iron Skin',
                 target: 'self',
-                cost: 20,
+                cost: 0,
                 effects: [
                     { stats: 'def', value: 5 }
                 ],

@@ -1,9 +1,18 @@
 import React from 'react'
 import StatsBar from './StatsBar'
 import Image from 'next/image'
+import { Player } from '@/types/player'
+import { Enemy } from '@/types/enemy'
 
-function FighterStatsBlock(props: any) {
-  const { player, com, currentTurn } = props
+const getStat = (statName: string, buffStats: { name: string, value: number, duration: number }[]) => {
+  const buff = buffStats.find(buff => buff.name === statName)
+  return {
+    value: buff ? buff.value : 0,
+    duration: buff ? buff.duration : 0
+  }
+}
+function FighterStatsBlock({ player, com, currentTurn }: { player: Player, com: Enemy, currentTurn: { player: number, enemy: number } }) {
+
   return (
     <>
       {
@@ -24,15 +33,15 @@ function FighterStatsBlock(props: any) {
               <div className="stats">
                 <p><b>ATK: </b> {player.stats.atk}
                   <i className='txt-green'>{player.bonusStats.atk > 0 ? `(+ ${player.bonusStats.atk})` : ''}</i>
-                  <i className='txt-purple'>{player.buffStats.atk > 0 ? `(+ ${player.buffStats.atk})` : ''}</i>
+                    <i className='txt-purple'>(+ {getStat('atk', player.buffStats).value})</i>
                 </p>
                 <p><b>DEF: </b> {player.stats.def}
                   <i className='txt-green'>{player.bonusStats.def > 0 ? `(+ ${player.bonusStats.def})` : ''}</i>
-                  <i className='txt-purple'>{player.buffStats.def > 0 ? `(+ ${player.buffStats.def})` : ''}</i>
+                    <i className='txt-purple'>(+ {getStat('def', player.buffStats).value})</i>
                 </p>
                 <p><b>SPD: </b> {player.stats.spd}
                   <i className='txt-green'>{player.bonusStats.spd > 0 ? `(+ ${player.bonusStats.spd})` : ''}</i>
-                  <i className='txt-purple'>{player.buffStats.spd > 0 ? `(+ ${player.buffStats.spd})` : ''}</i>
+                    <i className='txt-purple'>(+{getStat('spd', player.buffStats).value})</i>
                 </p>
               </div>
             </div>
