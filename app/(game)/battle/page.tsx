@@ -7,18 +7,14 @@ import useStore from '@/store/store';
 import { Enemy } from '@/types/enemy';
 import { Player, Skills } from '@/types/player';
 import PopUp from '@/components/shared/popup'
-// import PlayerActionsBlock from '@/components/blocks/PlayerActions'
-// import BattleLog from '@/components/blocks/BattleLog'
-// import FighterStatsBlock from '@/components/blocks/Fighters'
+import FighterStatsBlock from '@/components/blocks/Fighters'
 import Spinner from '@/components/svg/spinner'
 import { initialEnemies } from '@/data/enemies'
 import { BATTLE_EVENT, LOOT_EVENT, SHOP_EVENT } from '@/data/data'
 import dynamic from 'next/dynamic'
-import { cookies } from 'next/headers'
 
 const PlayerActionsBlock = dynamic(() => import('@/components/blocks/PlayerActions'), { ssr: false })
 const BattleLog = dynamic(() => import('@/components/blocks/BattleLog'), { ssr: false })
-const FighterStatsBlock = dynamic(() => import('@/components/blocks/Fighters'), { ssr: false })
 
 const initiateBuffs: { [key: string]: number } = {}
 const BattleScreen = () => {
@@ -36,7 +32,6 @@ const BattleScreen = () => {
     showBattleScreen: false,
     showNextBtn: false,
     initState: {},
-    showComTurn: false,
     turnCt: 0,
     currentTurn: '',
   })
@@ -46,35 +41,34 @@ const BattleScreen = () => {
   const setScore = useStore(state => state.setScore);
   const [player, setPlayer] = useState<Player>(playerStore);
   const [enemy, setEnemy] = useState<Enemy>(initialEnemies);
-  const [currentTurn, setCurrentTurn] = useState<{ player: number, enemy: number }>({ player: 1, enemy: 1 })
+  const [currentTurn, setCurrentTurn] = useState<{ player: number, enemy: number }>({ player: 0, enemy: 0 })
   const [isPlayerTurn, setIsPlayerTurn] = useState<boolean>();
-  // const [showPlayerActionBlock, setShowPlayerActionBlock] = useState(true);
   const router = useRouter();
 
+  // useEffect(() => {
+  //   if (playerStore) {
+  //     if (playerStore.stats.hp <= 0) {
+  //       router.push('/game-over')
+  //     }
+  //     setPlayer(playerStore)
+  //   }
+  // }, [playerStore]);
   useEffect(() => {
-    if (playerStore) {
-      if (playerStore.stats.hp <= 0) {
-        router.push('/game-over')
+    const localsave = localStorage.getItem('rpg_game');
+    if (!localsave) {
+      router.push('/create-character')
+    } else {
+      const saveGame = JSON.parse(localsave);
+      if (!saveGame.continueGame) {
+        console.log('no save game')
+    // router.push('/create-character')
       }
-      setPlayer(playerStore)
     }
-  }, [playerStore]);
-  useEffect(() => {
-    if (playerStore) {
+    if (playerStore.name) {
       setCurrentEvent(BATTLE_EVENT)
       getBattleData()
     }
   }, []);
-
-  const chooseFirstAttacker = () => {
-    const playerSpd = player.stats.spd
-    const enemySPd = enemy.stats.spd
-    if (playerSpd >= enemySPd) {
-      setIsPlayerTurn(true)
-    } else {
-      setIsPlayerTurn(false)
-    }
-  }
 
   // useEffect(() => {
   //   if (audioPlayer.current) {
@@ -83,28 +77,35 @@ const BattleScreen = () => {
   // }, [audioPlayer]);
 
 
-  // useEffect(() => {
-  //   if (player && enemy) {
-  //     if (enemy.hasOwnProperty('type') && player.hasOwnProperty('type')) {
-
-  //       checkWinCondition(player, enemy)
-  //     }
-  //   }
-  // }, [enemy, player]);
+  useEffect(() => {
+    if (player.name && enemy.key) {
+      if (currentTurn.player === 0) chooseFirstAttacker()
+      checkWinCondition(player, enemy)
+    }
+  }, [enemy, player]);
 
   useEffect(() => {
+    if (isPlayerTurn === undefined) return
     if (isPlayerTurn) {
       setCurrentTurn(prev => ({ ...prev, player: prev.player + 1 }))
     } else {
       setCurrentTurn(prev => ({ ...prev, enemy: prev.enemy + 1 }))
     }
-    if (isPlayerTurn !== undefined && enemy) {
-      checkWinCondition(player, enemy)
-    }
-    if (isPlayerTurn !== undefined && !isPlayerTurn && enemy && enemy.stats.hp > 0) {
+    if (!isPlayerTurn && enemy && enemy.stats.hp > 0) {
       handleAtkButtonClick('com', 'player')
     }
   }, [isPlayerTurn])
+
+  const chooseFirstAttacker = () => {
+
+    if (player.name && enemy.key) {
+      const playerSpd = player.stats.spd
+      const enemySPd = enemy.stats.spd
+      setIsPlayerTurn(playerSpd >= enemySPd)
+    } else {
+      console.log('data not found')
+    }
+  }
 
   const handleReady = () => {
     setState(prev => ({
@@ -117,13 +118,9 @@ const BattleScreen = () => {
     }))
   }
 
-  const turnCounter = () => {
-
-  }
   const getEvent = () => {
     // let id = 0;
     let id = Game.getEvent(BATTLE_EVENT);
-
     // let id  = 1
     if (id === BATTLE_EVENT) {
       router.push('/battle')
@@ -139,13 +136,10 @@ const BattleScreen = () => {
     const getEnemy = Object.assign({}, Game.getEnemy(enemy.key, player.level))
     if (getEnemy) {
       setEnemy(getEnemy)
-      chooseFirstAttacker()
     }
   }
 
-
   const handleEndturn = (atkerType: string) => {
-
     if (atkerType === 'player') {
       const _calculateInfo = Game.calculateBuffDuration(player)
       if (_calculateInfo._combatLog !== '') {
@@ -153,8 +147,8 @@ const BattleScreen = () => {
           ...prev,
           battleLogs: [...state.battleLogs, _calculateInfo._combatLog],
         }))
-        setPlayer({ ...player, buffs: _calculateInfo._buffs, buffStats: _calculateInfo._buffStats })
       }
+      setPlayer({ ...player, buffStats: _calculateInfo._buffStats })
     }
 
     setIsPlayerTurn(!isPlayerTurn);
@@ -166,39 +160,8 @@ const BattleScreen = () => {
     )
   }
 
-  const showComTurn = () => {
-    const displayCombatLog = {
-      display: 'flex',
-      opacity: '0.1'
-    }
-    setState(prev => ({
-      ...prev,
-      displayCombatLog,
-      showComTurn: true
-    }))
-  }
-
-  const hideComTurn = () => {
-    const displayCombatLog = {
-      display: 'none'
-    }
-    setState(prev => ({
-      ...prev,
-      displayCombatLog,
-      showComTurn: false
-    }))
-  }
-
   const checkWinCondition = (player: Player, enemy: Enemy) => {
     let winStatus = Game.winCondition(player, enemy)
-
-    // if (winStatus.status === 1 && attacker === 'player') {
-    //     // showComTurn()
-    //     // setTimeout(() => {
-    //     //     hideComTurn()
-    //     //     handleAtkButtonClick('com', 'player')
-    //     // }, 1000)
-    // }
     if (winStatus.status === 0) {
       setState(prev => ({
         ...prev,
@@ -256,11 +219,11 @@ const BattleScreen = () => {
       handleEndturn(afterAtk.type);
     }
   }
-  const handleNextBtnClick = () => {
+  const handleEndMatch = () => {
     const _player = { ...player };
+    _player.buffStats = [];
     const playerExp = player.exp + enemy.xp;
     _player.exp = playerExp;
-    _player.buffs = { ...initiateBuffs };
     if (playerExp >= player.levelExp) {
       const nextLvl = Game.calculateLvlFromExp(playerExp);
       const newLevelExp = Game.calculateCurrentLvlExp(Math.floor(nextLvl) + 1);
@@ -272,11 +235,10 @@ const BattleScreen = () => {
       setScore(enemy.score);
     }
     createPlayerStore(_player);
-    // setPlayer(newPlayerData);
     setState(prevState => ({ ...prevState, showNextBtn: false }));
     getEvent();
   }
-
+  console.log('===========');
   return (
     <div className='w-full h-full text-slate-900'>
       {/* <audio id='audioPlayer' ref={audioPlayer} src="/music/dungeon_theme_ost.mp3" autoPlay loop /> */}
@@ -319,15 +281,14 @@ const BattleScreen = () => {
                         ? <PlayerActionsBlock
                           handleAtkButtonClick={handleAtkButtonClick}
                           handleSkillBtnClick={handleSkillBtnClick}
-                          showComTurn={state.showComTurn}
                           player={player}
                         />
-                        : <Spinner size="4rem" color="#ffffff" />
+                        : <Spinner size="4rem" color="#e2e2e2" />
                     }
                     <BattleLog battleLogs={state.battleLogs} />
                     {state.showNextBtn &&
                       <div className='w-full text-center p-2'>
-                        <button className="btn bg-green w-200" style={{ margin: 'auto' }} onClick={handleNextBtnClick}>Next</button>
+                        <button className="btn bg-green w-200" style={{ margin: 'auto' }} onClick={handleEndMatch}>Next</button>
                       </div>}
               </motion.div>
             }
@@ -339,5 +300,3 @@ const BattleScreen = () => {
 }
 
 export default BattleScreen
-
-// </div>

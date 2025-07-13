@@ -9,6 +9,7 @@ const Shop = () => {
   const setCurrentEvent = useStore(state => state.setCurrentEvent);
   useEffect(() => {
     setCurrentEvent(SHOP_EVENT)
+    console.log('redirect to battle')
     router.push('/battle')
   }, [])
   return (

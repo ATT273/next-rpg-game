@@ -31,7 +31,7 @@ export default function Home() {
 
 
   const navigateToCreatePlayer = () => {
-    // openFullscreen();
+    localStorage.removeItem('rpg_game')
     router.push('/create-character');
   }
 

@@ -1,6 +1,6 @@
 import enemies from '@/data/enemies'
 import items from '@/data/items'
-import { Items, Player, Skills } from './types/player';
+import { BuffStat, Items, Player, Skills } from './types/player';
 import { Enemy } from './types/enemy';
 import * as _ from 'lodash'
 import { events } from '@/data/data';
@@ -27,11 +27,11 @@ class Game {
   static normalAttack(attacker: Player | Enemy, target: Player | Enemy) {
     const _items = this.getPlayerItems(attacker, target);
     const bonusStats = this.getBonusStats(_items ? _items : []);
-    // const buffStats = attacker.type === 'player' ? attacker.buffStats : null;
-    const atkBuff = _.find((attacker as Player).buffStats, buff => buff.name === "atk") || { value: 0 }
-    const defBuff = _.find((attacker as Player).buffStats, buff => buff.name === "def") || { value: 0 }
-    const atkOfAttacker = attacker.type === 'player' ? (attacker.stats.atk + bonusStats.atk + atkBuff.value) : attacker.stats.atk;
-    const defOfTarget = target.type === 'player' ? (target.stats.def + bonusStats.def + defBuff.value) : target.stats.def;
+    const _buffStats = this.isPlayer(attacker) ? (attacker as Player).buffStats : (target as Player).buffStats
+    const atkBuff = this.isPlayer(attacker) ? _.find(_buffStats, buff => buff.name === "atk") || { value: 0 } : { value: 0 }
+    const defBuff = this.isPlayer(target) ? _.find(_buffStats, buff => buff.name === "def") || { value: 0 } : { value: 0 }
+    const atkOfAttacker = this.isPlayer(attacker) ? (attacker.stats.atk + bonusStats.atk + atkBuff!.value) : attacker.stats.atk;
+    const defOfTarget = target.type === 'player' ? (target.stats.def + bonusStats.def + defBuff!.value) : target.stats.def;
 
     const dmgDealed = (atkOfAttacker - defOfTarget) > 0 ? atkOfAttacker - defOfTarget : 0
     let type = attacker.type
@@ -79,11 +79,12 @@ class Game {
           duration: 0
         },
       ]
-      Object.assign(attacker.buffs, { ...attacker.buffs, skill })
+      // Object.assign(attacker.buffs, { ...attacker.buffs, skill })
       skill.effects.forEach(fx => {
         buffStats.forEach(buff => {
           if (fx.stats === buff.name) {
             buff.value += fx.value
+            buff.duration += (typeof skill.duration === 'boolean') ? 0 : skill.duration
           }
         })
       })
@@ -102,29 +103,20 @@ class Game {
     return { attacker, target, type, combatLog }
   }
 
-  static calculateBuffDuration(player: any) {
-    let _buffs = player.buffs
-    let _stats = ''
-    let _value = 0
-    let _buffStats = { ...player.buffStats }
+  static calculateBuffDuration(player: Player) {
+    let _buffStats = player.buffStats.map((buff: BuffStat) => {
+      if (buff.duration > 0) buff.duration -= 1
+      if (buff.duration === 0) buff.value = 0
+      return buff
+    })
     let _combatLog = ''
 
-    if (player.buffs.length > 0) {
-      _.forEach(_buffs, (b, i) => {
-
-        _combatLog = `${b.name} last ${b.duration - 1} more rounds`
-        if (b.duration === 0) {
-          _buffs.splice(i, 1)
-          _stats = b.effects[0].stats
-          _value = b.effects[0].value
-          _buffStats[_stats] = _buffStats[_stats] - _value
-          _combatLog = ''
-        }
-        b.duration -= 1
-      })
-
-    }
-    return { _combatLog, _buffs, _buffStats }
+    _buffStats.forEach((buff: BuffStat) => {
+      if (buff.duration > 0) {
+        _combatLog += `${player.name} buffed ${buff.name} by ${buff.value}\n`
+      }
+    })
+    return { _combatLog, _buffStats }
   }
 
   static winCondition(player: Player, com: Enemy) {
