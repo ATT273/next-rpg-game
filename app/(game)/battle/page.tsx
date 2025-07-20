@@ -11,6 +11,7 @@ import FighterStatsBlock from "@/components/blocks/Fighters";
 import Spinner from "@/components/svg/spinner";
 import { initialEnemies } from "@/data/enemies";
 import { BATTLE_EVENT, LOOT_EVENT, SHOP_EVENT } from "@/data/data";
+import useGame from "@/hooks/use-game";
 import dynamic from "next/dynamic";
 
 const PlayerActionsBlock = dynamic(
@@ -24,6 +25,15 @@ const BattleLog = dynamic(() => import("@/components/blocks/BattleLog"), {
 const initiateBuffs: { [key: string]: number } = {};
 const BattleScreen = () => {
   const audioPlayer = useRef<HTMLAudioElement>(null);
+  const {
+    getEnemy,
+    calculateBuffDuration,
+    winCondition,
+    normalAttack,
+    skillUsing,
+    calculateCurrentLvlExp,
+    calculateLvlFromExp,
+  } = useGame();
   const {
     player: playerStore,
     selectedEnemy,
@@ -87,10 +97,9 @@ const BattleScreen = () => {
 
   useEffect(() => {
     if (selectedEnemy) {
-      console.log("selectedEnemy", selectedEnemy);
-      const getEnemy = Object.assign({}, Game.getEnemy(selectedEnemy));
-      if (getEnemy) {
-        setEnemy(getEnemy);
+      const _enemy = Object.assign({}, getEnemy(selectedEnemy));
+      if (_enemy) {
+        setEnemy(_enemy);
       }
     }
   }, [selectedEnemy]);
@@ -140,30 +149,9 @@ const BattleScreen = () => {
     }));
   };
 
-  const getEvent = () => {
-    // let id = 0;
-    let id = Game.getEvent(BATTLE_EVENT);
-    // let id  = 1
-    if (id === BATTLE_EVENT) {
-      router.push("/battle");
-    } else if (id === LOOT_EVENT) {
-      router.push("/loot");
-    } else if (id === SHOP_EVENT) {
-      router.push("/shop");
-    }
-  };
-
-  // const getBattleData = () => {
-  //   setPlayer(playerStore);
-  //   const getEnemy = Object.assign({}, Game.getEnemy(enemy.key, player.level));
-  //   if (getEnemy) {
-  //     setEnemy(getEnemy);
-  //   }
-  // };
-
   const handleEndturn = (atkerType: string) => {
     if (atkerType === "player") {
-      const _calculateInfo = Game.calculateBuffDuration(player);
+      const _calculateInfo = calculateBuffDuration(player);
       if (_calculateInfo._combatLog !== "") {
         setState((prev) => ({
           ...prev,
@@ -187,7 +175,7 @@ const BattleScreen = () => {
   };
 
   const checkWinCondition = (player: Player, enemy: Enemy) => {
-    let winStatus = Game.winCondition(player, enemy);
+    let winStatus = winCondition(player, enemy);
     if (winStatus.status === 0) {
       setState((prev) => ({
         ...prev,
@@ -205,7 +193,7 @@ const BattleScreen = () => {
     let attacker = attackerName === "player" ? player : enemy;
     let target = targetName === "player" ? player : enemy;
     // let winStatus = {}
-    const afterAtk = Game.normalAttack(attacker, target);
+    const afterAtk = normalAttack(attacker, target);
     if (attackerName === "player") {
       setPlayer(afterAtk.attacker as Player);
       setEnemy(afterAtk.target as Enemy);
@@ -231,7 +219,7 @@ const BattleScreen = () => {
   const handleSkillBtnClick = (key: string) => {
     const skillUsed = player.skills.find((skill: Skills) => skill.key === key);
     if (!skillUsed) return;
-    const afterAtk = Game.skillUsing(player, enemy, skillUsed);
+    const afterAtk = skillUsing(player, enemy, skillUsed);
     setPlayer(afterAtk.attacker);
     setEnemy(afterAtk.target);
 
@@ -255,8 +243,8 @@ const BattleScreen = () => {
     _player.exp = playerExp;
     _player.gold = player.gold + enemy.gold;
     if (playerExp >= player.levelExp) {
-      const nextLvl = Game.calculateLvlFromExp(playerExp);
-      const newLevelExp = Game.calculateCurrentLvlExp(Math.floor(nextLvl) + 1);
+      const nextLvl = calculateLvlFromExp(playerExp);
+      const newLevelExp = calculateCurrentLvlExp(Math.floor(nextLvl) + 1);
       _player.level = Math.floor(nextLvl) + 1;
       _player.exp = playerExp - player.levelExp;
       _player.levelExp = newLevelExp;
@@ -282,7 +270,7 @@ const BattleScreen = () => {
                 key={"container"}
                 initial={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 1 }}
+                transition={{ duration: 0.3 }}
               >
                 <PopUp
                   title={"Ready for the battle"}

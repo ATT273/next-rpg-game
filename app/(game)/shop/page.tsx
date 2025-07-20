@@ -6,15 +6,15 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import items from "@/data/items";
 import Image from "next/image";
-import { Items } from "@/types/player";
+import { IShopItem } from "@/types/player";
 
 const Shop = () => {
   const router = useRouter();
   const setCurrentEvent = useStore((state) => state.setCurrentEvent);
   const player = useStore((state) => state.player);
   const updatePlayer = useStore((state) => state.updatePlayer);
-  const [shopItems, setShopItems] = useState<Items[]>([]);
-  const [cart, setCart] = useState<Items[]>([]);
+  const [shopItems, setShopItems] = useState<IShopItem[]>([]);
+  const [cart, setCart] = useState<IShopItem[]>([]);
   const [playerGold, setPlayerGold] = useState<number>(player.gold || 0);
   useEffect(() => {
     setCurrentEvent(SHOP_EVENT);
@@ -35,7 +35,7 @@ const Shop = () => {
     setShopItems(itemsList);
   };
 
-  const renderStats = (item: Items) => {
+  const renderStats = (item: IShopItem) => {
     let stats = [];
     for (const stat in item.stats) {
       if (item.stats.hasOwnProperty(stat)) {
@@ -49,7 +49,7 @@ const Shop = () => {
     return stats;
   };
 
-  const buyItem = (item: Items) => {
+  const buyItem = (item: IShopItem) => {
     setCart([...cart, item]);
     setPlayerGold((prev) => prev - item.price);
   };
@@ -69,7 +69,7 @@ const Shop = () => {
     <div className="w-full h-full relative">
       <div>Gold: {player.gold}</div>
       <div className="w-[40rem] m-auto absolute flex flex-col gap-4 justify-center items-center p-4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-200 shadow-md rounded-lg">
-        <div className="text-2xl font-bold">Items Shop</div>
+        <div className="text-2xl font-bold">IShopItem Shop</div>
         <div className="flex gap-4 justify-center items-center">
           {shopItems.map((item, index) => {
             return (

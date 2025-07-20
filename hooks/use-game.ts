@@ -1,49 +1,49 @@
 import enemies from "@/data/enemies";
 import items from "@/data/items";
-import { BuffStat, Player, Skills } from "./types/player";
+import { BuffStat, Player, Skills } from "@/types/player";
 import { IShopItem } from "@/types/shop";
-import { Enemy } from "./types/enemy";
+import { Enemy } from "@/types/enemy";
 import * as _ from "lodash";
-import { events } from "@/data/data";
-class Game {
-  static isPlayer(object: Player | Enemy): object is Player {
-    return (object as Player).type === "player";
-  }
 
-  static getPlayerItems(attacker: Player | Enemy, target: Player | Enemy) {
+function UseGame() {
+  const isPlayer = (object: Player | Enemy): object is Player => {
+    return (object as Player).type === "player";
+  };
+
+  const getPlayerItems = (attacker: Player | Enemy, target: Player | Enemy) => {
     if ((attacker as Player).type === "player") {
       return (attacker as Player).items;
     } else if ((target as Player).type === "player") {
       return (target as Player).items;
     }
-  }
-  static getRandomEnemy(key: string | "", level: number) {
+  };
+  const getRandomEnemy = (key: string | "", level: number) => {
     const filterEnemies = enemies.filter(
       (enemy) => enemy.key !== key && enemy.matchLvl.includes(level)
     );
     const randomIdx = Math.floor(Math.random() * filterEnemies.length);
     return _.cloneDeep(filterEnemies[randomIdx]);
     // return JSON.parse(JSON.stringify(filterEnemies[randomIdx]))
-  }
-  static getEnemy(key: string) {
+  };
+  const getEnemy = (key: string) => {
     const filterEnemies = enemies.filter((enemy) => enemy.key === key);
     return _.cloneDeep(filterEnemies.length > 0 ? filterEnemies[0] : undefined);
     // return JSON.parse(JSON.stringify(filterEnemies[randomIdx]))
-  }
+  };
 
-  static normalAttack(attacker: Player | Enemy, target: Player | Enemy) {
-    const _items = this.getPlayerItems(attacker, target);
-    const bonusStats = this.getBonusStats(_items ? _items : []);
-    const _buffStats = this.isPlayer(attacker)
+  const normalAttack = (attacker: Player | Enemy, target: Player | Enemy) => {
+    const _items = getPlayerItems(attacker, target);
+    const bonusStats = getBonusStats(_items ? _items : []);
+    const _buffStats = isPlayer(attacker)
       ? (attacker as Player).buffStats
       : (target as Player).buffStats;
-    const atkBuff = this.isPlayer(attacker)
+    const atkBuff = isPlayer(attacker)
       ? _.find(_buffStats, (buff) => buff.name === "atk") || { value: 0 }
       : { value: 0 };
-    const defBuff = this.isPlayer(target)
+    const defBuff = isPlayer(target)
       ? _.find(_buffStats, (buff) => buff.name === "def") || { value: 0 }
       : { value: 0 };
-    const atkOfAttacker = this.isPlayer(attacker)
+    const atkOfAttacker = isPlayer(attacker)
       ? attacker.stats.atk + bonusStats.atk + atkBuff!.value
       : attacker.stats.atk;
     const defOfTarget =
@@ -59,9 +59,9 @@ class Game {
 
     const combatLog = `${attacker.name} deals ${dmgDealed} damage`;
     return { attacker, target, type, combatLog };
-  }
+  };
 
-  static skillUsing(attacker: Player, target: Enemy, skill: Skills) {
+  const skillUsing = (attacker: Player, target: Enemy, skill: Skills) => {
     // let dmgDealed = 0;
     let combatLog = "";
     let type = "";
@@ -124,9 +124,9 @@ class Game {
       combatLog = `${attacker.name} used ${skill.name}`;
     }
     return { attacker, target, type, combatLog };
-  }
+  };
 
-  static calculateBuffDuration(player: Player) {
+  const calculateBuffDuration = (player: Player) => {
     let _buffStats = player.buffStats.map((buff: BuffStat) => {
       if (buff.duration > 0) buff.duration -= 1;
       if (buff.duration === 0) buff.value = 0;
@@ -140,9 +140,9 @@ class Game {
       }
     });
     return { _combatLog, _buffStats };
-  }
+  };
 
-  static winCondition(player: Player, com: Enemy) {
+  const winCondition = (player: Player, com: Enemy) => {
     if (player.stats.hp === 0) {
       return {
         status: 0,
@@ -160,21 +160,21 @@ class Game {
       status: 1,
       message: "continue",
     };
-  }
+  };
 
-  static getLootItem() {
-    // const filterEvents = events.filter(event => event.id !== id)
-    const randomIdx = Math.floor(Math.random() * items.length);
-    return _.cloneDeep(items[randomIdx]);
-  }
-  static getEvent(id: number) {
-    const eventIdsList = [1, 2, 3];
-    const filterEvents = eventIdsList.filter((event) => event !== id);
-    const randomIdx = Math.floor(Math.random() * filterEvents.length);
-    return filterEvents[randomIdx];
-  }
+  // const  getLootItem = () => {
+  //   // const filterEvents = events.filter(event => event.id !== id)
+  //   const randomIdx = Math.floor(Math.random() * items.length);
+  //   return _.cloneDeep(items[randomIdx]);
+  // }
+  // const  getEvent = (id: number) => {
+  //   const eventIdsList = [1, 2, 3];
+  //   const filterEvents = eventIdsList.filter((event) => event !== id);
+  //   const randomIdx = Math.floor(Math.random() * filterEvents.length);
+  //   return filterEvents[randomIdx];
+  // }
 
-  static getBonusStats(itemList: IShopItem[]) {
+  const getBonusStats = (itemList: IShopItem[]) => {
     const bonusStats = {
       atk: 0,
       def: 0,
@@ -198,9 +198,9 @@ class Game {
       });
 
     return bonusStats;
-  }
+  };
 
-  static takeItem(item: IShopItem, itemList: IShopItem[]) {
+  const takeItem = (item: IShopItem, itemList: IShopItem[]) => {
     let newInventory = _.cloneDeep(itemList);
     let message = "";
     let isMaxQty = false;
@@ -214,13 +214,13 @@ class Game {
           isMaxQty = true;
           message = `You can only have ${newInventory[itemIndex].maxQty} of this item`;
         } else {
-          newInventory[itemIndex].qty += 1;
+          newInventory[itemIndex].qty ? (newInventory[itemIndex].qty += 1) : 1;
           message = `${item.name} is added to your inventory`;
           return { newInventory, message, isMaxQty };
         }
       } else {
         if (!isMaxQty) {
-          item.qty += 1;
+          item.qty ? (item.qty += 1) : 1;
           newInventory.push(item);
           message = `${item.name} is added to your inventory`;
         }
@@ -231,39 +231,56 @@ class Game {
     }
 
     return { newInventory, message, isMaxQty };
-  }
+  };
 
-  static consumeItem(player: Player, key: string) {
+  const consumeItem = (player: Player, key: string) => {
     const stats = { ...player.stats };
     const selectedItem = items.find((item) => item.key === key);
     if (selectedItem && selectedItem.stats) {
       Object.keys(selectedItem.stats).forEach((key) => {
-        if (
-          selectedItem.stats &&
-          stats[key as keyof typeof stats] +
-            selectedItem.stats[key as keyof typeof selectedItem.stats]! >
+        if (selectedItem.stats) {
+          if (
+            stats[key as keyof typeof stats] +
+              selectedItem.stats[key as keyof typeof selectedItem.stats]! >
             stats[`max${key.toUpperCase()}` as keyof typeof stats]!
-        ) {
-          stats[key as keyof typeof stats] =
-            stats[`max${key.toUpperCase()}` as keyof typeof stats];
-        } else
-          stats[key as keyof typeof stats] +=
-            selectedItem.stats[key as keyof typeof selectedItem.stats]!;
+          ) {
+            stats[key as keyof typeof stats] =
+              stats[`max${key.toUpperCase()}` as keyof typeof stats];
+          } else
+            stats[key as keyof typeof stats] +=
+              selectedItem.stats[key as keyof typeof selectedItem.stats]!;
+        }
       });
     }
 
     return stats;
-  }
+  };
 
-  static calculateCurrentLvlExp(level: number) {
+  const calculateCurrentLvlExp = (level: number) => {
     const exp = 50 * Math.pow(2, level - 1);
     return exp;
-  }
+  };
 
-  static calculateLvlFromExp(exp: number) {
+  const calculateLvlFromExp = (exp: number) => {
     const lvl = Math.log(exp / 25) / Math.log(2);
     return parseInt(lvl.toFixed(2));
-  }
+  };
+
+  return {
+    isPlayer,
+    getPlayerItems,
+    getRandomEnemy,
+    getEnemy,
+    normalAttack,
+    skillUsing,
+    calculateBuffDuration,
+    winCondition,
+    getBonusStats,
+    takeItem,
+    consumeItem,
+    calculateCurrentLvlExp,
+    calculateLvlFromExp,
+  };
 }
 
-export default Game;
+export default UseGame;

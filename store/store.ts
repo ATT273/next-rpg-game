@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { BonusStats, Stats, Player, Items, BuffStat } from "@/types/player";
+import { BonusStats, Stats, Player, IShopItem, BuffStat } from "@/types/player";
 import player_img from "@/public/images/player/player.png";
 import { initialPlayer } from "@/data/data";
 
@@ -10,7 +10,7 @@ interface Store {
   selectedEnemy: string;
   createPlayer: (payload: Player) => void;
   updateStats: (payload: Stats) => void;
-  updateItems: (payload: Items[]) => void;
+  updateItems: (payload: IShopItem[]) => void;
   updateBonusStats: (payload: BonusStats) => void;
   updateBuffStats: (payload: BuffStat[]) => void;
   resetPlayer: () => void;
@@ -80,7 +80,7 @@ const useStore = create<Store>()(
         set((state: any) => ({ ...state, currentEvent: payload })),
       setScore: (payload: number) =>
         set((state: any) => ({ ...state, score: state.score + payload })),
-      updateItems: (payload: Items[]) =>
+      updateItems: (payload: IShopItem[]) =>
         set((state: any) => ({ player: { ...state.player, items: payload } })),
       updatePlayer: (payload: Player) =>
         set((state: any) => ({ player: { ...state.player, ...payload } })),
