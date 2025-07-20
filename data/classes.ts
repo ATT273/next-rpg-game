@@ -3,7 +3,7 @@ import warrior from '@/public/images/classes/warrior.png';
 import assassin from '@/public/images/classes/assassin.png';
 import mage from '@/public/images/classes/mage.png';
 
-const classes = {
+export const classes = {
     knight: {
         key: 'knight',
         name: 'Knight',
@@ -207,4 +207,4 @@ const classes = {
         ]
     }
 };
-export default classes;
+// export default classes;
