@@ -13,7 +13,8 @@ type Player = {
   buffStats: BuffStat[],
   // buffs: Record<string, number>,
   items: Items[],
-  skills: Skills[]
+  skills: Skills[],
+  gold: number
 }
 type BuffStat = {
   name: string,
@@ -56,7 +57,7 @@ type Items = {
   type: string,
   key: string,
   name: string,
-  image: string,
+  image: StaticImageData,
   price: number,
   qty: number,
   maxQty: number,

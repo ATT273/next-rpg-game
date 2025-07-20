@@ -36,5 +36,6 @@ export const initialPlayer = {
   },
   buffStats: [],
   buffs: [],
-  items: []
+  items: [],
+  gold: 0
 }

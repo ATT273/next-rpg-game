@@ -5,8 +5,9 @@ import IronShield from '@/public/images/items/Iron_Shield.png';
 import BroadSword from '@/public/images/items/broad_sword.jpg';
 import ChestPlate from '@/public/images/items/chest_plate.jpg';
 import HPPotion from '@/public/images/items/hp_potion.jpg';
+import { Items } from '@/types/player';
 
-const items = [
+const items: Items[] = [
     {
         id: 0,
         image: RustySword,
@@ -107,4 +108,5 @@ const items = [
         }
     }
 ];
+
 export default items;

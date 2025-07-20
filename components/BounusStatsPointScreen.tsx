@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { Skills, Stats } from '@/types/player';
 import useStore from '@/store/store';
-import classes from '@/data/classes';
+import { classes } from '@/data/classes';
 
 const initialState: Stats = {
   hp: 100,

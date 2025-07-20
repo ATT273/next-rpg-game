@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import SkillSelection from './SkillSelecttion';
-import classes from '@/data/classes';
+import { classes } from '@/data/classes';
 import Image from 'next/image';
 import LeftCaret from '@/svg/caret-left.svg';
 import RightCaret from '@/svg/caret-right.svg';
