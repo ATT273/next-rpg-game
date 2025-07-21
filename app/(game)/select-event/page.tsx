@@ -13,10 +13,10 @@ const SelectEvents = () => {
   const [shop, setShop] = useState<IShop>();
   const [enemy, setEnemy] = useState<Enemy>();
   const { selectEnemy, player, selectedEnemy } = useStore();
-  const { getShop } = useShop();
+  const { getRandomShop } = useShop();
   const { getRandomEnemy } = useEnemy();
   useEffect(() => {
-    const _shop = getShop();
+    const _shop = getRandomShop();
     setShop(_shop);
     const _enemy = getRandomEnemy(selectedEnemy, player.level);
     setEnemy(_enemy);
@@ -26,15 +26,24 @@ const SelectEvents = () => {
     selectEnemy(key);
     router.push("/battle");
   };
+
+  const onSelectShop = (id?: number) => {
+    if (!id) {
+      alert("The shop has no Id");
+      return;
+    }
+    router.push("/shop");
+  };
   return (
-    <div className="flex gap-6 justify-center items-center h-full m-auto">
+    <div className="flex gap-6 justify-center items-center h-full m-auto bg-gray-100">
       <AnimatePresence>
         <motion.div
           key="event-1"
           id="event-1"
           transition={{ duration: 0.3 }}
           whileHover={{ scale: 1.5 }}
-          className="w-[200px] h-[300px] border p-4 cursor-pointer bg-white flex flex-col gap-2 items-center justify-start"
+          className="w-[200px] h-[300px] border p-4 cursor-pointer bg-white flex flex-col gap-2 items-center justify-start rounded-xl"
+          onClick={() => onSelectShop(shop?.id)}
         >
           {shop && (
             <>
@@ -51,7 +60,7 @@ const SelectEvents = () => {
           id="event-2"
           transition={{ duration: 0.3 }}
           whileHover={{ scale: 1.5 }}
-          className="w-[200px] h-[300px] border p-4 cursor-pointer bg-white flex flex-col gap-2 items-center justify-start"
+          className="w-[200px] h-[300px] border p-4 cursor-pointer bg-white flex flex-col gap-2 items-center justify-start rounded-xl"
           onClick={() => onSelectBattle(enemy?.key || "")}
         >
           {enemy && (
@@ -60,7 +69,7 @@ const SelectEvents = () => {
               <div className="w-[120px] h-[120px] relative mb-4">
                 <Image src={enemy.image} alt={enemy.name} fill sizes="300px" />
               </div>
-              {/* <div className="text-lg text-center p-2">{enemy.quotes}</div> */}
+              <div className="text-lg text-center p-2">{enemy.description}</div>
             </>
           )}
         </motion.div>
@@ -69,7 +78,7 @@ const SelectEvents = () => {
           id="event-3"
           transition={{ duration: 0.3 }}
           whileHover={{ scale: 1.5 }}
-          className="w-[200px] h-[300px] border p-4 cursor-pointer bg-green-500"
+          className="w-[200px] h-[300px] border p-4 cursor-pointer bg-white  rounded-xl"
         >
           Event 3
         </motion.div>

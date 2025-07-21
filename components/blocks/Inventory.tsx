@@ -1,61 +1,66 @@
-'use client'
+"use client";
 
-import { Items } from '@/types/player';
-import Image from 'next/image';
-import React, { useState } from 'react';
+import { IShopItem } from "@/types/shop";
+import Image from "next/image";
+import React, { useState } from "react";
 
 function InventoryBlock({
-  itemIndex, item, onItemUsed, onItemDropped
+  itemIndex,
+  item,
+  onItemUsed,
+  onItemDropped,
 }: {
-  itemIndex?: number,
-  item: Items,
-  onItemUsed?: Function,
-  onItemDropped?: Function
+  itemIndex?: number;
+  item: IShopItem;
+  onItemUsed?: Function;
+  onItemDropped?: Function;
 }) {
   const [isShowItemMenu, setIsShowItemMenu] = useState(false);
   const handleMenuBtnClick = () => {
     setIsShowItemMenu(!isShowItemMenu);
-  }
+  };
 
   const handleUseItem = () => {
     setIsShowItemMenu(!isShowItemMenu);
-    if (onItemUsed) onItemUsed(item.key, itemIndex)
-  }
+    if (onItemUsed) onItemUsed(item.key, itemIndex);
+  };
 
   const handleDropItem = () => {
     setIsShowItemMenu(!isShowItemMenu);
-    if (onItemDropped) onItemDropped(item.key, itemIndex)
-  }
+    if (onItemDropped) onItemDropped(item.key, itemIndex);
+  };
   return (
     <React.Fragment>
-      {
-        item
-          ? <div className='item border border-1 border-stone-800'>
-            <Image src={item.image} alt={item.key} className='item-thumb' />
-            {item.qty > 1 && <div className='item-qty'>{item.qty}</div>}
-            <div className='three-dot-menu' onClick={handleMenuBtnClick}></div>
-            {
-              isShowItemMenu &&
-              <ul className='item-menu'>
-                {item.isConsumable && <li onClick={handleUseItem}>Use item</li>}
-                <li onClick={handleDropItem}>Drop item</li>
-              </ul>
-            }
-            <div className='item-stats bg-stone-900 text-stone-100 border-amber-300 border-[3px]'>
-              <p><b>{item.name.toUpperCase()}</b></p>
-              <p>price: {item.price}</p>
-              {
-                Object.keys(item.stats).map(key => {
-                  return <p key={key}>{`${key}: ${item.stats[key]}`}</p>
-                })
-              }
-            </div>
+      {item ? (
+        <div className="item border border-1 border-stone-800">
+          <Image src={item.image} alt={item.key} className="item-thumb" />
+          {item.qty > 1 && <div className="item-qty">{item.qty}</div>}
+          <div className="three-dot-menu" onClick={handleMenuBtnClick}></div>
+          {isShowItemMenu && (
+            <ul className="item-menu">
+              {item.isConsumable && <li onClick={handleUseItem}>Use item</li>}
+              <li onClick={handleDropItem}>Drop item</li>
+            </ul>
+          )}
+          <div className="item-stats bg-stone-900 text-stone-100 border-amber-300 border-[3px]">
+            <p>
+              <b>{item.name.toUpperCase()}</b>
+            </p>
+            <p>price: {item.price}</p>
+            {Object.keys(item.stats).map((key) => {
+              return (
+                <p key={key}>{`${key}: ${
+                  item.stats[key as keyof typeof item.stats]
+                }`}</p>
+              );
+            })}
           </div>
-          : <div className='item border-stone-800'></div>
-      }
+        </div>
+      ) : (
+        <div className="item border-stone-800"></div>
+      )}
     </React.Fragment>
-
-  )
+  );
 }
 
-export default InventoryBlock
+export default InventoryBlock;
