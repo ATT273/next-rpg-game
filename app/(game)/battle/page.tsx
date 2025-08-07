@@ -1,33 +1,24 @@
 "use client";
-import React, { useState, useEffect, useRef, use } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Game from "../../../game";
 import { useRouter } from "next/navigation";
 import useStore from "@/store/store";
 import { Enemy } from "@/types/enemy";
-import { Player, Skills } from "@/types/player";
+import { ActionType, BuffCounter, Player } from "@/types/player";
 import PopUp from "@/components/shared/popup";
 import FighterStatsBlock from "@/components/blocks/Fighters";
-import Spinner from "@/components/svg/spinner";
 import { initialEnemies } from "@/data/enemies";
-import { BATTLE_EVENT, LOOT_EVENT, SHOP_EVENT } from "@/data/data";
+import { BATTLE_EVENT, SKILL_TARGET, WIN_CONDITION_STATUS } from "@/data/data";
 import useGame from "@/hooks/use-game";
-import dynamic from "next/dynamic";
+import { delay } from "@/utils";
+import BattleProvider from "./_components/battle-provider";
 
-const PlayerActionsBlock = dynamic(
-  () => import("@/components/blocks/PlayerActions"),
-  { ssr: false }
-);
-const BattleLog = dynamic(() => import("@/components/blocks/BattleLog"), {
-  ssr: false,
-});
-
-const initiateBuffs: { [key: string]: number } = {};
 const BattleScreen = () => {
   const audioPlayer = useRef<HTMLAudioElement>(null);
+
   const {
     getEnemy,
-    calculateBuffDuration,
+    calculateBuff,
     winCondition,
     normalAttack,
     skillUsing,
@@ -41,6 +32,8 @@ const BattleScreen = () => {
     setCurrentEvent,
     setScore,
   } = useStore();
+  const [player, setPlayer] = useState<Player>(playerStore);
+  const [enemy, setEnemy] = useState<Enemy>(initialEnemies);
   const [state, setState] = useState({
     display: "block",
     intrOpacity: 1,
@@ -57,43 +50,25 @@ const BattleScreen = () => {
     turnCt: 0,
     currentTurn: "",
   });
-  // const playerStore = useStore((state: any) => state.player);
-  // const updatePlayer = useStore((state) => state.updatePlayer);
-  // const setCurrentEvent = useStore((state) => state.setCurrentEvent);
-  // const setScore = useStore((state) => state.setScore);
-  const [player, setPlayer] = useState<Player>(playerStore);
-  const [enemy, setEnemy] = useState<Enemy>(initialEnemies);
+
   const [currentTurn, setCurrentTurn] = useState<{
     player: number;
     enemy: number;
   }>({ player: 0, enemy: 0 });
   const [isPlayerTurn, setIsPlayerTurn] = useState<boolean>();
+  const [buffCounter, setBuffCounter] = useState<BuffCounter>({});
+  const [actions, setActions] = useState<ActionType[]>([]);
+  const actionIndex = useMemo(() => {
+    return actions.length - 1;
+  }, [actions]);
   const router = useRouter();
 
-  // useEffect(() => {
-  //   if (playerStore) {
-  //     if (playerStore.stats.hp <= 0) {
-  //       router.push('/game-over')
-  //     }
-  //     setPlayer(playerStore)
-  //   }
-  // }, [playerStore]);
   useEffect(() => {
-    const localsave = localStorage.getItem("rpg_game");
-    if (!localsave) {
-      router.push("/create-character");
-    } else {
-      const saveGame = JSON.parse(localsave);
-      if (!saveGame.continueGame) {
-        console.log("no save game");
-        // router.push('/create-character')
-      }
-    }
     if (playerStore.name) {
       setCurrentEvent(BATTLE_EVENT);
       setPlayer(playerStore);
     }
-  }, []);
+  }, [playerStore]);
 
   useEffect(() => {
     if (selectedEnemy) {
@@ -110,32 +85,141 @@ const BattleScreen = () => {
   // }, [audioPlayer]);
 
   useEffect(() => {
-    if (player.name && enemy.key) {
-      if (currentTurn.player === 0) chooseFirstAttacker();
-      checkWinCondition(player, enemy);
+    if (player.name && enemy.key && state.showBattleScreen) {
+      if (currentTurn.player === 0) {
+        // Choose first attacker
+        setIsPlayerTurn(player.stats.spd >= enemy.stats.spd);
+      }
     }
-  }, [enemy, player]);
+  }, [enemy, player, state]);
 
   useEffect(() => {
     if (isPlayerTurn === undefined) return;
     if (isPlayerTurn) {
       setCurrentTurn((prev) => ({ ...prev, player: prev.player + 1 }));
+      playerTurn();
     } else {
       setCurrentTurn((prev) => ({ ...prev, enemy: prev.enemy + 1 }));
-    }
-    if (!isPlayerTurn && enemy && enemy.stats.hp > 0) {
-      handleAtkButtonClick("com", "player");
+      enemyTurn();
     }
   }, [isPlayerTurn]);
 
-  const chooseFirstAttacker = () => {
-    if (player.name && enemy.key) {
-      const playerSpd = player.stats.spd;
-      const enemySPd = enemy.stats.spd;
-      setIsPlayerTurn(playerSpd >= enemySPd);
-    } else {
-      console.log("data not found");
+  const playerTurn = async () => {
+    let _player = { ...player } as Player;
+    let _enemy = { ...enemy } as Enemy;
+    // Player normal attack
+    // debugger;
+    const afterAtk = await normalAttack(_player, _enemy);
+    _player = { ...(afterAtk.attacker as Player) };
+    _enemy = { ...(afterAtk.target as Enemy) };
+    await updateState({
+      player: _player,
+      enemy: _enemy,
+      battlelog: afterAtk.combatLog,
+      actionLogs: afterAtk.actions,
+    });
+    await delay(500);
+    if (await checkWinCondition(_player, _enemy)) return;
+    //  PLayer use skill
+    const skill = _player.skills[0];
+    if (
+      _player.stats.mp > 0 &&
+      _player.skills[0].cost < _player.stats.mp &&
+      !buffCounter[skill.key]
+    ) {
+      const afterUsingSkill = await skillUsing(_player, _enemy, skill);
+      _player = { ...afterUsingSkill.attacker };
+      _enemy = { ...afterUsingSkill.target };
+      let newBuff: { duration: number; turnCasted: number } | undefined;
+      if (skill.target === SKILL_TARGET.SELF) {
+        newBuff = {
+          duration: !isNaN(Number(skill.duration)) ? Number(skill.duration) : 0,
+          turnCasted: currentTurn.player,
+        };
+      }
+      await updateState({
+        player: { ..._player },
+        enemy: _enemy,
+        battlelog: afterUsingSkill.combatLog,
+        buffCounters: {
+          ...buffCounter,
+          [skill.key]: newBuff,
+        } as BuffCounter,
+        actionLogs: afterUsingSkill.actions,
+      });
+      await delay(500);
+      if (await checkWinCondition(_player, _enemy)) return;
     }
+    handleEndturn("player");
+  };
+  const enemyTurn = async () => {
+    let _player = { ...player } as Player;
+    let _enemy = { ...enemy } as Enemy;
+    const afterAtk = await normalAttack(_enemy, _player);
+
+    _player = { ...(afterAtk.target as Player) };
+    _enemy = { ...(afterAtk.attacker as Enemy) };
+    await updateState({
+      player: { ...player },
+      enemy: enemy,
+      battlelog: afterAtk.combatLog,
+      actionLogs: afterAtk.actions,
+    });
+    await delay(500);
+    if (await checkWinCondition(_player, _enemy)) return;
+
+    if (_player.buffStats.length > 0) {
+      await buffCalculation(_player, _enemy);
+    }
+    handleEndturn("enemy");
+  };
+
+  const buffCalculation = async (player: Player, enemy: Enemy) => {
+    const {
+      player: _player,
+      buffCounter: _counter,
+      combatLog,
+    } = await calculateBuff(player, buffCounter);
+    await updateState({
+      player: _player,
+      enemy: enemy,
+      buffCounters: _counter,
+      battlelog: combatLog,
+    });
+    await delay(500);
+  };
+
+  const updateState = async ({
+    player,
+    enemy,
+    battlelog,
+    buffCounters,
+    actionLogs,
+  }: {
+    player: Player;
+    enemy: Enemy;
+    battlelog?: string;
+    buffCounters?: BuffCounter;
+    actionLogs?: ActionType[];
+  }) => {
+    if (buffCounters) {
+      setBuffCounter({
+        ...buffCounters,
+      });
+    }
+    if (battlelog) {
+      setState((prev) => ({
+        ...prev,
+        battleLogs: [...prev.battleLogs, battlelog],
+      }));
+    }
+    if (actionLogs) {
+      setActions((prev) => [...prev, ...actionLogs]);
+      // setActionIndex((prev) => actions.length + 1);
+    }
+    setPlayer(player);
+    setEnemy(enemy);
+    return true;
   };
 
   const handleReady = () => {
@@ -149,104 +233,37 @@ const BattleScreen = () => {
     }));
   };
 
-  const handleEndturn = (atkerType: string) => {
-    if (atkerType === "player") {
-      const _calculateInfo = calculateBuffDuration(player);
-      if (_calculateInfo._combatLog !== "") {
-        setState((prev) => ({
-          ...prev,
-          battleLogs: [...state.battleLogs, _calculateInfo._combatLog],
-        }));
-      }
-      setPlayer({ ...player, buffStats: _calculateInfo._buffStats });
-    }
-
+  const handleEndturn = async (atkerType: string) => {
+    await delay(500);
     setIsPlayerTurn(!isPlayerTurn);
   };
 
-  const renderFighters = () => {
-    return (
-      <FighterStatsBlock
-        player={player}
-        com={enemy}
-        currentTurn={currentTurn}
-      />
-    );
-  };
-
-  const checkWinCondition = (player: Player, enemy: Enemy) => {
-    let winStatus = winCondition(player, enemy);
-    if (winStatus.status === 0) {
+  const checkWinCondition = async (player: Player, enemy: Enemy) => {
+    let winStatus = await winCondition(player, enemy);
+    if (
+      winStatus.status === WIN_CONDITION_STATUS.WIN ||
+      winStatus.status === WIN_CONDITION_STATUS.LOSE
+    ) {
       setState((prev) => ({
         ...prev,
-        battleLogs: [...state.battleLogs, winStatus.message],
+        battleLogs: [...prev.battleLogs, winStatus.message],
         showNextBtn: true,
       }));
+      return true;
     }
+    return false;
   };
 
-  // // NORMAL ATK
-  const handleAtkButtonClick = async (
-    attackerName: string,
-    targetName: string
-  ) => {
-    let attacker = attackerName === "player" ? player : enemy;
-    let target = targetName === "player" ? player : enemy;
-    // let winStatus = {}
-    const afterAtk = normalAttack(attacker, target);
-    if (attackerName === "player") {
-      setPlayer(afterAtk.attacker as Player);
-      setEnemy(afterAtk.target as Enemy);
-    } else {
-      setPlayer(afterAtk.target as Player);
-      setEnemy(afterAtk.attacker as Enemy);
-    }
-
-    setState((prev) => ({
-      ...prev,
-      battleLogs: [...state.battleLogs, afterAtk.combatLog],
-    }));
-
-    if (!isPlayerTurn) {
-      setTimeout(() => {
-        handleEndturn(afterAtk.type);
-      }, 500);
-    } else {
-      handleEndturn(afterAtk.type);
-    }
-  };
-  // // USE SKILL
-  const handleSkillBtnClick = (key: string) => {
-    const skillUsed = player.skills.find((skill: Skills) => skill.key === key);
-    if (!skillUsed) return;
-    const afterAtk = skillUsing(player, enemy, skillUsed);
-    setPlayer(afterAtk.attacker);
-    setEnemy(afterAtk.target);
-
-    setState((prev) => ({
-      ...prev,
-      battleLogs: [...state.battleLogs, afterAtk.combatLog],
-    }));
-
-    if (!isPlayerTurn) {
-      setTimeout(() => {
-        handleEndturn(afterAtk.type);
-      }, 500);
-    } else {
-      handleEndturn(afterAtk.type);
-    }
-  };
   const handleEndMatch = () => {
     const _player = { ...player };
     _player.buffStats = [];
-    const playerExp = player.exp + enemy.xp;
-    _player.exp = playerExp;
+    _player.exp = player.exp + enemy.xp;
     _player.gold = player.gold + enemy.gold;
-    if (playerExp >= player.levelExp) {
-      const nextLvl = calculateLvlFromExp(playerExp);
+    if (player.exp + enemy.xp >= player.levelExp) {
+      const nextLvl = calculateLvlFromExp(player.exp + enemy.xp);
       const newLevelExp = calculateCurrentLvlExp(Math.floor(nextLvl) + 1);
       _player.level = Math.floor(nextLvl) + 1;
-      _player.exp = playerExp - player.levelExp;
+      _player.exp = player.exp + enemy.xp - player.levelExp;
       _player.levelExp = newLevelExp;
     }
     if (_player.stats.hp > 0) {
@@ -256,70 +273,69 @@ const BattleScreen = () => {
     setState((prevState) => ({ ...prevState, showNextBtn: false }));
     router.push("/select-event");
   };
-  console.log("player", player);
-  console.log("===========");
+
   return (
-    <div className="w-full h-full text-slate-900">
-      {/* <audio id='audioPlayer' ref={audioPlayer} src="/music/dungeon_theme_ost.mp3" autoPlay loop /> */}
-      {player && enemy && (
-        <div className="fight-screen w-full h-full">
-          <AnimatePresence>
-            {state.showReadyPopup && enemy.key && (
-              <motion.div
-                className="container"
-                key={"container"}
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <PopUp
-                  title={"Ready for the battle"}
-                  content={`${player.name} vs ${enemy.name}`}
-                  display={state.display}
-                  size={"big"}
-                  renderButtons={true}
-                  renderInfo={true}
-                  handleReady={handleReady}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-          <AnimatePresence>
-            {state.showBattleScreen && (
-              <motion.div
-                className="w-[calc(100vw-800px)] h-full m-auto p-6"
-                key={"main-content"}
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                {player !== null && renderFighters()}
-                {isPlayerTurn ? (
-                  <PlayerActionsBlock
-                    handleAtkButtonClick={handleAtkButtonClick}
-                    handleSkillBtnClick={handleSkillBtnClick}
-                    player={player}
+    <BattleProvider
+      actions={actions}
+      actionIndex={actionIndex}
+      player={player}
+      enemy={enemy}
+      currentTurn={currentTurn}
+      isPlayerTurn={isPlayerTurn}
+      battleLogs={state.battleLogs}
+    >
+      <div className="w-full h-full text-slate-900">
+        {/* <audio id='audioPlayer' ref={audioPlayer} src="/music/dungeon_theme_ost.mp3" autoPlay loop /> */}
+        {player && enemy && (
+          <div className="fight-screen w-full h-full">
+            <AnimatePresence>
+              {state.showReadyPopup && enemy.key && (
+                <motion.div
+                  className="container"
+                  key={"container"}
+                  initial={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <PopUp
+                    title={"Ready for the battle"}
+                    content={`${player.name} vs ${enemy.name}`}
+                    display={state.display}
+                    size={"big"}
+                    renderButtons={true}
+                    renderInfo={true}
+                    handleReady={handleReady}
                   />
-                ) : (
-                  <Spinner size="4rem" color="#e2e2e2" />
-                )}
-                <BattleLog battleLogs={state.battleLogs} />
-                {state.showNextBtn && (
-                  <div className="w-full text-center p-2">
-                    <button
-                      className="btn bg-green w-200"
-                      style={{ margin: "auto" }}
-                      onClick={handleEndMatch}
-                    >
-                      Next
-                    </button>
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      )}
-    </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <AnimatePresence>
+              {state.showBattleScreen && (
+                <motion.div
+                  className="w-[calc(100vw-800px)] h-full m-auto p-6"
+                  key={"main-content"}
+                  initial={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {player !== null && <FighterStatsBlock />}
+                  {state.showNextBtn && (
+                    <div className="w-full text-center p-2">
+                      <button
+                        className="btn bg-green w-200"
+                        style={{ margin: "auto" }}
+                        onClick={handleEndMatch}
+                      >
+                        Next
+                      </button>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
+      </div>
+    </BattleProvider>
   );
 };
 

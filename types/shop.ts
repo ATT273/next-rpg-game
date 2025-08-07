@@ -20,7 +20,7 @@ export interface IShopItem {
   qty: number;
   maxQty: number;
   isConsumable: boolean;
-  stats: { [key: string]: number } | {};
+  stats: IItemStat;
   effects:
     | {
         name: string;
@@ -30,7 +30,16 @@ export interface IShopItem {
     | [];
   skills: Skills[] | [];
 }
-
+export interface IItemStat {
+  hp?: number;
+  mp?: number;
+  maxHP?: number;
+  maxMP?: number;
+  atk?: number;
+  def?: number;
+  spd?: number;
+  int?: number;
+}
 // type IShopItem = {
 //   id: number;
 //   type: string;

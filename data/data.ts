@@ -1,18 +1,19 @@
-import player_img from '@/public/images/player/player.png'
-export const events = [
-  { id: 0, name: 'Battle' },
-  { id: 1, name: 'Loot' },
-  // { id: 2, name: 'Shop' },
-]
+import player_img from "@/public/images/player/player.png";
 
-export const BATTLE_EVENT = 1
-export const LOOT_EVENT = 2
-export const SHOP_EVENT = 3
+export const events = [
+  { id: 0, name: "Battle" },
+  { id: 1, name: "Loot" },
+  // { id: 2, name: 'Shop' },
+];
+
+export const BATTLE_EVENT = 1;
+export const LOOT_EVENT = 2;
+export const SHOP_EVENT = 3;
 export const initialPlayer = {
-  type: 'player',
-  name: '',
+  type: "player",
+  name: "",
   image: player_img,
-  plClass: '',
+  plClass: "",
   level: 1,
   exp: 0,
   levelExp: 100,
@@ -24,7 +25,7 @@ export const initialPlayer = {
     int: 0,
     atk: 0,
     def: 0,
-    spd: 0
+    spd: 0,
   },
   skills: [],
   bonusStats: {
@@ -32,10 +33,20 @@ export const initialPlayer = {
     maxMP: 0,
     atk: 0,
     def: 0,
-    spd: 0
+    spd: 0,
   },
   buffStats: [],
   buffs: [],
   items: [],
-  gold: 0
-}
+  gold: 0,
+};
+export const WIN_CONDITION_STATUS = {
+  WIN: 0,
+  LOSE: 1,
+  CONTINUE: 2,
+};
+
+export const SKILL_TARGET = {
+  SELF: "self",
+  ENEMY: "enemy",
+};

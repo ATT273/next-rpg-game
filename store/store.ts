@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { BonusStats, Stats, Player, IShopItem, BuffStat } from "@/types/player";
+import { BonusStats, Stats, Player, BuffStat } from "@/types/player";
+import { IShopItem } from "@/types/shop";
 import player_img from "@/public/images/player/player.png";
 import { initialPlayer } from "@/data/data";
 

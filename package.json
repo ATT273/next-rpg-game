@@ -12,6 +12,7 @@
     "@types/lodash": "^4.17.7",
     "framer-motion": "^12.23.6",
     "lodash": "^4.17.21",
+    "lucide-react": "^0.536.0",
     "next": "15.0.3",
     "react": "^18",
     "react-dom": "^18",

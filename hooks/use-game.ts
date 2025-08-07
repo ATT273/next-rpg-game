@@ -1,9 +1,10 @@
 import enemies from "@/data/enemies";
 import items from "@/data/items";
-import { BuffStat, Player, Skills } from "@/types/player";
+import { ActionType, BuffCounter, Player, Skills } from "@/types/player";
 import { IShopItem } from "@/types/shop";
 import { Enemy } from "@/types/enemy";
 import * as _ from "lodash";
+import { SKILL_TARGET, WIN_CONDITION_STATUS } from "@/data/data";
 
 function UseGame() {
   const isPlayer = (object: Player | Enemy): object is Player => {
@@ -31,7 +32,10 @@ function UseGame() {
     // return JSON.parse(JSON.stringify(filterEnemies[randomIdx]))
   };
 
-  const normalAttack = (attacker: Player | Enemy, target: Player | Enemy) => {
+  const normalAttack = async (
+    attacker: Player | Enemy,
+    target: Player | Enemy
+  ) => {
     const _items = getPlayerItems(attacker, target);
     const bonusStats = getBonusStats(_items ? _items : []);
     const _buffStats = isPlayer(attacker)
@@ -56,29 +60,33 @@ function UseGame() {
     let type = attacker.type;
     target.stats.hp =
       target.stats.hp - dmgDealed < 0 ? 0 : target.stats.hp - dmgDealed;
-
+    const actions = [{ type: "atk", value: dmgDealed, source: attacker.type }];
     const combatLog = `${attacker.name} deals ${dmgDealed} damage`;
-    return { attacker, target, type, combatLog };
+    return { attacker, target, type, combatLog, actions };
   };
 
-  const skillUsing = (attacker: Player, target: Enemy, skill: Skills) => {
-    // let dmgDealed = 0;
+  const skillUsing = async (attacker: Player, target: Enemy, skill: Skills) => {
+    // debugger;
     let combatLog = "";
-    let type = "";
-    if (skill.target === "enemy") {
+    const actions: ActionType[] = [];
+    if (skill.target === SKILL_TARGET.ENEMY) {
       const atkOfAttacker = Math.abs(skill.effects[0].value);
       const defOfTarget = target.stats.def;
       const dmgDealed =
         atkOfAttacker - defOfTarget > 0 ? atkOfAttacker - defOfTarget : 0;
-      type = attacker.type;
+
       target.stats.hp =
         target.stats.hp - dmgDealed < 0 ? 0 : target.stats.hp - dmgDealed;
       attacker.stats.mp -= skill.cost;
-
+      actions.push({
+        type: "atk",
+        value: dmgDealed,
+        source: attacker.type,
+      });
       combatLog = `${attacker.name} used ${skill.name} => deals ${dmgDealed} damage`;
     }
 
-    if (skill.target === "self") {
+    if (skill.target === SKILL_TARGET.SELF) {
       const buffStats = [
         {
           name: "hp",
@@ -102,9 +110,15 @@ function UseGame() {
         },
       ];
       // Object.assign(attacker.buffs, { ...attacker.buffs, skill })
+
       skill.effects.forEach((fx) => {
         buffStats.forEach((buff) => {
           if (fx.stats === buff.name) {
+            actions.push({
+              type: fx.stats,
+              value: fx.value,
+              source: attacker.type,
+            });
             buff.value += fx.value;
             buff.duration +=
               typeof skill.duration === "boolean" ? 0 : skill.duration;
@@ -120,44 +134,68 @@ function UseGame() {
       });
 
       attacker.stats.mp -= skill.cost;
-      type = attacker.type;
       combatLog = `${attacker.name} used ${skill.name}`;
     }
-    return { attacker, target, type, combatLog };
+    return {
+      attacker,
+      target,
+      combatLog,
+      actions,
+    };
   };
 
-  const calculateBuffDuration = (player: Player) => {
-    let _buffStats = player.buffStats.map((buff: BuffStat) => {
-      if (buff.duration > 0) buff.duration -= 1;
-      if (buff.duration === 0) buff.value = 0;
-      return buff;
-    });
-    let _combatLog = "";
+  const calculateBuff = async (player: Player, buffCounter: BuffCounter) => {
+    const selfBuffs = player.skills.filter(
+      (item) => item.target === SKILL_TARGET.SELF
+    );
+    const _counter = { ...buffCounter };
 
-    _buffStats.forEach((buff: BuffStat) => {
-      if (buff.duration > 0) {
-        _combatLog += `${player.name} buffed ${buff.name} by ${buff.value}\n`;
+    let _combatLog = "";
+    const removed: { stat: string; value: number }[] = [];
+    selfBuffs.forEach((buff) => {
+      if (_counter[buff.key] && _counter[buff.key].duration > 1) {
+        _counter[buff.key].duration -= 1;
+        _combatLog += `
+            ${buff.name} ends in ${_counter[buff.key].duration} turns
+          `;
+      } else {
+        buff.effects.forEach((fx) => {
+          removed.push({
+            stat: fx.stats,
+            value: fx.value,
+          });
+        });
+        delete _counter[buff.key];
       }
     });
-    return { _combatLog, _buffStats };
+    // calculate buffs after removed
+    removed.forEach((item) => {
+      player.buffStats.forEach((bs) => {
+        if (bs.name === item.stat) {
+          bs.value -= item.value;
+        }
+      });
+    });
+
+    return { player, buffCounter: _counter, combatLog: _combatLog };
   };
 
-  const winCondition = (player: Player, com: Enemy) => {
+  const winCondition = async (player: Player, com: Enemy) => {
     if (player.stats.hp === 0) {
       return {
-        status: 0,
+        status: WIN_CONDITION_STATUS.LOSE,
         message: "You are defeated",
       };
     }
     if (com.stats.hp === 0) {
       return {
-        status: 0,
+        status: WIN_CONDITION_STATUS.WIN,
         message: "You win",
       };
     }
 
     return {
-      status: 1,
+      status: WIN_CONDITION_STATUS.CONTINUE,
       message: "continue",
     };
   };
@@ -185,15 +223,13 @@ function UseGame() {
     if (itemList.length > 0)
       itemList.forEach((item) => {
         if (item.stats) {
-          bonusStats.atk += item.stats.atk !== undefined ? item.stats.atk : 0;
-          bonusStats.def += item.stats.def !== undefined ? item.stats.def : 0;
+          bonusStats.atk += item.stats.atk ?? 0;
+          bonusStats.def += item.stats.def ?? 0;
           // bonusStats.hp += item.stats.hp !== undefined ? item.stats.hp : 0
           // bonusStats.mp += item.stats.mp !== undefined ? item.stats.mp : 0
-          bonusStats.spd += item.stats.spd !== undefined ? item.stats.spd : 0;
-          bonusStats.maxHP +=
-            item.stats.maxHP !== undefined ? item.stats.maxHP : 0;
-          bonusStats.maxMP +=
-            item.stats.maxMP !== undefined ? item.stats.maxMP : 0;
+          bonusStats.spd += item.stats.spd ?? 0;
+          bonusStats.maxHP += item.stats.maxHP ?? 0;
+          bonusStats.maxMP += item.stats.maxMP ?? 0;
         }
       });
 
@@ -273,7 +309,7 @@ function UseGame() {
     getEnemy,
     normalAttack,
     skillUsing,
-    calculateBuffDuration,
+    calculateBuff,
     winCondition,
     getBonusStats,
     takeItem,
