@@ -1,4 +1,7 @@
 import { IShop } from "@/types/shop";
+import Oakwand from "@/public/images/items/oak_wand.jpeg";
+import Firebook from "@/public/images/items/fire_book.jpeg";
+import Icebook from "@/public/images/items/ice_book.jpeg";
 
 const shops: IShop[] = [
   {
@@ -15,7 +18,7 @@ const shops: IShop[] = [
         qty: 1,
         maxQty: 1,
         isConsumable: false,
-        image: "/images/items/iron_sword.png",
+        image: "/images/items/iron_sword.jpeg",
         description: "A sword made of iron. It is a good weapon for beginners.",
         type: "weapon",
         stats: {
@@ -32,7 +35,7 @@ const shops: IShop[] = [
         qty: 1,
         maxQty: 1,
         isConsumable: false,
-        image: "/images/items/iron_axe.png",
+        image: "/images/items/iron_axe.jpeg",
         description: "An axe made of iron. It is a good weapon for beginners.",
         type: "weapon",
         stats: {
@@ -49,7 +52,7 @@ const shops: IShop[] = [
         qty: 1,
         maxQty: 1,
         isConsumable: false,
-        image: "/images/items/iron_shield.png",
+        image: "/images/items/iron_shield.jpeg",
         description:
           "A shield made of iron. It is a good weapon for beginners.",
         type: "shield",
@@ -75,7 +78,7 @@ const shops: IShop[] = [
         qty: 1,
         maxQty: 1,
         isConsumable: false,
-        image: "/images/items/enchanted_sword.png",
+        image: Oakwand,
         description:
           "A wand made of oak wood. It is a good weapon for beginners.",
         type: "weapon",
@@ -99,7 +102,7 @@ const shops: IShop[] = [
         qty: 1,
         maxQty: 1,
         isConsumable: false,
-        image: "/images/items/enchanted_sword.png",
+        image: Firebook,
         description: "Spellbook that can cast fire spells.",
         type: "book",
         stats: {},
@@ -124,7 +127,7 @@ const shops: IShop[] = [
         qty: 1,
         maxQty: 1,
         isConsumable: false,
-        image: "/images/items/enchanted_sword.png",
+        image: Icebook,
         description: "Spellbook that can cast fire spells.",
         type: "book",
         stats: {},

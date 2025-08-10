@@ -9,6 +9,7 @@ interface Store {
   player: Player;
   currentEvent: number;
   selectedEnemy: string;
+  selectedShop: number;
   createPlayer: (payload: Player) => void;
   updateStats: (payload: Stats) => void;
   updateItems: (payload: IShopItem[]) => void;
@@ -19,6 +20,7 @@ interface Store {
   setCurrentEvent: (payload: number) => void;
   updatePlayer: (payload: Player) => void;
   selectEnemy: (key: string) => void;
+  selectShop: (id: number) => void;
 }
 
 const useStore = create<Store>()(
@@ -52,13 +54,16 @@ const useStore = create<Store>()(
         },
         buffStats: [],
         items: [],
-        gold: 0,
+        gold: 100,
       },
       continueGame: false,
-      // lootItems: [],
       currentEvent: 0,
       score: 0,
       selectedEnemy: "",
+      selectedShop: 0,
+      selectShop: (id: number) => {
+        set((state: any) => ({ ...state, selectedShop: id }));
+      },
       selectEnemy: (key: string) => {
         set((state: any) => ({ ...state, selectedEnemy: key }));
       },

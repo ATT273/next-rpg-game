@@ -15,50 +15,6 @@
     --background-end-rgb: 0, 0, 0;
   }
 }
-
-/* COMMON */
-.btn {
-  padding: 10px;
-  cursor: pointer;
-  border: none;
-  background: none;
-}
-
-.txt-green {
-  color: green;
-}
-
-.txt-purple {
-  color: purple;
-}
-
-.bg-green {
-  background-color: #b3dd9e !important;
-}
-
-.bg-red {
-  background-color: #d43445 !important;
-}
-
-.bg-dark-red {
-  background-color: var(--dark-red);
-}
-
-.btn-large {
-  width: 200px;
-  height: 2.5rem;
-}
-
-.btn-square {
-  width: 2.5rem;
-  height: 2.5rem;
-}
-
-.error {
-  flex-basis: 100%;
-  color: red;
-}
-
 /* FORM INPUT */
 .form-input {
   width: 350px;
@@ -144,7 +100,11 @@ ul.item-menu li:hover {
   visibility: visible;
 }
 
-.character-detail__sidebar .player-inventory .item:hover .three-dot-menu:hover+.item-stats {
+.character-detail__sidebar
+  .player-inventory
+  .item:hover
+  .three-dot-menu:hover
+  + .item-stats {
   opacity: 0;
   display: none;
 }
@@ -163,11 +123,11 @@ ul.item-menu li:hover {
   padding: 5px;
   opacity: 0;
   display: none;
-  transition: opacity .5s;
+  transition: opacity 0.5s;
   z-index: 98;
 }
 
-.character-detail__sidebar .player-inventory .item img:hover~.item-stats {
+.character-detail__sidebar .player-inventory .item img:hover ~ .item-stats {
   opacity: 1;
   display: block;
 }
@@ -209,7 +169,7 @@ ul.item-menu li:hover {
 }
 
 /* CREATE CHARACTER */
-.create-character-wrapper>.title {
+.create-character-wrapper > .title {
   text-align: center;
   margin-bottom: 3rem;
 }
@@ -242,8 +202,8 @@ ul.item-menu li:hover {
 } */
 
 .player-inventory .item {
-  height: 100px;
-  width: 100px;
+  height: 70px;
+  width: 70px;
   border: 2px solid black;
 }
 

@@ -3,17 +3,20 @@
 import { IShopItem } from "@/types/shop";
 import Image from "next/image";
 import React, { useState } from "react";
+import { Ellipsis } from "lucide-react";
 
 function InventoryBlock({
   itemIndex,
   item,
   onItemUsed,
   onItemDropped,
+  onHover,
 }: {
   itemIndex?: number;
   item: IShopItem;
   onItemUsed?: Function;
   onItemDropped?: Function;
+  onHover: (item: IShopItem | null) => void;
 }) {
   const [isShowItemMenu, setIsShowItemMenu] = useState(false);
   const handleMenuBtnClick = () => {
@@ -29,37 +32,30 @@ function InventoryBlock({
     setIsShowItemMenu(!isShowItemMenu);
     if (onItemDropped) onItemDropped(item.key, itemIndex);
   };
+
   return (
-    <React.Fragment>
-      {item ? (
-        <div className="item border border-1 border-stone-800">
-          <Image src={item.image} alt={item.key} className="item-thumb" />
-          {item.qty > 1 && <div className="item-qty">{item.qty}</div>}
-          <div className="three-dot-menu" onClick={handleMenuBtnClick}></div>
-          {isShowItemMenu && (
-            <ul className="item-menu">
-              {item.isConsumable && <li onClick={handleUseItem}>Use item</li>}
-              <li onClick={handleDropItem}>Drop item</li>
-            </ul>
-          )}
-          <div className="item-stats bg-stone-900 text-stone-100 border-amber-300 border-[3px]">
-            <p>
-              <b>{item.name.toUpperCase()}</b>
-            </p>
-            <p>price: {item.price}</p>
-            {Object.keys(item.stats).map((key) => {
-              return (
-                <p key={key}>{`${key}: ${
-                  item.stats[key as keyof typeof item.stats]
-                }`}</p>
-              );
-            })}
-          </div>
-        </div>
-      ) : (
-        <div className="item border-stone-800"></div>
+    <div
+      className="relative group border-2 border-stone-800"
+      onMouseEnter={() => onHover(item)}
+      onMouseLeave={() => onHover(null)}
+    >
+      <div className="h-[70px] w-[70px] overflow-hidden">
+        <Image src={item.image} alt={item.key} className="item-thumb" />
+      </div>
+      {item.qty > 1 && <div className="item-qty">{item.qty}</div>}
+      <div
+        className="absolute top-0 right-0 hidden group-hover:block rounded-sm bg-stone-300 cursor-pointer"
+        onClick={handleMenuBtnClick}
+      >
+        <Ellipsis className="size-4" />
+      </div>
+      {isShowItemMenu && (
+        <ul className="absolute top-5 bg-stone-300 p-1 rounded-md cursor-pointer">
+          {item.isConsumable && <li onClick={handleUseItem}>Use item</li>}
+          <li onClick={handleDropItem}>Drop item</li>
+        </ul>
       )}
-    </React.Fragment>
+    </div>
   );
 }
 
