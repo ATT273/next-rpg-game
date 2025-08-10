@@ -40,18 +40,3 @@ export interface IItemStat {
   spd?: number;
   int?: number;
 }
-// type IShopItem = {
-//   id: number;
-//   type: string;
-//   key: string;
-//   name: string;
-//   image: StaticImageData;
-//   price: number;
-//   description?: string;
-//   qty?: number;
-//   maxQty?: number;
-//   stats: {
-//     [key: string]: number;
-//   };
-//   isConsumable: boolean;
-// };

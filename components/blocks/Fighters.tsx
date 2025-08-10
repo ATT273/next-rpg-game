@@ -22,8 +22,8 @@ function FighterStatsBlock() {
   return (
     <>
       {player.stats !== undefined && (
-        <div className="relative flex justify-center items-stretch">
-          <div className="relative grow flex flex-col items-center justify-center">
+        <div className="relative flex justify-between items-stretch">
+          <div className="relative flex flex-col items-center justify-center grow-[1]">
             <div className="mb-3">
               <Image
                 className="size-64"
@@ -90,20 +90,20 @@ function FighterStatsBlock() {
               </div>
             </div>
           </div>
-          <div className="flex flex-col items-center justify-between gap-2 h-[200px]">
+          <div className="flex flex-col items-center justify-between grow-[1] gap-2 h-[200px]">
             <div className="font-bold text-3xl">
               Turn: {currentTurn?.player}
             </div>
             <div className="font-bold text-3xl">VS.</div>
             {battleLogs?.length > 0 && (
-              <div className="absolute top-1/2 font-bold text-2xl text-gray-400">
+              <div className="absolute top-1/2 font-bold text-xl text-gray-400">
                 {"< "}
                 {battleLogs[battleLogs?.length - 1]}
                 {" >"}
               </div>
             )}
           </div>
-          <div className="relative grow flex flex-col items-center justify-center">
+          <div className="relative flex flex-col items-center justify-center  grow-[1]">
             <div className="image-container mb-3">
               <Image className="size-64" src={enemy.image} alt="enemy_avatar" />
             </div>

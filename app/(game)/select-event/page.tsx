@@ -12,14 +12,16 @@ const SelectEvents = () => {
   const router = useRouter();
   const [shop, setShop] = useState<IShop>();
   const [enemy, setEnemy] = useState<Enemy>();
-  const { selectEnemy, player, selectedEnemy } = useStore();
+  const { selectEnemy, selectShop, player, selectedEnemy } = useStore();
   const { getRandomShop } = useShop();
   const { getRandomEnemy } = useEnemy();
   useEffect(() => {
     const _shop = getRandomShop();
     setShop(_shop);
+    selectShop(_shop.id);
     const _enemy = getRandomEnemy(selectedEnemy, player.level);
     setEnemy(_enemy);
+    selectEnemy(_enemy.key);
   }, []);
 
   const onSelectBattle = (key: string) => {

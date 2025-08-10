@@ -8,7 +8,13 @@ import { ActionType, BuffCounter, Player } from "@/types/player";
 import PopUp from "@/components/shared/popup";
 import FighterStatsBlock from "@/components/blocks/Fighters";
 import { initialEnemies } from "@/data/enemies";
-import { BATTLE_EVENT, SKILL_TARGET, WIN_CONDITION_STATUS } from "@/data/data";
+import {
+  ACTION_DELAY,
+  BATTLE_EVENT,
+  ROUND_DELAY,
+  SKILL_TARGET,
+  WIN_CONDITION_STATUS,
+} from "@/data/data";
 import useGame from "@/hooks/use-game";
 import { delay } from "@/utils";
 import BattleProvider from "./_components/battle-provider";
@@ -59,8 +65,8 @@ const BattleScreen = () => {
   const [buffCounter, setBuffCounter] = useState<BuffCounter>({});
   const [actions, setActions] = useState<ActionType[]>([]);
   const actionIndex = useMemo(() => {
-    return actions.length - 1;
-  }, [actions]);
+    return !state.showNextBtn ? actions.length - 1 : -1;
+  }, [actions, state.showNextBtn]);
   const router = useRouter();
 
   useEffect(() => {
@@ -88,6 +94,9 @@ const BattleScreen = () => {
     if (player.name && enemy.key && state.showBattleScreen) {
       if (currentTurn.player === 0) {
         // Choose first attacker
+        async () => {
+          await delay(500);
+        };
         setIsPlayerTurn(player.stats.spd >= enemy.stats.spd);
       }
     }
@@ -118,7 +127,7 @@ const BattleScreen = () => {
       battlelog: afterAtk.combatLog,
       actionLogs: afterAtk.actions,
     });
-    await delay(500);
+    await delay(ACTION_DELAY);
     if (await checkWinCondition(_player, _enemy)) return;
     //  PLayer use skill
     const skill = _player.skills[0];
@@ -147,7 +156,7 @@ const BattleScreen = () => {
         } as BuffCounter,
         actionLogs: afterUsingSkill.actions,
       });
-      await delay(500);
+      await delay(ACTION_DELAY);
       if (await checkWinCondition(_player, _enemy)) return;
     }
     handleEndturn("player");
@@ -165,7 +174,7 @@ const BattleScreen = () => {
       battlelog: afterAtk.combatLog,
       actionLogs: afterAtk.actions,
     });
-    await delay(500);
+    await delay(ACTION_DELAY);
     if (await checkWinCondition(_player, _enemy)) return;
 
     if (_player.buffStats.length > 0) {
@@ -186,7 +195,7 @@ const BattleScreen = () => {
       buffCounters: _counter,
       battlelog: combatLog,
     });
-    await delay(500);
+    await delay(ACTION_DELAY);
   };
 
   const updateState = async ({
@@ -234,7 +243,7 @@ const BattleScreen = () => {
   };
 
   const handleEndturn = async (atkerType: string) => {
-    await delay(500);
+    await delay(ROUND_DELAY);
     setIsPlayerTurn(!isPlayerTurn);
   };
 
@@ -319,9 +328,9 @@ const BattleScreen = () => {
                 >
                   {player !== null && <FighterStatsBlock />}
                   {state.showNextBtn && (
-                    <div className="w-full text-center p-2">
+                    <div className="w-full text-center p-2 mt-6">
                       <button
-                        className="btn bg-green w-200"
+                        className="bg-stone-700 w-1/4 p-2 text-white rounded-lg"
                         style={{ margin: "auto" }}
                         onClick={handleEndMatch}
                       >

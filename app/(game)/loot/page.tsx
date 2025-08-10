@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { IShopItem } from "@/types/player";
+import { IShopItem } from "@/types/shop";
 import Game from "../../../game";
 import { useRouter } from "next/navigation";
 import useStore from "@/store/store";
@@ -24,6 +24,9 @@ const initialItem = {
   maxQty: 0,
   stats: { atk: 0 },
   isConsumable: true,
+  effects: [],
+  skills: [],
+  description: "",
 };
 const LootScreen = () => {
   const [item, setItem] = useState(initialItem);

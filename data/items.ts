@@ -1,10 +1,10 @@
-import RustySword from "@/public/images/items/Rusty_sword.png";
-import WoodenShield from "@/public/images/items/wood_shield.png";
-import LeatherBoots from "@/public/images/items/Leather_boot.png";
+import RustySword from "@/public/images/items/rusty_sword.jpeg";
+import WoodenShield from "@/public/images/items/wooden_shield.jpeg";
+import LeatherBoots from "@/public/images/items/leather_boots.jpeg";
 import IronShield from "@/public/images/items/Iron_Shield.png";
-import BroadSword from "@/public/images/items/broad_sword.jpg";
-import ChestPlate from "@/public/images/items/chest_plate.jpg";
-import HPPotion from "@/public/images/items/hp_potion.jpg";
+import BroadSword from "@/public/images/items/broad_sword.jpeg";
+import PlateArmor from "@/public/images/items/plate_armor.jpeg";
+import HPPotion from "@/public/images/items/hp_potion.jpeg";
 import { IShopItem } from "@/types/shop";
 
 const items: IShopItem[] = [
@@ -15,7 +15,7 @@ const items: IShopItem[] = [
     name: "Rusty Sword",
     type: "sword",
     isConsumable: false,
-    price: 100,
+    price: 10,
     qty: 0,
     maxQty: 1,
     stats: {
@@ -32,7 +32,7 @@ const items: IShopItem[] = [
     name: "Wooden shield",
     type: "shield",
     isConsumable: false,
-    price: 200,
+    price: 20,
     qty: 0,
     maxQty: 1,
     stats: {
@@ -49,7 +49,7 @@ const items: IShopItem[] = [
     name: "Leather boots",
     type: "boots",
     isConsumable: false,
-    price: 200,
+    price: 20,
     qty: 0,
     maxQty: 1,
     stats: {
@@ -67,7 +67,7 @@ const items: IShopItem[] = [
     name: "Iron shield",
     type: "shield",
     isConsumable: false,
-    price: 300,
+    price: 30,
     qty: 0,
     maxQty: 1,
     stats: {
@@ -84,7 +84,7 @@ const items: IShopItem[] = [
     name: "Broadsword",
     type: "sword",
     isConsumable: false,
-    price: 300,
+    price: 30,
     qty: 0,
     maxQty: 1,
     stats: {
@@ -96,12 +96,12 @@ const items: IShopItem[] = [
   },
   {
     id: 5,
-    image: ChestPlate,
-    key: "chest-plate",
-    name: "Chest plate",
+    image: PlateArmor,
+    key: "plate-armor",
+    name: "Plate armor",
     type: "armor",
     isConsumable: false,
-    price: 500,
+    price: 50,
     qty: 0,
     maxQty: 1,
     stats: {
@@ -118,11 +118,28 @@ const items: IShopItem[] = [
     name: "HP potion",
     type: "hp_potion",
     isConsumable: true,
-    price: 50,
+    price: 5,
     qty: 0,
     maxQty: 5,
     stats: {
       hp: 10,
+    },
+    effects: [],
+    skills: [],
+    description: "",
+  },
+  {
+    id: 7,
+    image: "/images/items/chanimail.jpeg",
+    key: "chainmail",
+    name: "Chainmail vest",
+    type: "armor",
+    isConsumable: false,
+    price: 10,
+    qty: 0,
+    maxQty: 1,
+    stats: {
+      def: 2,
     },
     effects: [],
     skills: [],

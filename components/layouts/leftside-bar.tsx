@@ -19,12 +19,7 @@ const LeftSideBar = () => {
   }, [playerStore]);
   return (
     <div className="character-detail__sidebar absolute top-0 left-0 md:w-[25rem] h-full p-3 z-10 bg-gray-100">
-      <div>
-        <h2 className="text-xl font-bold">{player.name}</h2>
-        <p>Level: {player.level}</p>
-        <p>Gold: {player.gold}</p>
-      </div>
-      {/* {pathName === '/battle' && player.name && <CharacterStats playerStore={player} />} */}
+      {playerStore.name && <CharacterStats />}
     </div>
   );
 };

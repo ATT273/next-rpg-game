@@ -1,26 +1,22 @@
 "use client";
 import { Player } from "@/types/player";
-import React, { Component, use, useEffect, useState } from "react";
-import player_img from "@/public/images/player/player.png";
-import StatsBar from "./StatsBar";
+import React, { useEffect, useState } from "react";
 import InventoryBlock from "./Inventory";
 import Game from "../../game";
 import * as _ from "lodash";
 import useStore from "@/store/store";
-import Image from "next/image";
-const CharacterStats = ({ playerStore }: { playerStore: Player }) => {
-  const { updateStats, udpateBonusStats, createPlayer } = useStore(
-    (store: any) => store
-  );
+import StatBlock from "./StatBlock";
+import { IShopItem } from "@/types/shop";
+import { motion } from "framer-motion";
+
+const CharacterStats = () => {
+  const { createPlayer, player: playerStore } = useStore();
   const [player, setPlayer] = useState(playerStore);
-  const [isClient, setIsClient] = useState(false);
+  const [hoverInfo, setHoverInfo] = useState<IShopItem | null>(null);
   useEffect(() => {
     setPlayer(playerStore);
   }, [playerStore]);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
   const handleUseItem = (itemKey: string, itemIndex: number) => {
     const _player = _.cloneDeep(player);
     const selectedItem = _player.items[itemIndex];
@@ -53,112 +49,83 @@ const CharacterStats = ({ playerStore }: { playerStore: Player }) => {
     createPlayer(_player);
   };
   return (
-    <React.Fragment>
-      {isClient ? (
-        <>
-          <div className="stats">
-            <div className="player-avatar">
-              <Image className="size-48" src={player_img} alt="player_avatar" />
-            </div>
-            <div className="player-stats">
-              <div className="item player-name">
-                <p>
-                  <b>{player.name}</b>
-                </p>
-              </div>
-              <div className="item">
-                <p>
-                  <b>HP: </b> {player.stats.hp}/{player.stats.maxHP}
-                  <i className="txt-green">
-                    {player.bonusStats.hp && player.bonusStats.hp > 0
-                      ? `(+ ${player.bonusStats.hp})`
-                      : ""}
-                  </i>
-                </p>
-                <StatsBar
-                  stats={{ hp: player.stats.hp, maxHP: player.stats.maxHP }}
-                  name={"hp"}
-                />
-              </div>
-              <div className="item">
-                <p>
-                  <b>MP: </b> {player.stats.mp}/{player.stats.maxMP}{" "}
-                  <i className="txt-green">
-                    {player.bonusStats.mp && player.bonusStats.mp > 0
-                      ? `(+ ${player.bonusStats.mp})`
-                      : ""}
-                  </i>
-                </p>
-                <StatsBar
-                  stats={{ mp: player.stats.mp, maxMP: player.stats.maxMP }}
-                  name={"mp"}
-                />
-              </div>
-              <div className="item level">
-                <p>
-                  <b>Lvl {player.level}: </b> {player.exp}/{player.levelExp}
-                </p>
-              </div>
-              <div className="item">
-                <p>
-                  <b>ATK: </b> {player.stats.atk}
-                  <i className="txt-green">
-                    {player.bonusStats.atk > 0
-                      ? `(+ ${player.bonusStats.atk})`
-                      : ""}
-                  </i>
-                  <i className="txt-purple">
-                    {player.buffs.atk > 0 ? `(+ ${player.buffs.atk})` : ""}
-                  </i>
-                </p>
-              </div>
-              <div className="item">
-                <p>
-                  <b>DEF: </b> {player.stats.def}
-                  <i className="txt-green">
-                    {player.bonusStats.def > 0
-                      ? `(+ ${player.bonusStats.def})`
-                      : ""}
-                  </i>
-                  <i className="txt-purple">
-                    {player.buffs.def > 0 ? `(+ ${player.buffs.def})` : ""}
-                  </i>
-                </p>
-              </div>
-              <div className="item">
-                <p>
-                  <b>SPD: </b> {player.stats.spd}
-                  <i className="txt-green">
-                    {player.bonusStats.spd > 0
-                      ? `(+ ${player.bonusStats.spd})`
-                      : ""}
-                  </i>
-                  <i className="txt-purple">
-                    {player.buffs.spd > 0 ? `(+ ${player.buffs.spd})` : ""}
-                  </i>
-                </p>
-              </div>
-            </div>
+    <>
+      <div className="stats">
+        <div className="player-stats">
+          <div className="item player-name">
+            <p>
+              <b className="text-2xl">{player.name}</b>
+              {" - "}
+              <span>Lvl {player.level}</span>
+            </p>
           </div>
-          <div className="player-inventory flex flex-wrap w-[310px] gap-1">
-            {[0, 1, 2, 3, 4, 5].map((x) => {
-              return (
-                <InventoryBlock
-                  key={x}
-                  itemIndex={x}
-                  item={player.items[x]}
-                  onItemUsed={handleUseItem}
-                  onItemDropped={handleDropItem}
-                />
-              );
-            })}
+          <div className="pl-4">
+            <p>
+              <span className="font-bold">EXP:&nbsp;</span> ({player.exp}/
+              {player.levelExp})
+            </p>
+            <p>
+              <span className="font-bold">Gold:</span>&nbsp;{player.gold}
+            </p>
           </div>
-        </>
-      ) : (
-        <>Loading...</>
-      )}
-    </React.Fragment>
+          <StatBlock player={player} statKey="hp" />
+          <StatBlock player={player} statKey="mp" />
+          <StatBlock player={player} statKey="atk" />
+          <StatBlock player={player} statKey="def" />
+          <StatBlock player={player} statKey="spd" />
+        </div>
+      </div>
+      <p className="text-bold text-lg">Inventory</p>
+      <div className="flex justify-center flex-wrap w-[230px] gap-1">
+        {Array.from({ length: 6 }, (_, i) => i).map((x) => {
+          return player.items[x] ? (
+            <InventoryBlock
+              key={x}
+              itemIndex={x}
+              item={player.items[x]}
+              onItemUsed={handleUseItem}
+              onItemDropped={handleDropItem}
+              onHover={setHoverInfo}
+            />
+          ) : (
+            <div
+              key={x}
+              className="h-[74px] w-[74px] border-2 border-stone-800"
+            ></div>
+          );
+        })}
+        {hoverInfo && (
+          <motion.div
+            animate={{ height: "auto", opacity: 1 }}
+            initial={{ height: "0px", opacity: 0 }}
+            exit={{ height: "auto", opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="w-full"
+          >
+            <ItemInfo item={hoverInfo} />
+          </motion.div>
+        )}
+      </div>
+    </>
   );
 };
 
 export default CharacterStats;
+
+const ItemInfo = ({ item }: { item: IShopItem }) => {
+  return (
+    <div className=" bg-white text-stone-900 p-2 rounded-lg shadow-md">
+      <p>
+        <b>{item.name.toUpperCase()}</b>
+      </p>
+      <p>price: {item.price}</p>
+      {Object.keys(item.stats).map((key) => {
+        return (
+          <p key={key}>{`${key}: ${
+            item.stats[key as keyof typeof item.stats]
+          }`}</p>
+        );
+      })}
+    </div>
+  );
+};

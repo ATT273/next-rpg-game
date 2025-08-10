@@ -50,3 +50,6 @@ export const SKILL_TARGET = {
   SELF: "self",
   ENEMY: "enemy",
 };
+
+export const ACTION_DELAY = 700;
+export const ROUND_DELAY = 1000;
