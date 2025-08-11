@@ -1,5 +1,4 @@
 "use client";
-import { Player } from "@/types/player";
 import React, { useEffect, useState } from "react";
 import InventoryBlock from "./Inventory";
 import Game from "../../game";
@@ -10,44 +9,45 @@ import { IShopItem } from "@/types/shop";
 import { motion } from "framer-motion";
 
 const CharacterStats = () => {
-  const { createPlayer, player: playerStore } = useStore();
+  const { updatePlayer, player: playerStore } = useStore();
   const [player, setPlayer] = useState(playerStore);
   const [hoverInfo, setHoverInfo] = useState<IShopItem | null>(null);
   useEffect(() => {
     setPlayer(playerStore);
   }, [playerStore]);
 
-  const handleUseItem = (itemKey: string, itemIndex: number) => {
-    const _player = _.cloneDeep(player);
-    const selectedItem = _player.items[itemIndex];
-    let message = "";
-    selectedItem.stats &&
-      Object.keys(selectedItem.stats).forEach((key) => {
-        if (
-          _player.stats[key as keyof typeof _player.stats] ===
-          _player.stats[`max${key.toUpperCase()}` as keyof typeof _player.stats]
-        )
-          message += `Your ${key} is full. You don't need to use this \n`;
-      });
-    if (message !== "") return alert(message);
+  // const handleUseItem = (itemKey: string, itemIndex: number) => {
+  //   const _player = _.cloneDeep(player);
+  //   const selectedItem = _player.items[itemIndex];
+  //   let message = "";
+  //   selectedItem.stats &&
+  //     Object.keys(selectedItem.stats).forEach((key) => {
+  //       if (
+  //         _player.stats[key as keyof typeof _player.stats] ===
+  //         _player.stats[`max${key.toUpperCase()}` as keyof typeof _player.stats]
+  //       )
+  //         message += `Your ${key} is full. You don't need to use this \n`;
+  //     });
+  //   if (message !== "") return alert(message);
 
-    if (selectedItem.qty === 1) {
-      _player.items.splice(itemIndex, 1);
-    } else if (selectedItem.qty && selectedItem.qty > 1) {
-      _player.items[itemIndex].qty! -= 1;
-    }
-    _player.bonusStats = Game.getBonusStats(_player.items);
-    const newStats = Game.consumeItem(_player, itemKey);
-    _player.stats = { ..._player.stats, ...newStats };
-    createPlayer(_player);
+  //   if (selectedItem.qty === 1) {
+  //     _player.items.splice(itemIndex, 1);
+  //   } else if (selectedItem.qty && selectedItem.qty > 1) {
+  //     _player.items[itemIndex].qty! -= 1;
+  //   }
+  //   _player.bonusStats = Game.getBonusStats(_player.items);
+  //   const newStats = Game.consumeItem(_player, itemKey);
+  //   _player.stats = { ..._player.stats, ...newStats };
+  //   createPlayer(_player);
+  // };
+
+  const handleDropItem = (key: string) => {
+    const _items = [...player.items].filter((item) => item.key !== key);
+    const bonusStats = Game.getBonusStats(_items);
+    updatePlayer({ ...player, items: _items, bonusStats });
+    setHoverInfo(null);
   };
 
-  const handleDropItem = (itemIndex: number) => {
-    const _player = _.cloneDeep(player);
-    _player.items.splice(itemIndex, 1);
-    _player.bonusStats = Game.getBonusStats(_player.items);
-    createPlayer(_player);
-  };
   return (
     <>
       <div className="stats">
@@ -83,7 +83,7 @@ const CharacterStats = () => {
               key={x}
               itemIndex={x}
               item={player.items[x]}
-              onItemUsed={handleUseItem}
+              // onItemUsed={handleUseItem}
               onItemDropped={handleDropItem}
               onHover={setHoverInfo}
             />
@@ -91,7 +91,8 @@ const CharacterStats = () => {
             <div
               key={x}
               className="h-[74px] w-[74px] border-2 border-stone-800"
-            ></div>
+              onMouseEnter={() => setHoverInfo(null)}
+            />
           );
         })}
         {hoverInfo && (
