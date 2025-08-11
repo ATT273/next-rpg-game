@@ -8,6 +8,7 @@ import { IShop } from "@/types/shop";
 import { Enemy } from "@/types/enemy";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+
 const SelectEvents = () => {
   const router = useRouter();
   const [shop, setShop] = useState<IShop>();
@@ -15,6 +16,7 @@ const SelectEvents = () => {
   const { selectEnemy, selectShop, player, selectedEnemy } = useStore();
   const { getRandomShop } = useShop();
   const { getRandomEnemy } = useEnemy();
+
   useEffect(() => {
     const _shop = getRandomShop();
     setShop(_shop);
@@ -36,6 +38,7 @@ const SelectEvents = () => {
     }
     router.push("/shop");
   };
+
   return (
     <div className="flex gap-6 justify-center items-center h-full m-auto bg-gray-100">
       <AnimatePresence>

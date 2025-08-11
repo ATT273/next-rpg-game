@@ -14,8 +14,8 @@ function InventoryBlock({
 }: {
   itemIndex?: number;
   item: IShopItem;
-  onItemUsed?: Function;
-  onItemDropped?: Function;
+  onItemUsed?: (itemKey: string) => void;
+  onItemDropped?: (itemKey: string) => void;
   onHover: (item: IShopItem | null) => void;
 }) {
   const [isShowItemMenu, setIsShowItemMenu] = useState(false);
@@ -25,12 +25,12 @@ function InventoryBlock({
 
   const handleUseItem = () => {
     setIsShowItemMenu(!isShowItemMenu);
-    if (onItemUsed) onItemUsed(item.key, itemIndex);
+    if (onItemUsed) onItemUsed(item.key);
   };
 
   const handleDropItem = () => {
     setIsShowItemMenu(!isShowItemMenu);
-    if (onItemDropped) onItemDropped(item.key, itemIndex);
+    if (onItemDropped) onItemDropped(item.key);
   };
 
   return (
@@ -40,7 +40,13 @@ function InventoryBlock({
       onMouseLeave={() => onHover(null)}
     >
       <div className="h-[70px] w-[70px] overflow-hidden">
-        <Image src={item.image} alt={item.key} className="item-thumb" />
+        <Image
+          src={item.image}
+          alt={item.key}
+          width={300}
+          height={300}
+          className="item-thumb"
+        />
       </div>
       {item.qty > 1 && <div className="item-qty">{item.qty}</div>}
       <div
