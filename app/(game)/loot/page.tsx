@@ -7,12 +7,7 @@ import { useRouter } from "next/navigation";
 import useStore from "@/store/store";
 import Image from "next/image";
 import { BATTLE_EVENT, LOOT_EVENT, SHOP_EVENT } from "@/data/data";
-type StaticImageData = {
-  src: string;
-  height: number;
-  width: number;
-  placeholder?: string;
-};
+
 const initialItem = {
   id: 0,
   type: "",
@@ -32,11 +27,9 @@ const LootScreen = () => {
   const [item, setItem] = useState(initialItem);
   const router = useRouter();
   const createPlayerStore = useStore((state) => state.createPlayer);
-  const setCurrentEvent = useStore((state) => state.setCurrentEvent);
   const player = useStore((state) => state.player);
 
   useEffect(() => {
-    setCurrentEvent(LOOT_EVENT);
     getLootData();
   }, []);
   const takeItem = (item: IShopItem) => {
