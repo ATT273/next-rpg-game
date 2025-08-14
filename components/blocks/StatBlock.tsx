@@ -1,9 +1,14 @@
 import { BonusStats, Player, Stats } from "@/types/player";
 import React from "react";
+import StatsBar from "./StatsBar";
 
 interface Props {
-  player: Player;
+  values: {
+    stats: Stats;
+    bonusStats: BonusStats;
+  };
   statKey: keyof Stats | keyof BonusStats;
+  showBar?: boolean;
 }
 
 interface Stat {
@@ -12,6 +17,7 @@ interface Stat {
   bonusStat: number;
   statKey: string;
   maxStatKey?: string;
+  showBar?: boolean;
 }
 export const PLAYER_STAT_KEYS = {
   ATK: "atk",
@@ -34,13 +40,16 @@ const statNoBar: StatKeyType[] = [
   PLAYER_STAT_KEYS.INT,
   PLAYER_STAT_KEYS.SPD,
 ];
-const StatWithBar = ({ stat, maxStat, bonusStat, statKey }: Stat) => {
+const StatWithBar = ({ stat, maxStat, bonusStat, statKey, showBar }: Stat) => {
   return (
-    <div className="flex">
-      <p className="font-bold">{statKey.toUpperCase()}: </p>&nbsp; {stat}/
-      {maxStat}
-      <i className="txt-green">{bonusStat ? `(+ ${bonusStat})` : ""}</i>
-    </div>
+    <>
+      <div className="flex">
+        <p className="font-bold">{statKey.toUpperCase()}: </p>&nbsp; {stat}/
+        {maxStat}
+        <i className="txt-green">{bonusStat ? `(+ ${bonusStat})` : ""}</i>
+      </div>
+      {showBar && <StatsBar stat={stat} maxStat={maxStat || 0} />}
+    </>
   );
 };
 
@@ -54,23 +63,24 @@ const StatNoBar = ({ stat, bonusStat, statKey }: Stat) => {
   );
 };
 
-const StatBlock = ({ player, statKey }: Props) => {
+const StatBlock = ({ values, statKey, showBar }: Props) => {
   const maxStatKey = statKey === "hp" ? "maxHP" : "maxMP";
 
   return (
-    <div className="pl-4">
+    <div>
       {statWithBar.includes(statKey) && (
         <StatWithBar
-          stat={player.stats[statKey]}
-          maxStat={player.stats[maxStatKey]}
-          bonusStat={player.bonusStats[statKey] || 0}
+          stat={values.stats[statKey]}
+          maxStat={values.stats[maxStatKey]}
+          bonusStat={values.bonusStats[statKey] || 0}
           statKey={statKey}
+          showBar={showBar}
         />
       )}
       {statNoBar.includes(statKey) && (
         <StatNoBar
-          stat={player.stats[statKey]}
-          bonusStat={player.bonusStats[statKey] || 0}
+          stat={values.stats[statKey]}
+          bonusStat={values.bonusStats[statKey] || 0}
           statKey={statKey}
         />
       )}

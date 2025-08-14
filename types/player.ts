@@ -55,16 +55,25 @@ type Skills = {
   duration: number | boolean;
 };
 
-export type { Stats, BuffStat, Player, BonusStats, Skills };
-export type BuffCounter = {
+type BuffCounter = {
   [key: string]: {
     duration: number;
     turnCasted: number;
   };
 };
 
-export type ActionType = {
+type ActionType = {
   type: string;
   value: number;
   source: string;
+};
+
+export type {
+  Stats,
+  BuffStat,
+  Player,
+  BonusStats,
+  Skills,
+  BuffCounter,
+  ActionType,
 };

@@ -1,4 +1,5 @@
 import { StaticImageData } from "next/image";
+import { BonusStats, Stats } from "./player";
 
 type Enemy = {
   type: string;
@@ -11,16 +12,7 @@ type Enemy = {
   gold: number;
   matchLvl: number[];
   stats: Stats;
-};
-type Stats = {
-  hp: number;
-  mp: number;
-  maxHP: number;
-  maxMP: number;
-  atk: number;
-  def: number;
-  spd: number;
-  int?: number;
+  bonusStats: BonusStats;
 };
 
-export type { Stats, Enemy };
+export type { Enemy };

@@ -25,6 +25,14 @@ const enemies: Enemy[] = [
       atk: 10,
       def: 5,
       spd: 3,
+      int: 0,
+    },
+    bonusStats: {
+      maxHP: 0,
+      maxMP: 0,
+      atk: 0,
+      def: 0,
+      spd: 0,
     },
   },
   {
@@ -45,6 +53,14 @@ const enemies: Enemy[] = [
       atk: 30,
       def: 5,
       spd: 2,
+      int: 0,
+    },
+    bonusStats: {
+      maxHP: 0,
+      maxMP: 0,
+      atk: 0,
+      def: 0,
+      spd: 0,
     },
   },
   {
@@ -65,6 +81,14 @@ const enemies: Enemy[] = [
       atk: 50,
       def: 20,
       spd: 10,
+      int: 0,
+    },
+    bonusStats: {
+      maxHP: 0,
+      maxMP: 0,
+      atk: 0,
+      def: 0,
+      spd: 0,
     },
   },
   {
@@ -85,6 +109,14 @@ const enemies: Enemy[] = [
       atk: 10,
       def: 3,
       spd: 1,
+      int: 0,
+    },
+    bonusStats: {
+      maxHP: 0,
+      maxMP: 0,
+      atk: 0,
+      def: 0,
+      spd: 0,
     },
   },
   {
@@ -105,6 +137,14 @@ const enemies: Enemy[] = [
       atk: 7,
       def: 3,
       spd: 3,
+      int: 0,
+    },
+    bonusStats: {
+      maxHP: 0,
+      maxMP: 0,
+      atk: 0,
+      def: 0,
+      spd: 0,
     },
   },
   {
@@ -125,6 +165,14 @@ const enemies: Enemy[] = [
       atk: 10,
       def: 3,
       spd: 2,
+      int: 0,
+    },
+    bonusStats: {
+      maxHP: 0,
+      maxMP: 0,
+      atk: 0,
+      def: 0,
+      spd: 0,
     },
   },
 ];
@@ -147,6 +195,14 @@ const initialEnemies = {
     atk: 10,
     def: 3,
     spd: 2,
+    int: 0,
+  },
+  bonusStats: {
+    maxHP: 0,
+    maxMP: 0,
+    atk: 0,
+    def: 0,
+    spd: 0,
   },
 };
 

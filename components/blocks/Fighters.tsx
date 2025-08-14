@@ -6,6 +6,7 @@ import {
   IBattleContext,
 } from "@/app/(game)/battle/_components/battle-provider";
 import ActionBlock from "@/app/(game)/battle/_components/action-block";
+import StatBlock from "./StatBlock";
 const getStat = (
   statName: string,
   buffStats: { name: string; value: number; duration: number }[]
@@ -37,22 +38,16 @@ function FighterStatsBlock() {
               )}
             </div>
             <div className="flex flex-col justify-start w-[15rem] text-lg">
-              <div className="hp-mp">
-                <p>
-                  <b>HP: </b> {player.stats.hp}/{player.stats.maxHP}
-                </p>
-                <StatsBar
-                  stats={{ hp: player.stats.hp, maxHP: player.stats.maxHP }}
-                  name={"hp"}
-                />
-                <p>
-                  <b>MP: </b> {player.stats.mp}/{player.stats.maxMP}
-                </p>
-                <StatsBar
-                  stats={{ mp: player.stats.mp, maxMP: player.stats.maxMP }}
-                  name={"mp"}
-                />
-              </div>
+              <StatBlock
+                values={{ stats: player.stats, bonusStats: player.bonusStats }}
+                statKey="hp"
+                showBar={true}
+              />
+              <StatBlock
+                values={{ stats: player.stats, bonusStats: player.bonusStats }}
+                statKey="mp"
+                showBar={true}
+              />
               <div className="stats">
                 <p>
                   <b>ATK: </b> {player.stats.atk}
@@ -113,7 +108,17 @@ function FighterStatsBlock() {
               )}
             </div>
             <div className="flex flex-col justify-start w-[15rem] text-lg">
-              <div className="hp-mp">
+              <StatBlock
+                values={{ stats: enemy.stats, bonusStats: enemy.bonusStats }}
+                statKey="hp"
+                showBar={true}
+              />
+              <StatBlock
+                values={{ stats: enemy.stats, bonusStats: enemy.bonusStats }}
+                statKey="mp"
+                showBar={true}
+              />
+              {/* <div className="hp-mp">
                 <p>
                   <b>HP: </b> {enemy.stats.hp}/{enemy.stats.maxHP}
                 </p>
@@ -128,7 +133,7 @@ function FighterStatsBlock() {
                   stats={{ mp: enemy.stats.mp, maxMP: enemy.stats.maxMP }}
                   name={"mp"}
                 />
-              </div>
+              </div> */}
               <div className="stats">
                 <p>
                   <b>ATK: </b> {enemy.stats.atk}

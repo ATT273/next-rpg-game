@@ -7,13 +7,15 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Game from "@/game";
 import { BATTLE_EVENT, LOOT_EVENT, SHOP_EVENT } from "@/data/data";
+import useStore from "@/store/store";
 
 export default function Home() {
   const [currentEvent, setCurrentEvent] = useState(0);
-  const [player, setPlayer] = useState({});
+  // const [player, setPlayer] = useState({});
   const [showHighScoresScreen, setShowHighScoresScreen] = useState(false);
   const [isContinueGame, setIsContinueGame] = useState(false);
   const router = useRouter();
+  const { updatePlayer } = useStore();
 
   const getEvent = () => {
     let id = Game.getEvent(currentEvent);
@@ -27,7 +29,7 @@ export default function Home() {
   };
 
   const continueGame = () => {
-    getEvent();
+    router.push("/select-event");
   };
 
   const navigateToCreatePlayer = () => {
@@ -38,12 +40,11 @@ export default function Home() {
   useEffect(() => {
     const _saveGame = localStorage.getItem("rpg_game");
     if (_saveGame) {
-      if (JSON.parse(_saveGame).state.continueGame) {
+      if (JSON.parse(_saveGame)) {
+        const data = JSON.parse(_saveGame);
+        updatePlayer(data.player);
         setIsContinueGame(true);
       }
-
-      setPlayer(JSON.parse(_saveGame).state.player);
-      setCurrentEvent(JSON.parse(_saveGame).state.currentEvent);
     }
   }, []);
 

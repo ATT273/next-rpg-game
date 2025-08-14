@@ -14,14 +14,13 @@ import { toast } from "sonner";
 
 const Shop = () => {
   const router = useRouter();
-  const { updatePlayer, setCurrentEvent, selectedShop, player } = useStore();
+  const { updatePlayer, selectedShop, player } = useStore();
   const [shopItems, setShopItems] = useState<IShopItem[]>([]);
   const [shopName, setShopName] = useState<string>("");
   const [cart, setCart] = useState<IShopItem[]>([]);
   const [playerGold, setPlayerGold] = useState<number>(player.gold || 0);
   const { getBonusStats } = UseGame();
   useEffect(() => {
-    setCurrentEvent(SHOP_EVENT);
     getShopItems();
   }, []);
 

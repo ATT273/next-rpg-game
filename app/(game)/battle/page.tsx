@@ -10,7 +10,6 @@ import FighterStatsBlock from "@/components/blocks/Fighters";
 import { initialEnemies } from "@/data/enemies";
 import {
   ACTION_DELAY,
-  BATTLE_EVENT,
   ROUND_DELAY,
   SKILL_TARGET,
   WIN_CONDITION_STATUS,
@@ -35,7 +34,6 @@ const BattleScreen = () => {
     player: playerStore,
     selectedEnemy,
     updatePlayer,
-    setCurrentEvent,
     setScore,
   } = useStore();
   const [player, setPlayer] = useState<Player>(playerStore);
@@ -71,7 +69,6 @@ const BattleScreen = () => {
 
   useEffect(() => {
     if (playerStore.name) {
-      setCurrentEvent(BATTLE_EVENT);
       setPlayer(playerStore);
     }
   }, [playerStore]);

@@ -68,11 +68,28 @@ const CharacterStats = () => {
               <span className="font-bold">Gold:</span>&nbsp;{player.gold}
             </p>
           </div>
-          <StatBlock player={player} statKey="hp" />
-          <StatBlock player={player} statKey="mp" />
-          <StatBlock player={player} statKey="atk" />
-          <StatBlock player={player} statKey="def" />
-          <StatBlock player={player} statKey="spd" />
+          <div className="pl-4">
+            <StatBlock
+              values={{ stats: player.stats, bonusStats: player.bonusStats }}
+              statKey="hp"
+            />
+            <StatBlock
+              values={{ stats: player.stats, bonusStats: player.bonusStats }}
+              statKey="mp"
+            />
+            <StatBlock
+              values={{ stats: player.stats, bonusStats: player.bonusStats }}
+              statKey="atk"
+            />
+            <StatBlock
+              values={{ stats: player.stats, bonusStats: player.bonusStats }}
+              statKey="def"
+            />
+            <StatBlock
+              values={{ stats: player.stats, bonusStats: player.bonusStats }}
+              statKey="spd"
+            />
+          </div>
         </div>
       </div>
       <p className="text-bold text-lg">Inventory</p>

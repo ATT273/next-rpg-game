@@ -2,34 +2,35 @@
 
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import ClassesSelection from "@/components/ClassesSelection";
-import BounusStatsPointScreen from "@/components/BounusStatsPointScreen";
+import ClassesSelection from "./_components/ClassesSelection";
+import BounusStatsPointScreen from "@/app/(game)/create-character/_components/BounusStatsPointScreen";
 import useStore from "@/store/store";
 import { useRouter } from "next/navigation";
+import { initialPlayer } from "@/data/data";
 
 const CreateCharacter = () => {
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState({ error: "" });
-  const player = useStore((state) => state.player);
-  const createPlayerStore = useStore((state) => state.createPlayer);
-  const [createPlayer, setCreatePlayer] = useState(player);
+  const { createPlayer } = useStore();
+  const [creatingPlayer, setCreatingPlayer] = useState(initialPlayer);
   const router = useRouter();
 
+  // useEffect(() => {
+  //   if (player) setCreatePlayer(player);
+  // }, [player]);
+
   useEffect(() => {
-    if (player) setCreatePlayer(player);
-  }, [player]);
-  useEffect(() => {
-    if (createPlayer && step === 3) {
-      createPlayerStore(createPlayer);
+    if (creatingPlayer && step === 3) {
+      createPlayer(creatingPlayer);
       router.push("/select-event");
     }
-  }, [createPlayer]);
+  }, [creatingPlayer]);
 
   const checkErrors = () => {
     let error = false;
     switch (step) {
       case 1:
-        if (createPlayer.name === "") {
+        if (creatingPlayer.name === "") {
           setErrors((prevState) => ({
             ...prevState,
             error: "Please enter your character`s name",
@@ -38,7 +39,7 @@ const CreateCharacter = () => {
         }
         break;
       case 2:
-        if (createPlayer.skills.length === 0) {
+        if (creatingPlayer.skills.length === 0) {
           setErrors((prevState) => ({
             ...prevState,
             error: "Select 1 skill to learn",
@@ -53,9 +54,6 @@ const CreateCharacter = () => {
     return error;
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCreatePlayer((prev) => ({ ...prev, name: e.target.value }));
-  };
   const handleNextStep = () => {
     const error = checkErrors();
     if (!error) {
@@ -67,12 +65,9 @@ const CreateCharacter = () => {
   const handlePrevStep = () => {
     setStep(step - 1);
   };
-  const handleUpdateClassData = (data: any) => {
-    setCreatePlayer((prevState) => ({ ...prevState, ...data }));
-  };
 
-  const handleUpdateStats = (data: any) => {
-    setCreatePlayer((prevState) => ({ ...prevState, stats: { ...data } }));
+  const handleUpdatePlayer = (data: any) => {
+    setCreatingPlayer((prevState) => ({ ...prevState, ...data }));
   };
 
   return (
@@ -95,9 +90,10 @@ const CreateCharacter = () => {
                   className="form-input"
                   placeholder="Enter your name"
                   name="name"
-                  onChange={handleInputChange}
-                  value={createPlayer.name}
+                  onChange={(e) => handleUpdatePlayer({ name: e.target.value })}
+                  value={creatingPlayer.name}
                 />
+                <p className="text-red-500 text-center">{errors.error}</p>
               </motion.div>
             )}
             {step === 2 && (
@@ -107,17 +103,15 @@ const CreateCharacter = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <ClassesSelection
-                  handleUpdateClassData={handleUpdateClassData}
-                />
-                <p className="error">{errors.error}</p>
+                <ClassesSelection handleUpdateClassData={handleUpdatePlayer} />
+                <p className="text-red-500 text-center">{errors.error}</p>
               </motion.div>
             )}
             {step === 3 && (
               <div className="character-stats">
                 <BounusStatsPointScreen
-                  selectedClass={createPlayer.plClass}
-                  handleUpdateStats={handleUpdateStats}
+                  selectedClass={creatingPlayer.plClass}
+                  handleUpdateStats={handleUpdatePlayer}
                   handlePrevStep={handlePrevStep}
                 />
               </div>
