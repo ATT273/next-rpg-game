@@ -19,9 +19,7 @@ function UseGame() {
     }
   };
   const getRandomEnemy = (key: string | "", level: number) => {
-    const filterEnemies = enemies.filter(
-      (enemy) => enemy.key !== key && enemy.matchLvl.includes(level)
-    );
+    const filterEnemies = enemies.filter((enemy) => enemy.key !== key && enemy.matchLvl.includes(level));
     const randomIdx = Math.floor(Math.random() * filterEnemies.length);
     return _.cloneDeep(filterEnemies[randomIdx]);
     // return JSON.parse(JSON.stringify(filterEnemies[randomIdx]))
@@ -32,51 +30,75 @@ function UseGame() {
     // return JSON.parse(JSON.stringify(filterEnemies[randomIdx]))
   };
 
-  const normalAttack = async (
-    attacker: Player | Enemy,
-    target: Player | Enemy
-  ) => {
+  const normalAttack = async (attacker: Player | Enemy, target: Player | Enemy) => {
     const _items = getPlayerItems(attacker, target);
     const bonusStats = getBonusStats(_items ? _items : []);
-    const _buffStats = isPlayer(attacker)
-      ? (attacker as Player).buffStats
-      : (target as Player).buffStats;
+    const _buffStats = isPlayer(attacker) ? (attacker as Player).buffStats : (target as Player).buffStats;
     const atkBuff = isPlayer(attacker)
       ? _.find(_buffStats, (buff) => buff.name === "atk") || { value: 0 }
       : { value: 0 };
-    const defBuff = isPlayer(target)
-      ? _.find(_buffStats, (buff) => buff.name === "def") || { value: 0 }
-      : { value: 0 };
+    const defBuff = isPlayer(target) ? _.find(_buffStats, (buff) => buff.name === "def") || { value: 0 } : { value: 0 };
     const atkOfAttacker = isPlayer(attacker)
       ? attacker.stats.atk + bonusStats.atk + atkBuff!.value
       : attacker.stats.atk;
     const defOfTarget =
-      target.type === "player"
-        ? target.stats.def + bonusStats.def + defBuff!.value
-        : target.stats.def;
+      target.type === "player" ? target.stats.def + bonusStats.def + defBuff!.value : target.stats.def;
 
-    const dmgDealed =
-      atkOfAttacker - defOfTarget > 0 ? atkOfAttacker - defOfTarget : 0;
+    const dmgDealed = atkOfAttacker - defOfTarget > 0 ? atkOfAttacker - defOfTarget : 0;
     let type = attacker.type;
-    target.stats.hp =
-      target.stats.hp - dmgDealed < 0 ? 0 : target.stats.hp - dmgDealed;
+    target.stats.hp = target.stats.hp - dmgDealed < 0 ? 0 : target.stats.hp - dmgDealed;
     const actions = [{ type: "atk", value: dmgDealed, source: attacker.type }];
     const combatLog = `${attacker.name} deals ${dmgDealed} damage`;
     return { attacker, target, type, combatLog, actions };
   };
 
-  const skillUsing = async (attacker: Player, target: Enemy, skill: Skills) => {
+  /**
+   * Executes a player's skill during combat, handling both offensive and self-buff abilities
+   * with proper damage calculations, stat modifications, and resource (MP) consumption.
+   *
+   * @param attacker - The player using the skill
+   * @param target - The enemy being targeted
+   * @param skill - The skill being used
+   * @param isNewCasted - Flag indicating if this is a fresh skill cast (vs. ongoing buff effect)
+   *
+   * @functionality
+   *
+   * **Enemy-Targeted Skills** (`SKILL_TARGET.ENEMY`):
+   * - Calculates damage by subtracting target's defense from skill's attack value
+   * - Applies damage to enemy's HP (minimum 0)
+   * - Deducts MP cost from attacker
+   * - Creates combat action log entry
+   *
+   * **Self-Targeted Skills** (`SKILL_TARGET.SELF`):
+   * - Initializes buff tracking for hp, atk, def, and spd stats
+   * - Applies skill effects to corresponding buff stats
+   * - Sets buff duration only for new casts
+   * - Updates player's `buffStats` array
+   * - Handles HP restoration (capped at max HP)
+   * - Deducts MP cost only for new casts
+   *
+   * @returns Object containing:
+   * - `attacker` - Updated player state
+   * - `target` - Updated enemy state
+   * - `combatLog` - String description of the action taken
+   * - `actions` - Array of `ActionType` objects tracking stat changes
+   *
+   * @features
+   * - Duration-based buff system with turn tracking
+   * - Prevents HP overflow beyond max HP
+   * - MP cost only charged on initial cast for buffs
+   * - Supports multiple stat effects per skill
+   */
+  const skillUsing = async (attacker: Player, target: Enemy, skill: Skills, isNewCasted: boolean) => {
     // debugger;
     let combatLog = "";
     const actions: ActionType[] = [];
     if (skill.target === SKILL_TARGET.ENEMY) {
       const atkOfAttacker = Math.abs(skill.effects[0].value);
       const defOfTarget = target.stats.def;
-      const dmgDealed =
-        atkOfAttacker - defOfTarget > 0 ? atkOfAttacker - defOfTarget : 0;
+      const dmgDealed = atkOfAttacker - defOfTarget > 0 ? atkOfAttacker - defOfTarget : 0;
 
-      target.stats.hp =
-        target.stats.hp - dmgDealed < 0 ? 0 : target.stats.hp - dmgDealed;
+      target.stats.hp = target.stats.hp - dmgDealed < 0 ? 0 : target.stats.hp - dmgDealed;
       attacker.stats.mp -= skill.cost;
       actions.push({
         type: "atk",
@@ -120,8 +142,9 @@ function UseGame() {
               source: attacker.type,
             });
             buff.value += fx.value;
-            buff.duration +=
-              typeof skill.duration === "boolean" ? 0 : skill.duration;
+            if (isNewCasted) {
+              buff.duration += typeof skill.duration === "boolean" ? 0 : skill.duration;
+            }
           }
         });
       });
@@ -129,11 +152,14 @@ function UseGame() {
       attacker.buffStats = [...buffStats];
       buffStats.forEach((buff) => {
         if (buff.name === "hp" && buff.value > 0) {
-          attacker.stats.hp += buff.value;
+          attacker.stats.hp +=
+            attacker.stats.maxHP - attacker.stats.hp > buff.value
+              ? buff.value
+              : attacker.stats.maxHP - attacker.stats.hp;
         }
       });
 
-      attacker.stats.mp -= skill.cost;
+      attacker.stats.mp -= isNewCasted ? skill.cost : 0;
       combatLog = `${attacker.name} used ${skill.name}`;
     }
     return {
@@ -145,20 +171,20 @@ function UseGame() {
   };
 
   const calculateBuff = async (player: Player, buffCounter: BuffCounter) => {
-    const selfBuffs = player.skills.filter(
-      (item) => item.target === SKILL_TARGET.SELF
-    );
+    const selfBuffs = player.skills.filter((item) => item.target === SKILL_TARGET.SELF);
     const _counter = { ...buffCounter };
 
     let _combatLog = "";
     const removed: { stat: string; value: number }[] = [];
     selfBuffs.forEach((buff) => {
+      // if buff is still active
       if (_counter[buff.key] && _counter[buff.key].duration > 1) {
         _counter[buff.key].duration -= 1;
         _combatLog += `
             ${buff.name} ends in ${_counter[buff.key].duration} turns
           `;
       } else {
+        // remove buff effects
         buff.effects.forEach((fx) => {
           removed.push({
             stat: fx.stats,
@@ -168,7 +194,7 @@ function UseGame() {
         delete _counter[buff.key];
       }
     });
-    // calculate buffs after removed
+    // calculate buffs if any buff is removed
     removed.forEach((item) => {
       player.buffStats.forEach((bs) => {
         if (bs.name === item.stat) {
@@ -241,10 +267,7 @@ function UseGame() {
     let message = "";
     let isMaxQty = false;
     if (newInventory.length < 6) {
-      const itemIndex = _.findIndex(
-        newInventory,
-        (pItem) => pItem.key === item.key
-      );
+      const itemIndex = _.findIndex(newInventory, (pItem) => pItem.key === item.key);
       if (itemIndex > -1) {
         if (newInventory[itemIndex].qty === newInventory[itemIndex].maxQty) {
           isMaxQty = true;
@@ -276,15 +299,11 @@ function UseGame() {
       Object.keys(selectedItem.stats).forEach((key) => {
         if (selectedItem.stats) {
           if (
-            stats[key as keyof typeof stats] +
-              selectedItem.stats[key as keyof typeof selectedItem.stats]! >
+            stats[key as keyof typeof stats] + selectedItem.stats[key as keyof typeof selectedItem.stats]! >
             stats[`max${key.toUpperCase()}` as keyof typeof stats]!
           ) {
-            stats[key as keyof typeof stats] =
-              stats[`max${key.toUpperCase()}` as keyof typeof stats];
-          } else
-            stats[key as keyof typeof stats] +=
-              selectedItem.stats[key as keyof typeof selectedItem.stats]!;
+            stats[key as keyof typeof stats] = stats[`max${key.toUpperCase()}` as keyof typeof stats];
+          } else stats[key as keyof typeof stats] += selectedItem.stats[key as keyof typeof selectedItem.stats]!;
         }
       });
     }

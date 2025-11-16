@@ -8,15 +8,11 @@ import { ActionType, BuffCounter, Player } from "@/types/player";
 import PopUp from "@/components/shared/popup";
 import FighterStatsBlock from "@/components/blocks/Fighters";
 import { initialEnemies } from "@/data/enemies";
-import {
-  ACTION_DELAY,
-  ROUND_DELAY,
-  SKILL_TARGET,
-  WIN_CONDITION_STATUS,
-} from "@/data/data";
+import { ACTION_DELAY, ROUND_DELAY, SKILL_TARGET, WIN_CONDITION_STATUS } from "@/data/data";
 import useGame from "@/hooks/use-game";
 import { delay } from "@/utils";
 import BattleProvider from "./_components/battle-provider";
+import { Bug } from "lucide-react";
 
 const BattleScreen = () => {
   const audioPlayer = useRef<HTMLAudioElement>(null);
@@ -30,12 +26,7 @@ const BattleScreen = () => {
     calculateCurrentLvlExp,
     calculateLvlFromExp,
   } = useGame();
-  const {
-    player: playerStore,
-    selectedEnemy,
-    updatePlayer,
-    setScore,
-  } = useStore();
+  const { player: playerStore, selectedEnemy, updatePlayer, setScore } = useStore();
   const [player, setPlayer] = useState<Player>(playerStore);
   const [enemy, setEnemy] = useState<Enemy>(initialEnemies);
   const [state, setState] = useState({
@@ -128,12 +119,9 @@ const BattleScreen = () => {
     if (await checkWinCondition(_player, _enemy)) return;
     //  PLayer use skill
     const skill = _player.skills[0];
-    if (
-      _player.stats.mp > 0 &&
-      _player.skills[0].cost < _player.stats.mp &&
-      !buffCounter[skill.key]
-    ) {
-      const afterUsingSkill = await skillUsing(_player, _enemy, skill);
+    if (_player.skills[0].cost < _player.stats.mp) {
+      const isNewCasted = buffCounter[skill.key] ? false : true;
+      const afterUsingSkill = await skillUsing(_player, _enemy, skill, isNewCasted);
       _player = { ...afterUsingSkill.attacker };
       _enemy = { ...afterUsingSkill.target };
       let newBuff: { duration: number; turnCasted: number } | undefined;
@@ -147,10 +135,12 @@ const BattleScreen = () => {
         player: { ..._player },
         enemy: _enemy,
         battlelog: afterUsingSkill.combatLog,
-        buffCounters: {
-          ...buffCounter,
-          [skill.key]: newBuff,
-        } as BuffCounter,
+        buffCounters: isNewCasted
+          ? ({
+              ...buffCounter,
+              [skill.key]: newBuff,
+            } as BuffCounter)
+          : undefined,
         actionLogs: afterUsingSkill.actions,
       });
       await delay(ACTION_DELAY);
@@ -181,11 +171,7 @@ const BattleScreen = () => {
   };
 
   const buffCalculation = async (player: Player, enemy: Enemy) => {
-    const {
-      player: _player,
-      buffCounter: _counter,
-      combatLog,
-    } = await calculateBuff(player, buffCounter);
+    const { player: _player, buffCounter: _counter, combatLog } = await calculateBuff(player, buffCounter);
     await updateState({
       player: _player,
       enemy: enemy,
@@ -246,10 +232,7 @@ const BattleScreen = () => {
 
   const checkWinCondition = async (player: Player, enemy: Enemy) => {
     let winStatus = await winCondition(player, enemy);
-    if (
-      winStatus.status === WIN_CONDITION_STATUS.WIN ||
-      winStatus.status === WIN_CONDITION_STATUS.LOSE
-    ) {
+    if (winStatus.status === WIN_CONDITION_STATUS.WIN || winStatus.status === WIN_CONDITION_STATUS.LOSE) {
       setState((prev) => ({
         ...prev,
         battleLogs: [...prev.battleLogs, winStatus.message],
@@ -280,6 +263,16 @@ const BattleScreen = () => {
     router.push("/select-event");
   };
 
+  const showDebug = () => {
+    const debugInfo = {
+      player: player,
+      enemy: enemy,
+      buffCounter: buffCounter,
+      actions: actions,
+      battleLogs: state.battleLogs,
+    };
+    console.log("DEBUG INFO:", debugInfo);
+  };
   return (
     <BattleProvider
       actions={actions}
@@ -324,6 +317,11 @@ const BattleScreen = () => {
                   exit={{ opacity: 0 }}
                 >
                   {player !== null && <FighterStatsBlock />}
+                  <div className="w-full text-center p-2 mt-6">
+                    <button onClick={showDebug} className="bg-violet-700 text-white p-2 rounded-md">
+                      <Bug />
+                    </button>
+                  </div>
                   {state.showNextBtn && (
                     <div className="w-full text-center p-2 mt-6">
                       <button
