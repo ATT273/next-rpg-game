@@ -92,7 +92,7 @@ function UseGame() {
   const skillUsing = async (attacker: Player, target: Enemy, skill: Skills, isNewCasted: boolean) => {
     // debugger;
     let combatLog = "";
-    const actions: ActionType[] = [];
+    const actions: (ActionType | null)[] = [];
     if (skill.target === SKILL_TARGET.ENEMY) {
       const atkOfAttacker = Math.abs(skill.effects[0].value);
       const defOfTarget = target.stats.def;
@@ -133,21 +133,48 @@ function UseGame() {
       ];
       // Object.assign(attacker.buffs, { ...attacker.buffs, skill })
 
+      // Collect all effects for multi-effect skills
+      const skillEffects: { type: string; value: number }[] = [];
+
       skill.effects.forEach((fx) => {
         buffStats.forEach((buff) => {
           if (fx.stats === buff.name) {
-            actions.push({
-              type: fx.stats,
-              value: fx.value,
-              source: attacker.type,
-            });
+            if (isNewCasted) {
+              skillEffects.push({
+                type: `${fx.stats}Bff`,
+                value: fx.value,
+              });
+            }
             buff.value += fx.value;
+            // set duration only if this is a new cast
             if (isNewCasted) {
               buff.duration += typeof skill.duration === "boolean" ? 0 : skill.duration;
             }
           }
         });
       });
+
+      // Push a single action with all effects if it's a new cast
+      if (isNewCasted && skillEffects.length > 0) {
+        if (skillEffects.length === 1) {
+          // Single effect skill
+          actions.push({
+            type: skillEffects[0].type,
+            value: skillEffects[0].value,
+            source: attacker.type,
+          });
+        } else {
+          // Multi-effect skill - group them together
+          actions.push({
+            type: "multiBuff",
+            value: 0, // Not used for multi-effects
+            source: attacker.type,
+            effects: skillEffects,
+          });
+        }
+      } else if (!isNewCasted) {
+        actions.push(null);
+      }
 
       attacker.buffStats = [...buffStats];
       buffStats.forEach((buff) => {
@@ -159,6 +186,7 @@ function UseGame() {
         }
       });
 
+      // if this is a new cast, deduct mp
       attacker.stats.mp -= isNewCasted ? skill.cost : 0;
       combatLog = `${attacker.name} used ${skill.name}`;
     }

@@ -66,6 +66,7 @@ type ActionType = {
   type: string;
   value: number;
   source: string;
+  effects?: { type: string; value: number }[]; // For multi-effect skills
 };
 
 export type {

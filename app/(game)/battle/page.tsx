@@ -52,7 +52,7 @@ const BattleScreen = () => {
   }>({ player: 0, enemy: 0 });
   const [isPlayerTurn, setIsPlayerTurn] = useState<boolean>();
   const [buffCounter, setBuffCounter] = useState<BuffCounter>({});
-  const [actions, setActions] = useState<ActionType[]>([]);
+  const [actions, setActions] = useState<(ActionType | null)[]>([]);
   const actionIndex = useMemo(() => {
     return !state.showNextBtn ? actions.length - 1 : -1;
   }, [actions, state.showNextBtn]);
@@ -119,7 +119,7 @@ const BattleScreen = () => {
     if (await checkWinCondition(_player, _enemy)) return;
     //  PLayer use skill
     const skill = _player.skills[0];
-    if (_player.skills[0].cost < _player.stats.mp) {
+    if (_player.stats.mp >= _player.skills[0].cost) {
       const isNewCasted = buffCounter[skill.key] ? false : true;
       const afterUsingSkill = await skillUsing(_player, _enemy, skill, isNewCasted);
       _player = { ...afterUsingSkill.attacker };
@@ -192,7 +192,7 @@ const BattleScreen = () => {
     enemy: Enemy;
     battlelog?: string;
     buffCounters?: BuffCounter;
-    actionLogs?: ActionType[];
+    actionLogs?: (ActionType | null)[];
   }) => {
     if (buffCounters) {
       setBuffCounter({
