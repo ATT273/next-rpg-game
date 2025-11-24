@@ -3,7 +3,7 @@ import { ActionType, Player } from "@/types/player";
 import { createContext } from "react";
 
 export interface IBattleContext {
-  actions: ActionType[];
+  actions: (ActionType | null)[];
   actionIndex: number;
   player: Player;
   enemy: Enemy;
@@ -11,9 +11,7 @@ export interface IBattleContext {
   isPlayerTurn: boolean | undefined;
   battleLogs: string[];
 }
-export const BattleContext = createContext<IBattleContext | {}>(
-  {} as IBattleContext
-);
+export const BattleContext = createContext<IBattleContext | {}>({} as IBattleContext);
 const BattleProvider = ({
   actions,
   actionIndex,
