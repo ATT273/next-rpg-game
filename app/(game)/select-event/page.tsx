@@ -8,7 +8,9 @@ import { IShop } from "@/types/shop";
 import { Enemy } from "@/types/enemy";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Bug } from "lucide-react";
 
+const APP_ENV = process.env.NEXT_PUBLIC_ENVIRONMENT;
 const SelectEvents = () => {
   const router = useRouter();
   const [shop, setShop] = useState<IShop>();
@@ -39,6 +41,11 @@ const SelectEvents = () => {
     router.push("/shop");
   };
 
+  const debugInfo = () => {
+    console.log("👤 Player Info:", player);
+    console.log("🛒 Selected Shop:", shop);
+    console.log("🤖 Selected Enemy:", enemy);
+  };
   return (
     <div className="flex gap-6 justify-center items-center h-full m-auto bg-gray-100">
       <AnimatePresence>
@@ -88,6 +95,17 @@ const SelectEvents = () => {
           Event 3
         </motion.div>
       </AnimatePresence>
+      {APP_ENV === "development" && (
+        <div className="fixed bottom-4 right-4 z-20">
+          <button
+            title="debug"
+            className="size-8 rounded-full bg-red-500 text-white flex items-center justify-center"
+            onClick={debugInfo}
+          >
+            <Bug className="size-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
