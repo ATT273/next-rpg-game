@@ -124,7 +124,6 @@ const BattleScreen = () => {
     for (const skill of _player.skills) {
       // Check if player has enough MP for this skill
       if (_player.stats.mp >= skill.cost) {
-        console.log("Using skill:", skill.name);
         const isNewCasted = _buffCounter[skill.key] ? false : true;
         const afterUsingSkill = await skillUsing(_player, _enemy, skill, isNewCasted);
         _player = { ...afterUsingSkill.attacker };
@@ -137,7 +136,7 @@ const BattleScreen = () => {
             turnCasted: currentTurn.player,
           };
         }
-        console.log("afterUsingSkill:", afterUsingSkill);
+
         // Update buff counter for this skill
         if (isNewCasted && newBuff) {
           _buffCounter = {
