@@ -14,6 +14,7 @@ import { delay } from "@/utils";
 import BattleProvider from "./_components/battle-provider";
 import { Bug } from "lucide-react";
 
+const APP_ENV = process.env.NEXT_PUBLIC_ENVIRONMENT;
 const BattleScreen = () => {
   const audioPlayer = useRef<HTMLAudioElement>(null);
 
@@ -104,8 +105,9 @@ const BattleScreen = () => {
   const playerTurn = async () => {
     let _player = { ...player } as Player;
     let _enemy = { ...enemy } as Enemy;
+    let _buffCounter = { ...buffCounter };
+
     // Player normal attack
-    // debugger;
     const afterAtk = await normalAttack(_player, _enemy);
     _player = { ...(afterAtk.attacker as Player) };
     _enemy = { ...(afterAtk.target as Enemy) };
@@ -117,35 +119,44 @@ const BattleScreen = () => {
     });
     await delay(ACTION_DELAY);
     if (await checkWinCondition(_player, _enemy)) return;
-    //  PLayer use skill
-    const skill = _player.skills[0];
-    if (_player.stats.mp >= _player.skills[0].cost) {
-      const isNewCasted = buffCounter[skill.key] ? false : true;
-      const afterUsingSkill = await skillUsing(_player, _enemy, skill, isNewCasted);
-      _player = { ...afterUsingSkill.attacker };
-      _enemy = { ...afterUsingSkill.target };
-      let newBuff: { duration: number; turnCasted: number } | undefined;
-      if (skill.target === SKILL_TARGET.SELF) {
-        newBuff = {
-          duration: !isNaN(Number(skill.duration)) ? Number(skill.duration) : 0,
-          turnCasted: currentTurn.player,
-        };
+
+    // Player use all available skills sequentially
+    for (const skill of _player.skills) {
+      // Check if player has enough MP for this skill
+      if (_player.stats.mp >= skill.cost) {
+        const isNewCasted = _buffCounter[skill.key] ? false : true;
+        const afterUsingSkill = await skillUsing(_player, _enemy, skill, isNewCasted);
+        _player = { ...afterUsingSkill.attacker };
+        _enemy = { ...afterUsingSkill.target };
+
+        let newBuff: { duration: number; turnCasted: number } | undefined;
+        if (skill.target === SKILL_TARGET.SELF) {
+          newBuff = {
+            duration: !isNaN(Number(skill.duration)) ? Number(skill.duration) : 0,
+            turnCasted: currentTurn.player,
+          };
+        }
+
+        // Update buff counter for this skill
+        if (isNewCasted && newBuff) {
+          _buffCounter = {
+            ..._buffCounter,
+            [skill.key]: newBuff,
+          };
+        }
+
+        await updateState({
+          player: { ..._player },
+          enemy: _enemy,
+          battlelog: afterUsingSkill.combatLog,
+          buffCounters: isNewCasted && newBuff ? _buffCounter : undefined,
+          actionLogs: afterUsingSkill.actions,
+        });
+        await delay(ACTION_DELAY);
+        if (await checkWinCondition(_player, _enemy)) return;
       }
-      await updateState({
-        player: { ..._player },
-        enemy: _enemy,
-        battlelog: afterUsingSkill.combatLog,
-        buffCounters: isNewCasted
-          ? ({
-              ...buffCounter,
-              [skill.key]: newBuff,
-            } as BuffCounter)
-          : undefined,
-        actionLogs: afterUsingSkill.actions,
-      });
-      await delay(ACTION_DELAY);
-      if (await checkWinCondition(_player, _enemy)) return;
     }
+
     handleEndturn("player");
   };
   const enemyTurn = async () => {
@@ -317,11 +328,13 @@ const BattleScreen = () => {
                   exit={{ opacity: 0 }}
                 >
                   {player !== null && <FighterStatsBlock />}
-                  <div className="w-full text-center p-2 mt-6">
-                    <button onClick={showDebug} className="bg-violet-700 text-white p-2 rounded-md">
-                      <Bug />
-                    </button>
-                  </div>
+                  {APP_ENV === "development" && (
+                    <div className="w-full text-center p-2 mt-6">
+                      <button onClick={showDebug} className="bg-violet-700 text-white p-2 rounded-md">
+                        <Bug />
+                      </button>
+                    </div>
+                  )}
                   {state.showNextBtn && (
                     <div className="w-full text-center p-2 mt-6">
                       <button

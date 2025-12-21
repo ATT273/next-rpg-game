@@ -2,6 +2,7 @@ import knight from "@/public/images/classes/knight.png";
 import warrior from "@/public/images/classes/warrior.png";
 import assassin from "@/public/images/classes/assassin.png";
 import mage from "@/public/images/classes/mage.png";
+import { SKILL_TARGET } from "./data";
 
 export const classes = {
   knight: {
@@ -25,7 +26,7 @@ export const classes = {
       {
         key: "holy_strike",
         name: "Holy Strike",
-        target: "enemy",
+        target: SKILL_TARGET.ENEMY,
         cost: 10,
         effects: [{ stats: "hp", value: -10 }],
         duration: false,
@@ -34,7 +35,7 @@ export const classes = {
       {
         key: "iron_skin",
         name: "Iron Skin",
-        target: "self",
+        target: SKILL_TARGET.SELF,
         cost: 0,
         effects: [{ stats: "def", value: 5 }],
         duration: 3,
@@ -43,7 +44,7 @@ export const classes = {
       {
         key: "holy_water",
         name: "Holy Water",
-        target: "self",
+        target: SKILL_TARGET.SELF,
         cost: 20,
         effects: [
           { stats: "def", value: 3 },
@@ -75,7 +76,7 @@ export const classes = {
       {
         key: "battle_roar",
         name: "Battle Roar",
-        target: "self",
+        target: SKILL_TARGET.SELF,
         cost: 7,
         effects: [{ stats: "atk", value: 3 }],
         duration: 3,
@@ -84,7 +85,7 @@ export const classes = {
       {
         key: "rage",
         name: "Rage",
-        target: "self",
+        target: SKILL_TARGET.SELF,
         cost: 10,
         effects: [
           { stats: "atk", value: 5 },
@@ -96,7 +97,7 @@ export const classes = {
       {
         key: "second_wind",
         name: "Second Wind",
-        target: "self",
+        target: SKILL_TARGET.SELF,
         cost: 10,
         effects: [{ stats: "hp", value: 6 }],
         duration: 3,
@@ -125,7 +126,7 @@ export const classes = {
       {
         key: "backstab",
         name: "Backstab",
-        target: "enemy",
+        target: SKILL_TARGET.ENEMY,
         cost: 15,
         effects: [{ stats: "hp", value: -15 }],
         duration: false,
@@ -134,7 +135,7 @@ export const classes = {
       {
         key: "ambus_and_assassinate",
         name: "Ambus and assassinate",
-        target: "enemy",
+        target: SKILL_TARGET.ENEMY,
         cost: 25,
         effects: [{ stats: "hp", value: -25 }],
         duration: 3,
@@ -143,7 +144,7 @@ export const classes = {
       {
         key: "poision_dagger",
         name: "Poison Dagger",
-        target: "enemy",
+        target: SKILL_TARGET.ENEMY,
         cost: 10,
         effects: [{ stats: "hp", value: -10 }],
         duration: 3,
@@ -172,7 +173,7 @@ export const classes = {
       {
         key: "fireball",
         name: "Fireball",
-        target: "enemy",
+        target: SKILL_TARGET.ENEMY,
         cost: 10,
         effects: [{ stats: "hp", value: -15 }],
         duration: 3,
@@ -181,7 +182,7 @@ export const classes = {
       {
         key: "ice_shard",
         name: "Ice shard",
-        target: "enemy",
+        target: SKILL_TARGET.ENEMY,
         cost: 5,
         effects: [{ stats: "hp", value: -9 }],
         duration: 3,
@@ -190,7 +191,7 @@ export const classes = {
       {
         key: "divine_light",
         name: "Divine Light",
-        target: "self",
+        target: SKILL_TARGET.SELF,
         cost: 5,
         effects: [{ stats: "hp", value: 10 }],
         duration: 3,

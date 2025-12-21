@@ -2,6 +2,7 @@ import { IShop } from "@/types/shop";
 import Oakwand from "@/public/images/items/oak_wand.jpeg";
 import Firebook from "@/public/images/items/fire_book.jpeg";
 import Icebook from "@/public/images/items/ice_book.jpeg";
+import { SKILL_TARGET } from "./data";
 
 const shops: IShop[] = [
   {
@@ -24,7 +25,6 @@ const shops: IShop[] = [
         stats: {
           atk: 3,
         },
-        effects: [],
         skills: [],
       },
       {
@@ -41,7 +41,6 @@ const shops: IShop[] = [
         stats: {
           atk: 4,
         },
-        effects: [],
         skills: [],
       },
       {
@@ -53,13 +52,11 @@ const shops: IShop[] = [
         maxQty: 1,
         isConsumable: false,
         image: "/images/items/iron_shield.jpeg",
-        description:
-          "A shield made of iron. It is a good weapon for beginners.",
+        description: "A shield made of iron. It is a good weapon for beginners.",
         type: "shield",
         stats: {
           def: 3,
         },
-        effects: [],
         skills: [],
       },
     ],
@@ -79,19 +76,11 @@ const shops: IShop[] = [
         maxQty: 1,
         isConsumable: false,
         image: Oakwand,
-        description:
-          "A wand made of oak wood. It is a good weapon for beginners.",
+        description: "A wand made of oak wood. It is a good weapon for beginners.",
         type: "weapon",
         stats: {
           atk: 2,
         },
-        effects: [
-          {
-            name: "Extra hit",
-            description: "The target will receive an extra hit.",
-            value: 1,
-          },
-        ],
         skills: [],
       },
       {
@@ -110,14 +99,13 @@ const shops: IShop[] = [
           {
             key: "fire_spell",
             name: "Fire spell",
-            target: "com",
+            target: SKILL_TARGET.ENEMY,
             description: "The target will receive fire damage.",
             effects: [{ stats: "atk", value: 5 }],
             cost: 5,
             duration: false,
           },
         ],
-        effects: [],
       },
       {
         id: 3,
@@ -131,12 +119,11 @@ const shops: IShop[] = [
         description: "Spellbook that can cast fire spells.",
         type: "book",
         stats: {},
-        effects: [],
         skills: [
           {
             key: "ice_shard",
             name: "Ice shard",
-            target: "com",
+            target: SKILL_TARGET.ENEMY,
             description: "The target will receive ice damage.",
             effects: [{ stats: "atk", value: 5 }],
             cost: 5,

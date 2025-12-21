@@ -21,7 +21,6 @@ const items: IShopItem[] = [
     stats: {
       atk: 1,
     },
-    effects: [],
     skills: [],
     description: "",
   },
@@ -38,7 +37,6 @@ const items: IShopItem[] = [
     stats: {
       def: 3,
     },
-    effects: [],
     skills: [],
     description: "",
   },
@@ -56,7 +54,6 @@ const items: IShopItem[] = [
       def: 2,
       spd: 1,
     },
-    effects: [],
     skills: [],
     description: "",
   },
@@ -73,7 +70,6 @@ const items: IShopItem[] = [
     stats: {
       def: 5,
     },
-    effects: [],
     skills: [],
     description: "",
   },
@@ -90,7 +86,6 @@ const items: IShopItem[] = [
     stats: {
       atk: 5,
     },
-    effects: [],
     skills: [],
     description: "",
   },
@@ -107,7 +102,6 @@ const items: IShopItem[] = [
     stats: {
       def: 10,
     },
-    effects: [],
     skills: [],
     description: "",
   },
@@ -124,7 +118,6 @@ const items: IShopItem[] = [
     stats: {
       hp: 10,
     },
-    effects: [],
     skills: [],
     description: "",
   },
@@ -141,7 +134,6 @@ const items: IShopItem[] = [
     stats: {
       def: 2,
     },
-    effects: [],
     skills: [],
     description: "",
   },

@@ -99,7 +99,8 @@ function UseGame() {
       const dmgDealed = atkOfAttacker - defOfTarget > 0 ? atkOfAttacker - defOfTarget : 0;
 
       target.stats.hp = target.stats.hp - dmgDealed < 0 ? 0 : target.stats.hp - dmgDealed;
-      attacker.stats.mp -= skill.cost;
+      // attacker.stats.mp -= skill.cost;
+      attacker.stats.mp -= 0;
       actions.push({
         type: "atk",
         value: dmgDealed,
@@ -187,7 +188,8 @@ function UseGame() {
       });
 
       // if this is a new cast, deduct mp
-      attacker.stats.mp -= isNewCasted ? skill.cost : 0;
+      attacker.stats.mp -= 0;
+      // attacker.stats.mp -= isNewCasted ? skill.cost : 0;
       combatLog = `${attacker.name} used ${skill.name}`;
     }
     return {

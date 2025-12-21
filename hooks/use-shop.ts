@@ -10,7 +10,7 @@ export default function useShop() {
 
   const getRandomShop = () => {
     const randomIdx = Math.floor(Math.random() * shops.length);
-    const _shop = _.cloneDeep(shops[randomIdx]);
+    const _shop = _.cloneDeep(shops[1]);
     setShop(_shop);
 
     return _shop;
@@ -24,14 +24,8 @@ export default function useShop() {
 
   const getShopItems = (shopItems: IShopItem[]) => {
     const randomIdx = Math.floor(Math.random() * items.length);
-    const secondIdx =
-      randomIdx !== items.length ? randomIdx + 1 : randomIdx - 1;
-    const thirdIdx =
-      randomIdx === 0
-        ? randomIdx + 2
-        : randomIdx !== items.length
-        ? randomIdx - 1
-        : randomIdx - 2;
+    const secondIdx = randomIdx !== items.length ? randomIdx + 1 : randomIdx - 1;
+    const thirdIdx = randomIdx === 0 ? randomIdx + 2 : randomIdx !== items.length ? randomIdx - 1 : randomIdx - 2;
     const itemsList = [items[randomIdx], items[secondIdx], items[thirdIdx]];
 
     return itemsList;

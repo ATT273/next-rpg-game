@@ -50,7 +50,7 @@ const Shop = () => {
     }
   };
 
-  const buyItem = (item: IShopItem) => {
+  const addToCart = (item: IShopItem) => {
     if (player.items.length >= 6) {
       toast.error("Please remove 1 item in your inventory first");
     }
@@ -65,15 +65,22 @@ const Shop = () => {
   const handleCloseShop = () => {
     if (cart.length > 0) {
       const newItems = [...player.items, ...cart];
-      const bonusStats = getBonusStats(newItems);
+
+      // Create a Set of existing skill keys for O(1) lookup
+      const existingSkillKeys = new Set(player.skills.map((s) => s.key));
+
+      // Collect all new unique skills from cart items
+      const newSkills = cart.flatMap((item) => item.skills.filter((skill) => !existingSkillKeys.has(skill.key)));
+
+      const newGold = playerGold;
       updatePlayer({
         ...player,
         items: newItems,
-        gold: playerGold,
-        bonusStats,
+        skills: [...player.skills, ...newSkills],
+        gold: newGold,
       });
     }
-    // router.push("/battle");
+    router.push("/select-event");
   };
   return (
     <div className="w-full h-full relative">
@@ -86,7 +93,7 @@ const Shop = () => {
                 <ItemBlock
                   key={index}
                   item={item}
-                  onItemSelect={buyItem}
+                  onItemSelect={addToCart}
                   onItemRemove={removeItem}
                   playerGold={player.gold}
                 />

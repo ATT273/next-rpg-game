@@ -21,13 +21,6 @@ export interface IShopItem {
   maxQty: number;
   isConsumable: boolean;
   stats: IItemStat;
-  effects:
-    | {
-        name: string;
-        description: string;
-        value: number;
-      }[]
-    | [];
   skills: Skills[] | [];
 }
 export interface IItemStat {
