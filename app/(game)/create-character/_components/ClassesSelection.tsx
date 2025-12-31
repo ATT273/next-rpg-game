@@ -8,7 +8,7 @@ import RightCaret from "@/svg/caret-right.svg";
 import { motion } from "framer-motion";
 import {
   SkillLevel,
-  SkillNode,
+  SkillTreeNode as SkillTreeNodeType,
   Skills,
   Stats,
   SkillDefinition,
@@ -51,14 +51,16 @@ const ClassesSelection = ({
 
   const [activeClass, setActiveClass] = useState(0);
   const [xValue, setXValue] = useState("");
-  const [currentSkillTree, setCurrentSkillTree] = useState<SkillNode[]>([]);
+  const [currentSkillTree, setCurrentSkillTree] = useState<SkillTreeNodeType[]>(
+    []
+  );
   const [isOpen, setIsOpen] = useState(false);
   const [skillLevelData, setSkillLevelData] = useState<SkillLevel>(skillLevel);
 
   const { buildSkillTree } = useGame();
   const { convertSkillsToRuntime } = useSkill();
 
-  const skillsTree: Map<string, SkillNode[]> = useMemo(() => {
+  const skillsTree: Map<string, SkillTreeNodeType[]> = useMemo(() => {
     const tree = new Map();
     classKeys.forEach((key) => {
       const classSkill = buildSkillTree(
