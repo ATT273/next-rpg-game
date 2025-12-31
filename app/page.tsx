@@ -54,7 +54,7 @@ export default function Home() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-2 text-2xl">
         {isContinueGame && (
           <button
-            className="bg-white rounded-md h-[3em] w-[9rem] p-2"
+            className="bg-white rounded-md h-[3em] w-36 p-2"
             onClick={continueGame}
           >
             Continue
@@ -62,14 +62,14 @@ export default function Home() {
         )}
         <Link href={"/create-character"}>
           <button
-            className="bg-white rounded-md h-[3em] w-[9rem] p-2"
+            className="bg-white rounded-md h-[3em] w-36 p-2"
             onClick={navigateToCreatePlayer}
           >
             New Game
           </button>
         </Link>
         <Link href="/high-score">
-          <button className="bg-white rounded-md h-[3em] w-[9rem] p-2">
+          <button className="bg-white rounded-md h-[3em] w-36 p-2">
             High scores
           </button>
         </Link>

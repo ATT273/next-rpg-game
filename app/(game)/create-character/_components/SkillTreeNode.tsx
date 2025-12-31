@@ -168,7 +168,7 @@ const SkillTreeNode = ({
               />
             ))}
           </div>
-          <div className="absolute top-0 left-1/2 h-full w-[1px] bg-slate-900 -z-10" />
+          <div className="absolute top-0 left-1/2 h-full w-px bg-slate-900 -z-10" />
         </>
       )}
     </div>
