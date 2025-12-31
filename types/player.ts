@@ -90,12 +90,14 @@ type ActionType = {
 
 type SkillType = "physical" | "magical" | undefined;
 
-type SkillNode = {
+
+type SkillTreeNode = {
   key: string;
-  children?: SkillNode[];
-  parent?: string | null;
-  data: Skills;
+  parent: string | null;
+  children: SkillTreeNode[];
+  data: SkillDefinition;
 };
+
 export type {
   Stats,
   BuffStat,
@@ -106,7 +108,7 @@ export type {
   BuffCounter,
   ActionType,
   SkillType,
-  SkillNode,
+  SkillTreeNode,
 };
 
 export type SkillLevel = Record<string, { key: string; level: number }>;

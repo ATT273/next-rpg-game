@@ -6,6 +6,7 @@ import {
   Player,
   SkillDefinition,
   Skills,
+  SkillTreeNode,
   SkillType,
 } from "@/types/player";
 import { IShopItem } from "@/types/shop";
@@ -485,13 +486,6 @@ function UseGame() {
    * ]
    */
   const buildSkillTree = (skills: SkillDefinition[]) => {
-    type SkillTreeNode = {
-      key: string;
-      parent: string | null;
-      children: SkillTreeNode[];
-      data: SkillDefinition;
-    };
-
     // Create a map for quick lookup
     const nodeMap: { [key: string]: SkillTreeNode } = {};
 

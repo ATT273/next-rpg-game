@@ -1,21 +1,26 @@
 import { MAX_LEVEL } from "@/data/classes";
-import { SkillLevel, SkillNode, SkillDefinition } from "@/types/player";
-import { useCreateCharacterContext } from "./CreateCharacterProvider";
+import {
+  SkillLevel,
+  SkillTreeNode as SkillTreeNodeType,
+  SkillDefinition,
+} from "@/types/player";
 import useSkill from "@/hooks/use-skill";
 
 const SkillTreeNode = ({
   skill,
   skillLevelData,
   onItemSelect,
-  onItemUndoSelect
+  onItemUndoSelect,
 }: {
-  skill: SkillNode;
+  skill: SkillTreeNodeType;
   skillLevelData: SkillLevel;
   onItemSelect: (key: string) => void;
   onItemUndoSelect: (key: string) => void;
 }) => {
   const { getSkillProgression } = useSkill();
-  const isUnlocked = !skill.parent ? true : skillLevelData[skill.parent].level > 0;
+  const isUnlocked = !skill.parent
+    ? true
+    : skillLevelData[skill.parent].level > 0;
   const currentLvl = skillLevelData[skill.key].level;
 
   // Get skill progression data for tooltip
@@ -33,12 +38,11 @@ const SkillTreeNode = ({
                 ${isUnlocked ? "bg-white" : "bg-gray-300"}
               `}
           onClick={() => {
-            if (isUnlocked) onItemSelect(skill.key)
-            }
-          }
+            if (isUnlocked) onItemSelect(skill.key);
+          }}
           onContextMenu={(e) => {
             e.preventDefault();
-            onItemUndoSelect(skill.key)
+            onItemUndoSelect(skill.key);
           }}
         >
           {skill.data.name} -{currentLvl}
@@ -66,13 +70,16 @@ const SkillTreeNode = ({
             <div className="text-xs space-y-1 mb-2">
               <p className="font-semibold text-slate-700">Current Level:</p>
               <p>
-                <span className="font-medium">Type:</span> {progression.current.type || "N/A"}
+                <span className="font-medium">Type:</span>{" "}
+                {progression.current.type || "N/A"}
               </p>
               <p>
-                <span className="font-medium">Cost:</span> {progression.current.cost} MP
+                <span className="font-medium">Cost:</span>{" "}
+                {progression.current.cost} MP
               </p>
               <p>
-                <span className="font-medium">Target:</span> {progression.current.target}
+                <span className="font-medium">Target:</span>{" "}
+                {progression.current.target}
               </p>
               <p>
                 <span className="font-medium">Effects:</span>{" "}
@@ -88,7 +95,9 @@ const SkillTreeNode = ({
               )}
               <p>
                 <span className="font-medium">Duration:</span>{" "}
-                {progression.current.duration === false ? "Instant" : progression.current.duration}
+                {progression.current.duration === false
+                  ? "Instant"
+                  : progression.current.duration}
               </p>
             </div>
           )}
@@ -100,7 +109,8 @@ const SkillTreeNode = ({
                 Next Level ({currentLvl + 1}):
               </p>
               <p className="text-green-600">
-                <span className="font-medium">Cost:</span> {progression.next.cost} MP
+                <span className="font-medium">Cost:</span>{" "}
+                {progression.next.cost} MP
                 {progression.current && (
                   <span className="text-xs ml-1">
                     (+{progression.next.cost - progression.current.cost})
@@ -114,7 +124,9 @@ const SkillTreeNode = ({
                     const diff = progression.current
                       ? e.value - progression.current.effects[idx].value
                       : 0;
-                    return `${e.stats}: ${e.value}${diff !== 0 ? ` (+${diff})` : ""}`;
+                    return `${e.stats}: ${e.value}${
+                      diff !== 0 ? ` (+${diff})` : ""
+                    }`;
                   })
                   .join(", ")}
               </p>
@@ -124,7 +136,10 @@ const SkillTreeNode = ({
                   {progression.next.amplified}
                   {progression.current?.amplified && (
                     <span className="text-xs ml-1">
-                      (+{progression.next.amplified - progression.current.amplified})
+                      (+
+                      {progression.next.amplified -
+                        progression.current.amplified}
+                      )
                     </span>
                   )}
                 </p>
