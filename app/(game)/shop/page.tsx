@@ -11,15 +11,18 @@ import shops from "@/data/shop";
 import UseGame from "@/hooks/use-game";
 import { getRandomThree } from "@/utils";
 import { toast } from "sonner";
+import useSkill from "@/hooks/use-skill";
+import { SkillDefinition } from "@/types/player";
 
 const Shop = () => {
   const router = useRouter();
-  const { updatePlayer, selectedShop, player } = useStore();
+  const { updatePlayer, selectedShop, player, skillLevelData } = useStore();
   const [shopItems, setShopItems] = useState<IShopItem[]>([]);
   const [shopName, setShopName] = useState<string>("");
   const [cart, setCart] = useState<IShopItem[]>([]);
   const [playerGold, setPlayerGold] = useState<number>(player.gold || 0);
   const { getBonusStats } = UseGame();
+  const { convertSkillsToRuntime } = useSkill();
   useEffect(() => {
     getShopItems();
   }, []);
@@ -70,13 +73,19 @@ const Shop = () => {
       const existingSkillKeys = new Set(player.skills.map((s) => s.key));
 
       // Collect all new unique skills from cart items
-      const newSkills = cart.flatMap((item) => item.skills.filter((skill) => !existingSkillKeys.has(skill.key)));
+      const newSkills = cart.flatMap((item) =>
+        item.skills.filter((skill) => !existingSkillKeys.has(skill.key))
+      );
+      const runtimeSkills = convertSkillsToRuntime(
+        newSkills as SkillDefinition[],
+        skillLevelData
+      );
 
       const newGold = playerGold;
       updatePlayer({
         ...player,
         items: newItems,
-        skills: [...player.skills, ...newSkills],
+        skills: [...player.skills, ...runtimeSkills],
         gold: newGold,
       });
     }
@@ -84,7 +93,7 @@ const Shop = () => {
   };
   return (
     <div className="w-full h-full relative">
-      <div className="w-[40rem] m-auto absolute p-4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <div className="w-160 m-auto absolute p-4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <div className="flex flex-col gap-4 justify-center items-center mb-[80px]">
           <div className="text-2xl font-bold mb-6">{shopName}</div>
           <div className="flex gap-4 justify-center items-center">

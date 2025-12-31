@@ -27,6 +27,7 @@ import {
   MAX_SKILL_POINTS,
 } from "./CreateCharacterProvider";
 import BasicStats from "./BasicStats";
+import useStore from "@/store/store";
 
 const ClassesSelection = ({
   handleUpdateClassData,
@@ -55,8 +56,7 @@ const ClassesSelection = ({
     []
   );
   const [isOpen, setIsOpen] = useState(false);
-  const [skillLevelData, setSkillLevelData] = useState<SkillLevel>(skillLevel);
-
+  const { player, setSkillLevelData, skillLevelData } = useStore();
   const { buildSkillTree } = useGame();
   const { convertSkillsToRuntime } = useSkill();
 
@@ -106,13 +106,14 @@ const ClassesSelection = ({
     setSkillPoints(skillPoints - 1);
     const currentLvl = skillLevelData[key].level;
     if (currentLvl < MAX_LEVEL) {
-      setSkillLevelData((prev) => ({
-        ...prev,
+      const _skillLevel = {
+        ...skillLevelData,
         [key]: {
-          ...prev[key],
-          level: prev[key].level + 1,
+          ...skillLevelData[key],
+          level: skillLevelData[key].level + 1,
         },
-      }));
+      };
+      setSkillLevelData(_skillLevel);
     }
   };
 
@@ -122,13 +123,14 @@ const ClassesSelection = ({
     setSkillPoints(skillPoints + 1);
     const currentLvl = skillLevelData[key].level;
     if (currentLvl > 0) {
-      setSkillLevelData((prev) => ({
-        ...prev,
+      const _skillLevel = {
+        ...skillLevelData,
         [key]: {
-          ...prev[key],
-          level: prev[key].level - 1,
+          ...skillLevelData[key],
+          level: skillLevelData[key].level - 1,
         },
-      }));
+      };
+      setSkillLevelData(_skillLevel);
     }
   };
 

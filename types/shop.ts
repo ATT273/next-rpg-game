@@ -1,5 +1,5 @@
 import { StaticImageData } from "next/image";
-import { Skills } from "./player";
+import { SkillDefinition, Skills } from "./player";
 
 export interface IShop {
   id: number;
@@ -21,7 +21,7 @@ export interface IShopItem {
   maxQty: number;
   isConsumable: boolean;
   stats: IItemStat;
-  skills: Skills[] | [];
+  skills: SkillDefinition[] | [];
 }
 export interface IItemStat {
   hp?: number;

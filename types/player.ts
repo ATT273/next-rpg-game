@@ -50,6 +50,7 @@ type SkillDefinition = {
   key: string;
   name: string;
   type?: SkillType;
+  level?: number;
   target: string;
   description: string;
   required?: string | null;
