@@ -33,7 +33,7 @@ const IngameMenu = () => {
         {open && (
           <AnimatePresence>
             <motion.div
-              className="absolute top-0 right-0 md:w-[25rem] flex flex-col justify-center items-center gap-1 text-white"
+              className="absolute top-0 right-0 md:w-100 flex flex-col justify-center items-center gap-1 text-white"
               key={"menu"}
               animate={{ height: "auto", opacity: 1 }}
               initial={{ height: 0, opacity: 0 }}

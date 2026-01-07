@@ -19,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="w-full h-full px-[25rem]">
+    <div className="w-full h-full px-100">
       <Toaster richColors position="top-center" />
       <LeftSideBar />
       <RightSideBar />

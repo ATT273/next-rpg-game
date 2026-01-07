@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Stats } from "@/types/player";
 import { classes } from "@/data/classes";
-import StatAdjustmentButton from "@/app/(game)/create-character/_components/stat-adjustment-button";
+import StatAdjustmentButton from "@/app/(game)/create-character/_components/StatAdjustmentButton";
 
 const initialState: Stats = {
   hp: 100,

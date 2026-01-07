@@ -16,6 +16,7 @@ type Player = {
   items: IShopItem[];
   skills: Skills[];
   gold: number;
+  skillPoints: number;
 };
 type BuffStat = {
   name: string;
@@ -45,8 +46,28 @@ type BonusStats = {
   mp?: number;
 };
 
+// Base skill definition stored in classes.ts (static data)
+type SkillDefinition = {
+  key: string;
+  name: string;
+  type?: SkillType;
+  level?: number;
+  target: string;
+  description: string;
+  required?: string | null;
+  cost: number[]; // Level 1, 2, 3
+  effects: { stats: string; value: number[] }[];
+  amplified?: number[];
+  duration: number | boolean;
+  image?: string;
+};
+
+// Runtime skill used in game (dynamic data)
 type Skills = {
   key: string;
+  type: SkillType;
+  level: number; // Current skill level (1-3)
+  amplified?: number;
   name: string;
   target: string;
   cost: number;
@@ -69,12 +90,26 @@ type ActionType = {
   effects?: { type: string; value: number }[]; // For multi-effect skills
 };
 
+type SkillType = "physical" | "magical" | undefined;
+
+type SkillTreeNode = {
+  key: string;
+  parent: string | null;
+  children: SkillTreeNode[];
+  data: SkillDefinition;
+};
+
 export type {
   Stats,
   BuffStat,
   Player,
   BonusStats,
   Skills,
+  SkillDefinition,
   BuffCounter,
   ActionType,
+  SkillType,
+  SkillTreeNode,
 };
+
+export type SkillLevel = Record<string, { key: string; level: number }>;

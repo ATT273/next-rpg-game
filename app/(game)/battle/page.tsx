@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import useStore from "@/store/store";
@@ -262,9 +262,10 @@ const BattleScreen = () => {
     if (player.exp + enemy.xp >= player.levelExp) {
       const nextLvl = calculateLvlFromExp(player.exp + enemy.xp);
       const newLevelExp = calculateCurrentLvlExp(Math.floor(nextLvl) + 1);
-      _player.level = Math.floor(nextLvl) + 1;
+      _player.level = Math.floor(nextLvl);
       _player.exp = player.exp + enemy.xp - player.levelExp;
       _player.levelExp = newLevelExp;
+      _player.skillPoints += 1;
     }
     if (_player.stats.hp > 0) {
       setScore(enemy.score);

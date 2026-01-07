@@ -24,7 +24,7 @@ function SkillSelection({
             }`}
             onClick={() => handleChooseSkill(item)}
           >
-            <div className="name min-w-[150px]">{item.name}:</div>
+            <div className="name min-w-40">{item.name}:</div>
             <div className="cost">cost: {item.cost}</div>
             <div>
               target: <span className={`target-${item.target}`}>{item.target}</span>

@@ -39,14 +39,8 @@ function InventoryBlock({
       onMouseEnter={() => onHover(item)}
       onMouseLeave={() => onHover(null)}
     >
-      <div className="h-[70px] w-[70px] overflow-hidden">
-        <Image
-          src={item.image}
-          alt={item.key}
-          width={300}
-          height={300}
-          className="item-thumb"
-        />
+      <div className="size-16 overflow-hidden">
+        <Image src={item.image} alt={item.key} width={300} height={300} className="item-thumb" />
       </div>
       {item.qty > 1 && <div className="item-qty">{item.qty}</div>}
       <div

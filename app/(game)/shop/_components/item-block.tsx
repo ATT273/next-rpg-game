@@ -56,7 +56,7 @@ const ItemBlock = ({ item, onItemSelect, onItemRemove, playerGold }: Props) => {
         <div className="flex gap-2 justify-center items-center">
           {itemSelected ? (
             <button
-              className={`border-1 border p-2 w-200 rounded-md border-red-400`}
+              className={`border p-2 w-200 rounded-md border-red-400`}
               onClick={() => {
                 setItemSelected(false);
                 onItemRemove(item);
@@ -66,7 +66,7 @@ const ItemBlock = ({ item, onItemSelect, onItemRemove, playerGold }: Props) => {
             </button>
           ) : (
             <button
-              className={`border-1 border p-2 w-200 rounded-md bg-slate-900 ${
+              className={`border p-2 w-200 rounded-md bg-slate-900 ${
                 item.price > playerGold ? "bg-slate-300" : ""
               }`}
               onClick={() => {

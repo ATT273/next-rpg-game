@@ -1,6 +1,12 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { BonusStats, Stats, Player, BuffStat } from "@/types/player";
+import {
+  BonusStats,
+  Stats,
+  Player,
+  BuffStat,
+  SkillLevel,
+} from "@/types/player";
 import { IShopItem } from "@/types/shop";
 import player_img from "@/public/images/player/player.png";
 import { initialPlayer } from "@/data/data";
@@ -9,6 +15,7 @@ interface Store {
   player: Player;
   selectedEnemy: string;
   selectedShop: number;
+  skillLevelData: SkillLevel;
   createPlayer: (payload: Player) => void;
   updateStats: (payload: Stats) => void;
   updateItems: (payload: IShopItem[]) => void;
@@ -19,6 +26,7 @@ interface Store {
   updatePlayer: (payload: Player) => void;
   selectEnemy: (key: string) => void;
   selectShop: (id: number) => void;
+  setSkillLevelData: (payload: SkillLevel) => void;
 }
 
 const useStore = create<Store>()((set) => ({
@@ -51,10 +59,12 @@ const useStore = create<Store>()((set) => ({
     buffStats: [],
     items: [],
     gold: 100,
+    skillPoints: 0,
   },
   score: 0,
   selectedEnemy: "",
   selectedShop: 0,
+  skillLevelData: {},
   selectShop: (id: number) => {
     set((state: any) => ({ ...state, selectedShop: id }));
   },
@@ -81,6 +91,8 @@ const useStore = create<Store>()((set) => ({
     set((state: any) => ({ player: { ...state.player, items: payload } })),
   updatePlayer: (payload: Player) =>
     set((state: any) => ({ player: { ...state.player, ...payload } })),
+  setSkillLevelData: (payload: SkillLevel) =>
+    set((state: any) => ({ skillLevelData: payload })),
 }));
 
 export default useStore;
