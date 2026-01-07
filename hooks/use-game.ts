@@ -1,20 +1,12 @@
 import enemies from "@/data/enemies";
 import items from "@/data/items";
-import {
-  ActionType,
-  BuffCounter,
-  Player,
-  SkillDefinition,
-  Skills,
-  SkillTreeNode,
-  SkillType,
-} from "@/types/player";
+import { ActionType, BuffCounter, Player, SkillDefinition, Skills, SkillTreeNode, SkillType } from "@/types/player";
 import { IShopItem } from "@/types/shop";
 import { Enemy } from "@/types/enemy";
 import * as _ from "lodash";
 import { SKILL_TARGET, WIN_CONDITION_STATUS } from "@/data/data";
 
-function UseGame() {
+function useGame() {
   const isPlayer = (object: Player | Enemy): object is Player => {
     return (object as Player).type === "player";
   };
@@ -26,10 +18,16 @@ function UseGame() {
       return (target as Player).items;
     }
   };
+
+  const getEvent = (id: number) => {
+    const eventIdsList = [1, 2, 3];
+    const filterEvents = eventIdsList.filter((event) => event !== id);
+    const randomIdx = Math.floor(Math.random() * filterEvents.length);
+    return filterEvents[randomIdx];
+  };
+
   const getRandomEnemy = (key: string | "", level: number) => {
-    const filterEnemies = enemies.filter(
-      (enemy) => enemy.key !== key && enemy.matchLvl.includes(level)
-    );
+    const filterEnemies = enemies.filter((enemy) => enemy.key !== key && enemy.matchLvl.includes(level));
     const randomIdx = Math.floor(Math.random() * filterEnemies.length);
     return _.cloneDeep(filterEnemies[randomIdx]);
     // return JSON.parse(JSON.stringify(filterEnemies[randomIdx]))
@@ -41,34 +39,23 @@ function UseGame() {
     // return JSON.parse(JSON.stringify(filterEnemies[randomIdx]))
   };
 
-  const normalAttack = async (
-    attacker: Player | Enemy,
-    target: Player | Enemy
-  ) => {
+  const normalAttack = async (attacker: Player | Enemy, target: Player | Enemy) => {
     const _items = getPlayerItems(attacker, target);
     const bonusStats = getBonusStats(_items ? _items : []);
-    const _buffStats = isPlayer(attacker)
-      ? (attacker as Player).buffStats
-      : (target as Player).buffStats;
+    const _buffStats = isPlayer(attacker) ? (attacker as Player).buffStats : (target as Player).buffStats;
     const atkBuff = isPlayer(attacker)
       ? _.find(_buffStats, (buff) => buff.name === "atk") || { value: 0 }
       : { value: 0 };
-    const defBuff = isPlayer(target)
-      ? _.find(_buffStats, (buff) => buff.name === "def") || { value: 0 }
-      : { value: 0 };
+    const defBuff = isPlayer(target) ? _.find(_buffStats, (buff) => buff.name === "def") || { value: 0 } : { value: 0 };
     const atkOfAttacker = isPlayer(attacker)
       ? attacker.stats.atk + bonusStats.atk + atkBuff!.value
       : attacker.stats.atk;
     const defOfTarget =
-      target.type === "player"
-        ? target.stats.def + bonusStats.def + defBuff!.value
-        : target.stats.def;
+      target.type === "player" ? target.stats.def + bonusStats.def + defBuff!.value : target.stats.def;
 
-    const dmgDealed =
-      atkOfAttacker - defOfTarget > 0 ? atkOfAttacker - defOfTarget : 0;
+    const dmgDealed = atkOfAttacker - defOfTarget > 0 ? atkOfAttacker - defOfTarget : 0;
     let type = attacker.type;
-    const newHp =
-      target.stats.hp - dmgDealed < 0 ? 0 : target.stats.hp - dmgDealed;
+    const newHp = target.stats.hp - dmgDealed < 0 ? 0 : target.stats.hp - dmgDealed;
     target.stats.hp = Math.round(newHp * 10) / 10;
     const actions = [{ type: "atk", value: dmgDealed, source: attacker.type }];
     const combatLog = `${attacker.name} deals ${dmgDealed} damage`;
@@ -91,12 +78,7 @@ function UseGame() {
    * - Formula: baseValue + (stat * amplified)
    * - Result is rounded to 1 decimal place
    */
-  const calculateSkillValue = (
-    baseValue: number,
-    skillType: SkillType,
-    attacker: Player,
-    amplified: number = 1.0
-  ) => {
+  const calculateSkillValue = (baseValue: number, skillType: SkillType, attacker: Player, amplified: number = 1.0) => {
     const _items = attacker.items;
     const bonusStats = getBonusStats(_items ? _items : []);
 
@@ -155,31 +137,19 @@ function UseGame() {
    * - Supports multiple stat effects per skill
    * - Skill damage scales with ATK (physical) or INT (magical) stats
    */
-  const skillUsing = async (
-    attacker: Player,
-    target: Enemy,
-    skill: Skills,
-    isNewCasted: boolean
-  ) => {
+  const skillUsing = async (attacker: Player, target: Enemy, skill: Skills, isNewCasted: boolean) => {
     // debugger;
     let combatLog = "";
     const actions: (ActionType | null)[] = [];
     if (skill.target === SKILL_TARGET.ENEMY) {
       const baseValue = skill.effects[0].value;
       const amplified = skill.amplified ?? 1.0;
-      const atkOfAttacker = calculateSkillValue(
-        baseValue,
-        skill.type,
-        attacker,
-        amplified
-      );
+      const atkOfAttacker = calculateSkillValue(baseValue, skill.type, attacker, amplified);
       const defOfTarget = target.stats.def;
-      const rawDmg =
-        atkOfAttacker - defOfTarget > 0 ? atkOfAttacker - defOfTarget : 0;
+      const rawDmg = atkOfAttacker - defOfTarget > 0 ? atkOfAttacker - defOfTarget : 0;
       const dmgDealed = Math.round(rawDmg * 10) / 10;
 
-      const newHp =
-        target.stats.hp - dmgDealed < 0 ? 0 : target.stats.hp - dmgDealed;
+      const newHp = target.stats.hp - dmgDealed < 0 ? 0 : target.stats.hp - dmgDealed;
       target.stats.hp = Math.round(newHp * 10) / 10;
       attacker.stats.mp -= skill.cost;
       // attacker.stats.mp -= 0;
@@ -224,12 +194,7 @@ function UseGame() {
         buffStats.forEach((buff) => {
           if (fx.stats === buff.name) {
             // Calculate amplified value based on skill type
-            const amplifiedValue = calculateSkillValue(
-              fx.value,
-              skill.type,
-              attacker,
-              amplified
-            );
+            const amplifiedValue = calculateSkillValue(fx.value, skill.type, attacker, amplified);
 
             if (isNewCasted) {
               skillEffects.push({
@@ -240,8 +205,7 @@ function UseGame() {
             buff.value += amplifiedValue;
             // set duration only if this is a new cast
             if (isNewCasted) {
-              buff.duration +=
-                typeof skill.duration === "boolean" ? 0 : skill.duration;
+              buff.duration += typeof skill.duration === "boolean" ? 0 : skill.duration;
             }
           }
         });
@@ -276,8 +240,7 @@ function UseGame() {
             attacker.stats.maxHP - attacker.stats.hp > buff.value
               ? buff.value
               : attacker.stats.maxHP - attacker.stats.hp;
-          attacker.stats.hp =
-            Math.round((attacker.stats.hp + healAmount) * 10) / 10;
+          attacker.stats.hp = Math.round((attacker.stats.hp + healAmount) * 10) / 10;
         }
       });
 
@@ -295,9 +258,7 @@ function UseGame() {
   };
 
   const calculateBuff = async (player: Player, buffCounter: BuffCounter) => {
-    const selfBuffs = player.skills.filter(
-      (item) => item.target === SKILL_TARGET.SELF
-    );
+    const selfBuffs = player.skills.filter((item) => item.target === SKILL_TARGET.SELF);
     const _counter = { ...buffCounter };
 
     let _combatLog = "";
@@ -395,10 +356,7 @@ function UseGame() {
     let message = "";
     let isMaxQty = false;
     if (newInventory.length < 6) {
-      const itemIndex = _.findIndex(
-        newInventory,
-        (pItem) => pItem.key === item.key
-      );
+      const itemIndex = _.findIndex(newInventory, (pItem) => pItem.key === item.key);
       if (itemIndex > -1) {
         if (newInventory[itemIndex].qty === newInventory[itemIndex].maxQty) {
           isMaxQty = true;
@@ -430,15 +388,11 @@ function UseGame() {
       Object.keys(selectedItem.stats).forEach((key) => {
         if (selectedItem.stats) {
           if (
-            stats[key as keyof typeof stats] +
-              selectedItem.stats[key as keyof typeof selectedItem.stats]! >
+            stats[key as keyof typeof stats] + selectedItem.stats[key as keyof typeof selectedItem.stats]! >
             stats[`max${key.toUpperCase()}` as keyof typeof stats]!
           ) {
-            stats[key as keyof typeof stats] =
-              stats[`max${key.toUpperCase()}` as keyof typeof stats];
-          } else
-            stats[key as keyof typeof stats] +=
-              selectedItem.stats[key as keyof typeof selectedItem.stats]!;
+            stats[key as keyof typeof stats] = stats[`max${key.toUpperCase()}` as keyof typeof stats];
+          } else stats[key as keyof typeof stats] += selectedItem.stats[key as keyof typeof selectedItem.stats]!;
         }
       });
     }
@@ -451,9 +405,30 @@ function UseGame() {
     return exp;
   };
 
+  /**
+   * Calculates the player's level based on total experience points
+   *
+   * @param exp - Total experience points
+   * @returns The player's current level
+   *
+   * @functionality
+   * - XP curve follows: exp = 50 * 2^(level - 1)
+   * - Level 1: 0-99 XP
+   * - Level 2: 100-199 XP
+   * - Level 3: 200-399 XP
+   * - Level 4: 400-799 XP
+   * - Supports level skipping (e.g., gaining 500 XP at level 1 jumps to level 4)
+   * - Formula: level = floor(log2(exp / 50) + 1)
+   */
   const calculateLvlFromExp = (exp: number) => {
-    const lvl = Math.log(exp / 25) / Math.log(2);
-    return parseInt(lvl.toFixed(2));
+    // Players start at level 1
+    if (exp < 50) return 1;
+
+    // Calculate level from XP using logarithm
+    // Derived from: exp = 50 * 2^(level - 1)
+    // Solving for level: level = log2(exp / 50) + 1
+    const lvl = Math.log2(exp / 50) + 1;
+    return Math.floor(lvl);
   };
 
   /**
@@ -533,7 +508,8 @@ function UseGame() {
     calculateCurrentLvlExp,
     calculateLvlFromExp,
     buildSkillTree,
+    getGameEvent: getEvent,
   };
 }
 
-export default UseGame;
+export default useGame;

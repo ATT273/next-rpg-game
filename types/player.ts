@@ -16,6 +16,7 @@ type Player = {
   items: IShopItem[];
   skills: Skills[];
   gold: number;
+  skillPoints: number;
 };
 type BuffStat = {
   name: string;
@@ -90,7 +91,6 @@ type ActionType = {
 };
 
 type SkillType = "physical" | "magical" | undefined;
-
 
 type SkillTreeNode = {
   key: string;

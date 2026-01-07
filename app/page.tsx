@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import Game from "@/game";
 import { BATTLE_EVENT, LOOT_EVENT, SHOP_EVENT } from "@/data/data";
 import useStore from "@/store/store";
+import useGame from "@/hooks/use-game";
 
 export default function Home() {
   const [currentEvent, setCurrentEvent] = useState(0);
@@ -16,9 +17,10 @@ export default function Home() {
   const [isContinueGame, setIsContinueGame] = useState(false);
   const router = useRouter();
   const { updatePlayer } = useStore();
+  const { getGameEvent } = useGame();
 
   const getEvent = () => {
-    let id = Game.getEvent(currentEvent);
+    let id = getGameEvent(currentEvent);
     if (id === BATTLE_EVENT) {
       router.push("/battle");
     } else if (id === LOOT_EVENT) {
@@ -53,31 +55,21 @@ export default function Home() {
       <Image src={OpenningBackGround} className="h-full w-full" alt="bg-img" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-2 text-2xl">
         {isContinueGame && (
-          <button
-            className="bg-white rounded-md h-[3em] w-36 p-2"
-            onClick={continueGame}
-          >
+          <button className="bg-white rounded-md h-[3em] w-36 p-2" onClick={continueGame}>
             Continue
           </button>
         )}
         <Link href={"/create-character"}>
-          <button
-            className="bg-white rounded-md h-[3em] w-36 p-2"
-            onClick={navigateToCreatePlayer}
-          >
+          <button className="bg-white rounded-md h-[3em] w-36 p-2" onClick={navigateToCreatePlayer}>
             New Game
           </button>
         </Link>
         <Link href="/high-score">
-          <button className="bg-white rounded-md h-[3em] w-36 p-2">
-            High scores
-          </button>
+          <button className="bg-white rounded-md h-[3em] w-36 p-2">High scores</button>
         </Link>
         {/* <a href={feedbackLink} target='_blank' className='send-feedback'>Đóng góp ý kiến</a> */}
       </div>
-      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 text-white text-xl">
-        version 0.0.1
-      </div>
+      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 text-white text-xl">version 0.0.1</div>
     </div>
   );
 }

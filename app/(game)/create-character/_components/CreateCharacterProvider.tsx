@@ -10,20 +10,13 @@ type CreateCharacterContextType = {
   setSkillPoints: (points: number) => void;
   handleNextStep: () => void;
   handlePrevStep: () => void;
-  setCreatingPlayer: (player: typeof initialPlayer) => void;
   handleUpdatePlayer: (data: any) => void;
 };
 
 export const MAX_SKILL_POINTS = 1;
-const CreateCharacterContext = createContext<CreateCharacterContextType | null>(
-  null
-);
+const CreateCharacterContext = createContext<CreateCharacterContextType | null>(null);
 
-const CreateCharacterProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+const CreateCharacterProvider = ({ children }: { children: React.ReactNode }) => {
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState({ error: "" });
   const [skillPoints, setSkillPoints] = useState<number>(MAX_SKILL_POINTS);
@@ -83,7 +76,6 @@ const CreateCharacterProvider = ({
         setSkillPoints,
         handleNextStep,
         handlePrevStep,
-        setCreatingPlayer,
         handleUpdatePlayer,
       }}
     >
@@ -95,9 +87,7 @@ const CreateCharacterProvider = ({
 export const useCreateCharacterContext = () => {
   const context = useContext(CreateCharacterContext);
   if (!context) {
-    throw new Error(
-      "useCreateCharacterContext must be used within a CreateCharacterProvider"
-    );
+    throw new Error("useCreateCharacterContext must be used within a CreateCharacterProvider");
   }
   return context;
 };

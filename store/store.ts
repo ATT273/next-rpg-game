@@ -59,6 +59,7 @@ const useStore = create<Store>()((set) => ({
     buffStats: [],
     items: [],
     gold: 100,
+    skillPoints: 0,
   },
   score: 0,
   selectedEnemy: "",
