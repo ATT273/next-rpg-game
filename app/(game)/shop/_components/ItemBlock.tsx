@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { IShopItem } from "@/types/shop";
 import Image from "next/image";
 import { Check, X } from "lucide-react";
+import { DEFAULT_BUTTON_CLASSES } from "@/constants/css.constants";
 
 interface Props {
   item: IShopItem;
@@ -17,11 +18,7 @@ const ItemBlock = ({ item, onItemSelect, onItemRemove, playerGold }: Props) => {
     let stats = [];
     for (const stat in item.stats) {
       if (item.stats.hasOwnProperty(stat)) {
-        stats.push(
-          <p key={stat}>{`${stat}: ${
-            item.stats[stat as keyof typeof item.stats]
-          }`}</p>
-        );
+        stats.push(<p key={stat}>{`${stat}: ${item.stats[stat as keyof typeof item.stats]}`}</p>);
       }
     }
     return stats;
@@ -33,30 +30,24 @@ const ItemBlock = ({ item, onItemSelect, onItemRemove, playerGold }: Props) => {
       id={item.key}
       transition={{ duration: 0.1 }}
       whileHover={{ scale: 1.2, boxShadow: "1px 1px 10px #ccc" }}
-      className="w-[200px] border p-4 bg-white flex flex-col gap-2 items-center justify-start rounded-xl"
+      className="w-full md:w-50 border p-4 bg-white flex flex-col gap-2 items-center justify-start rounded-xl"
       onClick={() => {}}
     >
-      <div key={item.key} className="flex flex-col gap-2">
-        <div className="item-img w-[150px] h-[150px] overflow-hidden bg-white p-2 box-content">
+      <div key={item.key} className="flex flex-row md:flex-col gap-2">
+        <div className="size-20 md:size-37.5 overflow-hidden bg-white p-2 box-content">
           {item.image && (
-            <Image
-              src={item.image}
-              alt={item.name}
-              width={300}
-              height={300}
-              className="object-cover  w-[150px] h-[150px]"
-            />
+            <Image src={item.image} alt={item.name} width={300} height={300} className="object-cover  size-37.5" />
           )}
         </div>
-        <div className="item-detail">
+        <div className="">
           <p>{item.name.toUpperCase()}</p>
           <p>{`price: ${item.price}`}</p>
-          <div className="h-[50px] overflow-y-auto">{renderStats(item)}</div>
+          <div className="h-12.5 overflow-y-auto">{renderStats(item)}</div>
         </div>
         <div className="flex gap-2 justify-center items-center">
           {itemSelected ? (
             <button
-              className={`border-1 border p-2 w-200 rounded-md border-red-400`}
+              className={`${DEFAULT_BUTTON_CLASSES} border p-2 rounded-md border-red-400`}
               onClick={() => {
                 setItemSelected(false);
                 onItemRemove(item);
@@ -66,7 +57,7 @@ const ItemBlock = ({ item, onItemSelect, onItemRemove, playerGold }: Props) => {
             </button>
           ) : (
             <button
-              className={`border-1 border p-2 w-200 rounded-md bg-slate-900 ${
+              className={`${DEFAULT_BUTTON_CLASSES} border p-2 rounded-md bg-slate-900 ${
                 item.price > playerGold ? "bg-slate-300" : ""
               }`}
               onClick={() => {

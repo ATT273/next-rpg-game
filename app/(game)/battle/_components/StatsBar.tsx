@@ -1,5 +1,3 @@
-import React from "react";
-
 interface Props {
   stat: number;
   maxStat: number;
@@ -9,7 +7,7 @@ function StatsBar(props: Props) {
 
   return (
     <div style={{ position: "relative" }}>
-      <div className="w-[150px] h-[15px] bg-stone-300 rounded-full"></div>
+      <div className="w-37.5 h-3.75 bg-stone-300 rounded-full"></div>
       <div
         style={{
           height: "15px",

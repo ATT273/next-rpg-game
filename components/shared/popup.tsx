@@ -1,3 +1,4 @@
+import { DEFAULT_BUTTON_CLASSES } from "@/constants/css.constants";
 import React, { useEffect, useState } from "react";
 
 const intro = {
@@ -27,7 +28,7 @@ const PopUp = (props: any) => {
   const renderPopUpButtons = () => {
     return (
       <div>
-        <button className="btn bg-green rounded-md" onClick={handleReady}>
+        <button className={`${DEFAULT_BUTTON_CLASSES} p-2`} onClick={handleReady}>
           READY!
         </button>
       </div>

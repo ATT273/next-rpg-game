@@ -1,25 +1,27 @@
 "use client";
 
-import { SHOP_EVENT } from "@/data/data";
 import useStore from "@/store/store";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IShopItem } from "@/types/shop";
-import ItemBlock from "./_components/item-block";
+import ItemBlock from "./_components/ItemBlock";
 import { Swords } from "lucide-react";
 import shops from "@/data/shop";
-import UseGame from "@/hooks/use-game";
 import { getRandomThree } from "@/utils";
 import { toast } from "sonner";
+import useSkill from "@/hooks/use-skill";
+import { SkillDefinition } from "@/types/player";
+import { DEFAULT_BUTTON_CLASSES } from "@/constants/css.constants";
 
 const Shop = () => {
   const router = useRouter();
-  const { updatePlayer, selectedShop, player } = useStore();
+  const { updatePlayer, selectedShop, player, skillLevelData } = useStore();
   const [shopItems, setShopItems] = useState<IShopItem[]>([]);
   const [shopName, setShopName] = useState<string>("");
   const [cart, setCart] = useState<IShopItem[]>([]);
   const [playerGold, setPlayerGold] = useState<number>(player.gold || 0);
-  const { getBonusStats } = UseGame();
+  const { convertSkillsToRuntime } = useSkill();
+
   useEffect(() => {
     getShopItems();
   }, []);
@@ -71,12 +73,13 @@ const Shop = () => {
 
       // Collect all new unique skills from cart items
       const newSkills = cart.flatMap((item) => item.skills.filter((skill) => !existingSkillKeys.has(skill.key)));
+      const runtimeSkills = convertSkillsToRuntime(newSkills as SkillDefinition[], skillLevelData);
 
       const newGold = playerGold;
       updatePlayer({
         ...player,
         items: newItems,
-        skills: [...player.skills, ...newSkills],
+        skills: [...player.skills, ...runtimeSkills],
         gold: newGold,
       });
     }
@@ -84,10 +87,10 @@ const Shop = () => {
   };
   return (
     <div className="w-full h-full relative">
-      <div className="w-[40rem] m-auto absolute p-4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <div className="flex flex-col gap-4 justify-center items-center mb-[80px]">
+      <div className="flex flex-col items-center w-160 m-auto absolute p-4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div className="flex flex-col gap-4 justify-center items-center mb-20">
           <div className="text-2xl font-bold mb-6">{shopName}</div>
-          <div className="flex gap-4 justify-center items-center">
+          <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
             {shopItems.map((item, index) => {
               return item ? (
                 <ItemBlock
@@ -102,7 +105,7 @@ const Shop = () => {
           </div>
         </div>
         <button
-          className="w-full flex gap-2 items-center justify-center text-md bg-green-400 p-2"
+          className={`${DEFAULT_BUTTON_CLASSES} w-2/3 md:w-full flex gap-2 items-center justify-center text-md bg-green-400 p-2`}
           onClick={handleCloseShop}
         >
           <Swords className="size-5" /> To battle

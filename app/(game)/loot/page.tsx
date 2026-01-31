@@ -87,7 +87,7 @@ const LootScreen = () => {
 
   return (
     <div className="w-full h-full relative">
-      <div className="w-[40rem] m-auto absolute flex flex-col gap-2 justify-center items-center p-2 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-200 shadow-md">
+      <div className="w-60 m-auto absolute flex flex-col gap-2 justify-center items-center p-2 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-slate-200 shadow-md">
         <div className="item-img">
           {item.image && (
             <Image src={item.image} alt="" height={300} width={300} />

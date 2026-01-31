@@ -1,6 +1,11 @@
-@tailwind base;
-@tailwind components;
 @tailwind utilities;
+@import "tailwindcss";
+
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden !important;
+}
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -100,11 +105,7 @@ ul.item-menu li:hover {
   visibility: visible;
 }
 
-.character-detail__sidebar
-  .player-inventory
-  .item:hover
-  .three-dot-menu:hover
-  + .item-stats {
+.character-detail__sidebar .player-inventory .item:hover .three-dot-menu:hover + .item-stats {
   opacity: 0;
   display: none;
 }

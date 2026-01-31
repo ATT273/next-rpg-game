@@ -38,25 +38,20 @@ function InventoryBlock({
       className="relative group border-2 border-stone-800"
       onMouseEnter={() => onHover(item)}
       onMouseLeave={() => onHover(null)}
+      onClick={() => onHover(item)}
     >
-      <div className="h-[70px] w-[70px] overflow-hidden">
-        <Image
-          src={item.image}
-          alt={item.key}
-          width={300}
-          height={300}
-          className="item-thumb"
-        />
+      <div className="size-16 overflow-hidden">
+        <Image src={item.image} alt={item.key} width={300} height={300} className="item-thumb" />
       </div>
       {item.qty > 1 && <div className="item-qty">{item.qty}</div>}
       <div
-        className="absolute top-0 right-0 hidden group-hover:block rounded-sm bg-stone-300 cursor-pointer"
+        className="absolute top-0 right-0 block lg:hidden group-hover:block rounded-sm bg-stone-300 cursor-pointer"
         onClick={handleMenuBtnClick}
       >
         <Ellipsis className="size-4" />
       </div>
       {isShowItemMenu && (
-        <ul className="absolute top-5 bg-stone-300 p-1 rounded-md cursor-pointer">
+        <ul className="absolute top-5  w-20 bg-stone-300 p-1 rounded-md cursor-pointer">
           {item.isConsumable && <li onClick={handleUseItem}>Use item</li>}
           <li onClick={handleDropItem}>Drop item</li>
         </ul>

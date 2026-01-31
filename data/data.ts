@@ -39,7 +39,9 @@ export const initialPlayer = {
   buffs: [],
   items: [],
   gold: 0,
+  skillPoints: 0,
 };
+
 export const WIN_CONDITION_STATUS = {
   WIN: 0,
   LOSE: 1,

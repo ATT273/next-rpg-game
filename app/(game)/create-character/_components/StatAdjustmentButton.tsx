@@ -1,3 +1,4 @@
+import { DEFAULT_BUTTON_CLASSES } from "@/constants/css.constants";
 import React from "react";
 
 interface Props {
@@ -20,7 +21,7 @@ const StatAdjustmentButton = ({
     <div className="flex gap-3">
       {showAdd ? (
         <button
-          className="rounded-sm bg-red-500 p-1 size-8"
+          className={`${DEFAULT_BUTTON_CLASSES} bg-red-500 p-1 size-8`}
           onClick={handleAddPoint}
           disabled={disabledAdd}
         >
@@ -31,7 +32,7 @@ const StatAdjustmentButton = ({
       )}
       {showSub ? (
         <button
-          className="rounded-sm bg-slate-400 text-black p-1 size-8"
+          className={`${DEFAULT_BUTTON_CLASSES} bg-slate-400 text-black p-1 size-8`}
           onClick={handleSubtractPoint}
           disabled={disabledSub}
         >
