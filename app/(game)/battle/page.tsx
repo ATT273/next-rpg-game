@@ -6,13 +6,15 @@ import useStore from "@/store/store";
 import { Enemy } from "@/types/enemy";
 import { ActionType, BuffCounter, Player } from "@/types/player";
 import PopUp from "@/components/shared/popup";
-import FighterStatsBlock from "@/components/blocks/Fighters";
+import FighterStatsBlockPC from "./_components/FighterStatsSectionPC";
+import FighterStatsBlockMobile from "./_components/FighterStatsSectionMobile";
 import { initialEnemies } from "@/data/enemies";
 import { ACTION_DELAY, ROUND_DELAY, SKILL_TARGET, WIN_CONDITION_STATUS } from "@/data/data";
 import useGame from "@/hooks/use-game";
 import { delay } from "@/utils";
-import BattleProvider from "./_components/battle-provider";
+import BattleProvider from "./_components/BattleProvider";
 import { Bug } from "lucide-react";
+import { DEFAULT_BUTTON_CLASSES } from "@/constants/css.constants";
 
 const APP_ENV = process.env.NEXT_PUBLIC_ENVIRONMENT;
 const BattleScreen = () => {
@@ -295,7 +297,7 @@ const BattleScreen = () => {
       isPlayerTurn={isPlayerTurn}
       battleLogs={state.battleLogs}
     >
-      <div className="w-full h-full text-slate-900">
+      <div className="relative w-full h-full text-slate-900 pt-12">
         {/* <audio id='audioPlayer' ref={audioPlayer} src="/music/dungeon_theme_ost.mp3" autoPlay loop /> */}
         {player && enemy && (
           <div className="fight-screen w-full h-full">
@@ -323,23 +325,17 @@ const BattleScreen = () => {
             <AnimatePresence>
               {state.showBattleScreen && (
                 <motion.div
-                  className="w-[calc(100vw-800px)] h-full m-auto p-6"
+                  className="lg:w-[calc(100vw-400px)] 2xl:w-[calc(100vw-800px)] h-full m-auto px-4 py-2 md:p-6"
                   key={"main-content"}
                   initial={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  {player !== null && <FighterStatsBlock />}
-                  {APP_ENV === "development" && (
-                    <div className="w-full text-center p-2 mt-6">
-                      <button onClick={showDebug} className="bg-violet-700 text-white p-2 rounded-md">
-                        <Bug />
-                      </button>
-                    </div>
-                  )}
+                  <FighterStatsBlockPC />
+                  <FighterStatsBlockMobile />
                   {state.showNextBtn && (
                     <div className="w-full text-center p-2 mt-6">
                       <button
-                        className="bg-stone-700 w-1/4 p-2 text-white rounded-lg"
+                        className={`${DEFAULT_BUTTON_CLASSES} bg-stone-700 w-1/4 p-2 text-white rounded-lg`}
                         style={{ margin: "auto" }}
                         onClick={handleEndMatch}
                       >
@@ -353,6 +349,13 @@ const BattleScreen = () => {
           </div>
         )}
       </div>
+      {APP_ENV === "development" && (
+        <div className="fixed bottom-0 right-0 text-center p-2 mt-6">
+          <button onClick={showDebug} className="bg-violet-700 text-white p-2 rounded-md">
+            <Bug />
+          </button>
+        </div>
+      )}
     </BattleProvider>
   );
 };

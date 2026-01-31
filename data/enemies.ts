@@ -11,7 +11,8 @@ const enemies: Enemy[] = [
     type: "com",
     key: "tiger",
     name: "Tiger",
-    description: "",
+    description:
+      "In the forgotten depths of Ashen Vale, there prowls a creature spoken of only in whispers — the Dread Tiger. Once a guardian spirit of the ancient forest, it was twisted by forbidden sorcery and centuries of bloodshed into a monstrous beast of shadow and flame.",
     image: tiger,
     xp: 20,
     score: 20,

@@ -6,7 +6,7 @@ const ActionBlock = ({ actions }: { actions: ActionType }) => {
   if (actions?.effects && actions.effects.length > 0) {
     return (
       <motion.div
-        className=""
+        className="p-1 md:p-2 rounded shadow-lg md:bg-white"
         key={"player-action"}
         animate={{ y: 0, opacity: 1 }}
         initial={{ y: 50, opacity: 0 }}
@@ -15,10 +15,7 @@ const ActionBlock = ({ actions }: { actions: ActionType }) => {
       >
         <div className="flex flex-col gap-1">
           {actions.effects.map((effect, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-center px-2 py-2 rounded shadow-lg bg-white gap-2 text-center text-2xl"
-            >
+            <div key={index} className="flex items-center justify-centergap-2 text-center text-2xl">
               {ACTION_ICONS[effect.type as keyof typeof ACTION_ICONS]}
               <p>{effect.value}</p>
             </div>
@@ -31,7 +28,7 @@ const ActionBlock = ({ actions }: { actions: ActionType }) => {
   // Single effect action
   return (
     <motion.div
-      className="px-2 py-2 rounded shadow-lg bg-white"
+      className="p-1 md:p-2 rounded shadow-lg bg-white"
       key={"player-action"}
       animate={{ y: 0, opacity: 1 }}
       initial={{ y: 50, opacity: 0 }}

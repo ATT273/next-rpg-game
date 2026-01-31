@@ -1,10 +1,7 @@
 import { MAX_LEVEL } from "@/data/classes";
-import {
-  SkillLevel,
-  SkillTreeNode as SkillTreeNodeType,
-  SkillDefinition,
-} from "@/types/player";
+import { SkillLevel, SkillTreeNode as SkillTreeNodeType, SkillDefinition } from "@/types/player";
 import useSkill from "@/hooks/use-skill";
+import Image from "next/image";
 
 const SkillTreeNode = ({
   skill,
@@ -18,16 +15,11 @@ const SkillTreeNode = ({
   onItemUndoSelect: (key: string) => void;
 }) => {
   const { getSkillProgression } = useSkill();
-  const isUnlocked = !skill.parent
-    ? true
-    : skillLevelData[skill.parent].level > 0;
+  const isUnlocked = !skill.parent ? true : skillLevelData[skill.parent].level > 0;
   const currentLvl = skillLevelData[skill.key].level;
 
   // Get skill progression data for tooltip
-  const progression = getSkillProgression(
-    skill.data as unknown as SkillDefinition,
-    currentLvl
-  );
+  const progression = getSkillProgression(skill.data as unknown as SkillDefinition, currentLvl);
 
   return (
     <div className="relative flex flex-col gap-4">
@@ -45,101 +37,76 @@ const SkillTreeNode = ({
             onItemUndoSelect(skill.key);
           }}
         >
-          {skill.data.name} -{currentLvl}
-          <div className="absolute bottom-0 left-0 flex gap-2 justify-center h-2 w-full">
+          {!isUnlocked && <div className="inset-0 absolute top-0 left-0 bg-neutral-300/50" />}
+          <Image src={`/images/classes/${skill.key}.webp`} width={100} height={100} alt={skill.key} />
+          {/* {skill.data.name} -{currentLvl} */}
+          <div className="absolute bottom-0 left-0 flex gap-2 justify-center items-center h-2 w-full bg-neutral-50/60">
             {Array.from({ length: MAX_LEVEL }).map((_, index) => (
-              <div
-                key={index}
-                className={`w-2 h-1 ${
-                  currentLvl >= index + 1 ? "bg-amber-600" : "bg-gray-600"
-                }`}
-              />
+              <div key={index} className={`w-2 h-1 ${currentLvl >= index + 1 ? "bg-amber-600" : "bg-gray-600"}`} />
             ))}
           </div>
         </div>
-        <div className="absolute top-full left-0 mt-2 peer-hover:opacity-100 opacity-0 border border-slate-300 shadow-lg bg-white p-3 w-[280px] pointer-events-none rounded-md z-30">
+        <div className="absolute top-full left-0 mt-2 peer-hover:opacity-100 opacity-0 border border-slate-300 shadow-lg bg-white p-3 w-70 pointer-events-none rounded-md z-30">
           <p className="font-semibold mb-2">
             {skill.data.name} {currentLvl > 0 && `(Level ${currentLvl})`}
           </p>
-          <p className="text-sm text-slate-600 mb-2">
-            {skill.data.description}
-          </p>
+          <p className="text-sm text-slate-600 mb-2">{skill.data.description}</p>
 
           {/* Current Level Stats */}
           {progression.current && (
-            <div className="text-xs space-y-1 mb-2">
+            <div className="text-sm space-y-1 mb-2">
               <p className="font-semibold text-slate-700">Current Level:</p>
               <p>
-                <span className="font-medium">Type:</span>{" "}
-                {progression.current.type || "N/A"}
+                <span className="font-medium">Type:</span> {progression.current.type || "N/A"}
               </p>
               <p>
-                <span className="font-medium">Cost:</span>{" "}
-                {progression.current.cost} MP
+                <span className="font-medium">Cost:</span> {progression.current.cost} MP
               </p>
               <p>
-                <span className="font-medium">Target:</span>{" "}
-                {progression.current.target}
+                <span className="font-medium">Target:</span> {progression.current.target}
               </p>
               <p>
                 <span className="font-medium">Effects:</span>{" "}
-                {progression.current.effects
-                  .map((e) => `${e.stats}: ${e.value}`)
-                  .join(", ")}
+                {progression.current.effects.map((e) => `${e.stats}: ${e.value}`).join(", ")}
               </p>
               {progression.current.amplified && (
                 <p>
-                  <span className="font-medium">Amplified:</span>{" "}
-                  {progression.current.amplified}
+                  <span className="font-medium">Amplified:</span> {progression.current.amplified}
                 </p>
               )}
               <p>
                 <span className="font-medium">Duration:</span>{" "}
-                {progression.current.duration === false
-                  ? "Instant"
-                  : progression.current.duration}
+                {progression.current.duration === false ? "Instant" : progression.current.duration}
               </p>
             </div>
           )}
 
           {/* Next Level Preview */}
           {progression.hasNextLevel && progression.next && (
-            <div className="text-xs space-y-1 border-t pt-2 border-slate-200">
-              <p className="font-semibold text-green-700">
-                Next Level ({currentLvl + 1}):
-              </p>
+            <div className="text-sm space-y-1 border-t pt-2 border-slate-200">
+              <p className="font-semibold text-green-700">Next Level ({currentLvl + 1}):</p>
               <p className="text-green-600">
-                <span className="font-medium">Cost:</span>{" "}
-                {progression.next.cost} MP
+                <span className="font-medium">Cost:</span> {progression.next.cost} MP
                 {progression.current && (
-                  <span className="text-xs ml-1">
-                    (+{progression.next.cost - progression.current.cost})
-                  </span>
+                  <span className="text-sm ml-1">(+{progression.next.cost - progression.current.cost})</span>
                 )}
               </p>
               <p className="text-green-600">
                 <span className="font-medium">Effects:</span>{" "}
                 {progression.next.effects
                   .map((e, idx) => {
-                    const diff = progression.current
-                      ? e.value - progression.current.effects[idx].value
-                      : 0;
-                    return `${e.stats}: ${e.value}${
-                      diff !== 0 ? ` (+${diff})` : ""
-                    }`;
+                    const diff = progression.current ? e.value - progression.current.effects[idx].value : 0;
+                    return `${e.stats}: ${e.value}${diff !== 0 ? ` (+${diff})` : ""}`;
                   })
                   .join(", ")}
               </p>
               {progression.next.amplified && (
                 <p className="text-green-600">
-                  <span className="font-medium">Amplified:</span>{" "}
-                  {progression.next.amplified}
+                  <span className="font-medium">Amplified:</span> {progression.next.amplified}
                   {progression.current?.amplified && (
-                    <span className="text-xs ml-1">
+                    <span className="text-sm ml-1">
                       (+
-                      {progression.next.amplified -
-                        progression.current.amplified}
-                      )
+                      {progression.next.amplified - progression.current.amplified})
                     </span>
                   )}
                 </p>
@@ -149,10 +116,14 @@ const SkillTreeNode = ({
 
           {/* Max Level Indicator */}
           {!progression.hasNextLevel && currentLvl > 0 && (
-            <div className="text-xs border-t pt-2 border-slate-200">
+            <div className="text-sm border-t pt-2 border-slate-200">
               <p className="font-semibold text-amber-600">MAX LEVEL</p>
             </div>
           )}
+          <div className="text-xs italic">
+            <p>Left click to assign point</p>
+            <p>Right click to undo</p>
+          </div>
         </div>
       </div>
       {skill.children && skill.children.length > 0 && (

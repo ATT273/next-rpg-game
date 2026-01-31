@@ -1,5 +1,4 @@
-import { BonusStats, Player, Stats } from "@/types/player";
-import React from "react";
+import { BonusStats, Stats } from "@/types/player";
 import StatsBar from "./StatsBar";
 
 interface Props {
@@ -30,10 +29,7 @@ export const PLAYER_STAT_KEYS = {
   INT: "int",
 } as const;
 type StatKeyType = (typeof PLAYER_STAT_KEYS)[keyof typeof PLAYER_STAT_KEYS];
-const statWithBar: StatKeyType[] = [
-  PLAYER_STAT_KEYS.HP,
-  PLAYER_STAT_KEYS.MP,
-] as const;
+const statWithBar: StatKeyType[] = [PLAYER_STAT_KEYS.HP, PLAYER_STAT_KEYS.MP] as const;
 const statNoBar: StatKeyType[] = [
   PLAYER_STAT_KEYS.ATK,
   PLAYER_STAT_KEYS.DEF,
@@ -44,8 +40,7 @@ const StatWithBar = ({ stat, maxStat, bonusStat, statKey, showBar }: Stat) => {
   return (
     <>
       <div className="flex">
-        <p className="font-bold">{statKey.toUpperCase()}: </p>&nbsp; {stat}/
-        {maxStat}
+        <p className="font-bold">{statKey.toUpperCase()}: </p>&nbsp; {stat}/{maxStat}
         <i className="txt-green">{bonusStat ? `(+ ${bonusStat})` : ""}</i>
       </div>
       {showBar && <StatsBar stat={stat} maxStat={maxStat || 0} />}
@@ -78,11 +73,7 @@ const StatBlock = ({ values, statKey, showBar }: Props) => {
         />
       )}
       {statNoBar.includes(statKey) && (
-        <StatNoBar
-          stat={values.stats[statKey]}
-          bonusStat={values.bonusStats[statKey] || 0}
-          statKey={statKey}
-        />
+        <StatNoBar stat={values.stats[statKey]} bonusStat={values.bonusStats[statKey] || 0} statKey={statKey} />
       )}
     </div>
   );

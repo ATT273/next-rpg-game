@@ -10,7 +10,7 @@ type CreateCharacterContextType = {
   setSkillPoints: (points: number) => void;
   handleNextStep: () => void;
   handlePrevStep: () => void;
-  handleUpdatePlayer: (data: any) => void;
+  handleUpdatePlayer: (data: Partial<Player>) => void;
 };
 
 export const MAX_SKILL_POINTS = 1;
@@ -20,7 +20,6 @@ const CreateCharacterProvider = ({ children }: { children: React.ReactNode }) =>
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState({ error: "" });
   const [skillPoints, setSkillPoints] = useState<number>(MAX_SKILL_POINTS);
-  // const { createPlayer } = useStore();
   const [creatingPlayer, setCreatingPlayer] = useState<Player>(initialPlayer);
 
   const handleUpdatePlayer = (data: any) => {

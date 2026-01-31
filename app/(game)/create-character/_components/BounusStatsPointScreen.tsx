@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Stats } from "@/types/player";
 import { classes } from "@/data/classes";
 import StatAdjustmentButton from "@/app/(game)/create-character/_components/StatAdjustmentButton";
+import { DEFAULT_BUTTON_CLASSES } from "@/constants/css.constants";
 
 const initialState: Stats = {
   hp: 100,
@@ -66,8 +67,7 @@ const BounusStatsPointScreen = ({
   return (
     <div className="flex flex-col items-center">
       <h4 className="stats-note text-lg">
-        You have <span className="text-red-500">{points}</span> points to assign
-        to your stats
+        You have <span className="text-red-500">{points}</span> points to assign to your stats
       </h4>
       {statsState ? (
         <div className="p-3 mb-5 flex flex-col gap-3">
@@ -127,7 +127,7 @@ const BounusStatsPointScreen = ({
       )}
       <div className="flex gap-3">
         <button
-          className="btn bg-green"
+          className={`${DEFAULT_BUTTON_CLASSES} p-2 border-transparent border hover:border-neutral-300`}
           onClick={handlePrevStep}
           style={{ marginRight: "10px" }}
         >
@@ -135,7 +135,7 @@ const BounusStatsPointScreen = ({
         </button>
         <button
           type="submit"
-          className="btn bg-green"
+          className={`${DEFAULT_BUTTON_CLASSES} bg-neutral-300 hover:bg-neutral-400 p-2`}
           onClick={() => handleUpdateStats({ stats: statsState })}
         >
           Finish

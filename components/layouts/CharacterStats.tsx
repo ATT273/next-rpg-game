@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import InventoryBlock from "./Inventory";
 import * as _ from "lodash";
 import useStore from "@/store/store";
-import StatBlock from "./StatBlock";
+import StatBlock from "../../app/(game)/battle/_components/StatBlock";
 import { IShopItem } from "@/types/shop";
 import { motion } from "framer-motion";
 import { Button } from "@headlessui/react";

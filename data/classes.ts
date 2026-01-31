@@ -35,6 +35,7 @@ export const classes = {
         effects: [{ stats: "hp", value: [-10, -15, -18] }],
         duration: false,
         description: "",
+        image: "/images/classes/divine_sword.webp",
       },
       {
         key: "thick_skin",
@@ -226,8 +227,8 @@ export const classes = {
         description: "",
       },
       {
-        key: "ambuse_and_assassinate",
-        name: "Ambus and assassinate",
+        key: "ambush_and_assassinate",
+        name: "Ambush and assassinate",
         type: "physical",
         level: 0,
         amplified: [0.07, 0.1, 0.15],
@@ -238,7 +239,7 @@ export const classes = {
         description: "",
       },
       {
-        key: "poision_dagger",
+        key: "poison_dagger",
         name: "Poison Dagger",
         type: "magical",
         level: 0,
@@ -356,8 +357,8 @@ export const skillLevel: SkillLevel = {
   backstab: { key: "backstab", level: 0 },
   double_backstab: { key: "double_backstab", level: 0 },
   cutthroat: { key: "cutthroat", level: 0 },
-  ambuse_and_assassinate: { key: "ambuse_and_assassinate", level: 0 },
-  poision_dagger: { key: "poision_dagger", level: 0 },
+  ambush_and_assassinate: { key: "ambush_and_assassinate", level: 0 },
+  poison_dagger: { key: "poison_dagger", level: 0 },
   // mage
   fireball: { key: "fireball", level: 0 },
   fire_breath: { key: "fire_breath", level: 0 },
