@@ -245,9 +245,9 @@ function useGame() {
       });
 
       // if this is a new cast, deduct mp
-      attacker.stats.mp -= 0;
-      // attacker.stats.mp -= isNewCasted ? skill.cost : 0;
-      combatLog = `${attacker.name} used ${skill.name}`;
+      // attacker.stats.mp -= 0;
+      attacker.stats.mp -= isNewCasted ? skill.cost : 0;
+      combatLog = isNewCasted ? `${attacker.name} used ${skill.name}` : `${skill.name} effect continues`;
     }
     return {
       attacker,
@@ -313,18 +313,6 @@ function useGame() {
     };
   };
 
-  // const  getLootItem = () => {
-  //   // const filterEvents = events.filter(event => event.id !== id)
-  //   const randomIdx = Math.floor(Math.random() * items.length);
-  //   return _.cloneDeep(items[randomIdx]);
-  // }
-  // const  getEvent = (id: number) => {
-  //   const eventIdsList = [1, 2, 3];
-  //   const filterEvents = eventIdsList.filter((event) => event !== id);
-  //   const randomIdx = Math.floor(Math.random() * filterEvents.length);
-  //   return filterEvents[randomIdx];
-  // }
-
   const getBonusStats = (itemList: IShopItem[]) => {
     const bonusStats = {
       atk: 0,
@@ -339,8 +327,6 @@ function useGame() {
         if (item.stats) {
           bonusStats.atk += item.stats.atk ?? 0;
           bonusStats.def += item.stats.def ?? 0;
-          // bonusStats.hp += item.stats.hp !== undefined ? item.stats.hp : 0
-          // bonusStats.mp += item.stats.mp !== undefined ? item.stats.mp : 0
           bonusStats.spd += item.stats.spd ?? 0;
           bonusStats.maxHP += item.stats.maxHP ?? 0;
           bonusStats.maxMP += item.stats.maxMP ?? 0;
