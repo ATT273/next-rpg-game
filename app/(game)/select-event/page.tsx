@@ -1,12 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import useEnemy from "@/hooks/use-enemy";
 import useShop from "@/hooks/use-shop";
 import useStore from "@/store/store";
-import { IShop } from "@/types/shop";
+import { IShopConfig } from "@/types/shop";
 import { Enemy } from "@/types/enemy";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Bug } from "lucide-react";
 import EventCard from "./_components/EventCard";
@@ -14,7 +13,7 @@ import EventCard from "./_components/EventCard";
 const APP_ENV = process.env.NEXT_PUBLIC_ENVIRONMENT;
 const SelectEvents = () => {
   const router = useRouter();
-  const [shop, setShop] = useState<IShop>();
+  const [shop, setShop] = useState<IShopConfig>();
   const [enemy, setEnemy] = useState<Enemy>();
   const { selectEnemy, selectShop, player, selectedEnemy } = useStore();
   const { getRandomShop } = useShop();
@@ -67,15 +66,15 @@ const SelectEvents = () => {
             handleOnClick={() => onSelectBattle(enemy?.key || "")}
           />
           {/* TODO: new feature */}
-          {/* <motion.div
-          key="event-3"
-          id="event-3"
-          transition={{ duration: 0.3 }}
-          whileHover={{ scale: 1.5, zIndex: 10 }}
-          className="relative w-[200px] h-[300px] border p-4 cursor-pointer bg-white  rounded-xl"
+          <motion.div
+            key="event-3"
+            id="event-3"
+            transition={{ duration: 0.3 }}
+            whileHover={{ scale: 1.5, zIndex: 10 }}
+            className="relative w-[200px] h-[300px] border p-4 cursor-pointer bg-white  rounded-xl"
           >
-          Event 3
-          </motion.div> */}
+            Event 3
+          </motion.div>
         </AnimatePresence>
         {APP_ENV === "development" && (
           <div className="fixed bottom-4 right-4 z-20">

@@ -13,6 +13,7 @@ import useSkill from "@/hooks/use-skill";
 import { SkillDefinition, SkillLevel, SkillTreeNode } from "@/types/player";
 import { classes, MAX_LEVEL } from "@/data/classes";
 import { usePathname } from "next/navigation";
+import ItemInfoPanel from "@/app/(game)/shop/_components/ItemInfoPanel";
 
 const CharacterStats = () => {
   const pathName = usePathname();
@@ -94,7 +95,7 @@ const CharacterStats = () => {
     setSkillPoints(player.skillPoints);
     setIsOpen(false);
   };
-  const handleConfirmSkillelection = () => {
+  const handleConfirmSkillSelection = () => {
     if (!tempSkillLevelData) return;
     const selectedClass = classes[player.plClass as keyof typeof classes];
 
@@ -132,7 +133,7 @@ const CharacterStats = () => {
               <span className="font-bold">EXP:&nbsp;</span> ({player.exp}/{player.levelExp})
             </p>
             <p>
-              <span className="font-bold">Gold:</span>&nbsp;{player.gold}
+              <span className="font-bold">Gold:</span>&nbsp;{player.gold} 🪙
             </p>
           </div>
           <div className="pl-4">
@@ -168,7 +169,9 @@ const CharacterStats = () => {
             transition={{ duration: 0.3 }}
             className="w-full"
           >
-            <ItemInfo item={hoverInfo} />
+            <div className="bg-white text-stone-900 p-2 rounded-lg shadow-md">
+              <ItemInfoPanel item={hoverInfo} />
+            </div>
           </motion.div>
         )}
       </div>
@@ -179,7 +182,7 @@ const CharacterStats = () => {
         currentSkillTree={currentSkillTree}
         skillLevelData={tempSkillLevelData!}
         handleCloseSkillDialog={handleCloseSkillDialog}
-        handleConfirmSkillelection={handleConfirmSkillelection}
+        handleConfirmSkillSelection={handleConfirmSkillSelection}
         handleDecreaseLevel={handleDecreaseLevel}
         handleIncreaseLevel={handleIncreaseLevel}
       />
@@ -191,7 +194,7 @@ export default CharacterStats;
 
 const ItemInfo = ({ item }: { item: IShopItem }) => {
   return (
-    <div className=" bg-white text-stone-900 p-2 rounded-lg shadow-md">
+    <div className="bg-white text-stone-900 p-2 rounded-lg shadow-md">
       <p>
         <b>{item.name.toUpperCase()}</b>
       </p>

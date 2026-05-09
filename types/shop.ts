@@ -21,8 +21,11 @@ export interface IShopItem {
   maxQty: number;
   isConsumable: boolean;
   stats: IItemStat;
-  skills: SkillDefinition[] | [];
+  skills: string[] | [];
+  rarity: ItemRarity;
+  lvlRequired: number;
 }
+
 export interface IItemStat {
   hp?: number;
   mp?: number;
@@ -32,4 +35,26 @@ export interface IItemStat {
   def?: number;
   spd?: number;
   int?: number;
+}
+
+export type ItemRarity = "common" | "uncommon" | "rare" | "epic" | "legendary";
+
+export interface RarityStat {
+  type: ItemRarity;
+  color: string;
+  percentage: number;
+}
+
+export interface IShopItemConfig {
+  key: string;
+  price: number;
+  qty: number;
+}
+
+export interface IShopConfig {
+  id: number;
+  name: string;
+  quotes: string;
+  image: string;
+  items: IShopItemConfig[];
 }

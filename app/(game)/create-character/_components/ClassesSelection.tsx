@@ -131,7 +131,7 @@ const ClassesSelection = ({
     setIsOpen(false);
   };
 
-  const handleConfirmSkillelection = () => {
+  const handleConfirmSkillSelection = () => {
     const _skillLevelData = tempSkillLevelData;
     const selectedClass = classes[classKeys[currentSlide] as keyof typeof classes];
     setSkillLevelData(_skillLevelData);
@@ -242,7 +242,7 @@ const ClassesSelection = ({
           currentSkillTree={currentSkillTree}
           skillLevelData={tempSkillLevelData}
           handleCloseSkillDialog={handleCloseSkillDialog}
-          handleConfirmSkillelection={handleConfirmSkillelection}
+          handleConfirmSkillSelection={handleConfirmSkillSelection}
           handleDecreaseLevel={handleDecreaseLevel}
           handleIncreaseLevel={handleIncreaseLevel}
         />

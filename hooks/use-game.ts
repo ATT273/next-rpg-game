@@ -153,8 +153,9 @@ function useGame() {
       target.stats.hp = Math.round(newHp * 10) / 10;
       attacker.stats.mp -= skill.cost;
       // attacker.stats.mp -= 0;
+      const actionType = skill.type === "magical" ? "int" : "atk";
       actions.push({
-        type: "atk",
+        type: actionType,
         value: dmgDealed,
         source: attacker.type,
       });
@@ -337,34 +338,44 @@ function useGame() {
     return bonusStats;
   };
 
-  const takeItem = (item: IShopItem, itemList: IShopItem[]) => {
+  const takeItem = (
+    item: IShopItem,
+    itemList: IShopItem[],
+  ): { newInventory: IShopItem[]; message: string; isMaxQty: boolean; isAdded: boolean } => {
     let newInventory = _.cloneDeep(itemList);
     let message = "";
     let isMaxQty = false;
+    let isAdded = false;
     if (newInventory.length < 6) {
       const itemIndex = _.findIndex(newInventory, (pItem) => pItem.key === item.key);
-      if (itemIndex > -1) {
-        if (newInventory[itemIndex].qty === newInventory[itemIndex].maxQty) {
-          isMaxQty = true;
-          message = `You can only have ${newInventory[itemIndex].maxQty} of this item`;
-        } else {
-          newInventory[itemIndex].qty ? (newInventory[itemIndex].qty += 1) : 1;
-          message = `${item.name} is added to your inventory`;
-          return { newInventory, message, isMaxQty };
-        }
-      } else {
-        if (!isMaxQty) {
-          item.qty ? (item.qty += 1) : 1;
-          newInventory.push(item);
-          message = `${item.name} is added to your inventory`;
-        }
+      if (itemIndex < 0) {
+        message = "no item added";
       }
+      message = "item added";
+      newInventory.push(item);
+      isAdded = true;
+      // if (itemIndex > -1) {
+      //   if (newInventory[itemIndex].qty === newInventory[itemIndex].maxQty) {
+      //     isMaxQty = true;
+      //     message = `You can only have ${newInventory[itemIndex].maxQty} of this item`;
+      //   } else {
+      //     newInventory[itemIndex].qty ? (newInventory[itemIndex].qty += 1) : 1;
+      //     message = `${item.name} is added to your inventory`;
+      //     return { newInventory, message, isMaxQty };
+      //   }
+      // } else {
+      //   if (!isMaxQty) {
+      //     item.qty ? (item.qty += 1) : 1;
+      //     newInventory.push(item);
+      //     message = `${item.name} is added to your inventory`;
+      //   }
+      // }
     } else if (itemList.length > 6) {
       message = "Please remove 1 of your items";
       isMaxQty = true;
     }
 
-    return { newInventory, message, isMaxQty };
+    return { newInventory, message, isMaxQty, isAdded };
   };
 
   const consumeItem = (player: Player, key: string) => {

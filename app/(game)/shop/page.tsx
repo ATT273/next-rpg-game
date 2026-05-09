@@ -2,25 +2,33 @@
 
 import useStore from "@/store/store";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IShopItem } from "@/types/shop";
 import ItemBlock from "./_components/ItemBlock";
 import { Swords } from "lucide-react";
-import shops from "@/data/shop";
 import { getRandomThree } from "@/utils";
+import useShop from "@/hooks/use-shop";
 import { toast } from "sonner";
 import useSkill from "@/hooks/use-skill";
 import { SkillDefinition } from "@/types/player";
 import { DEFAULT_BUTTON_CLASSES } from "@/constants/css.constants";
+import { classes } from "@/data/classes";
+import SkillProvider from "../_components/SkillProvider";
 
 const Shop = () => {
   const router = useRouter();
-  const { updatePlayer, selectedShop, player, skillLevelData } = useStore();
+  const { updatePlayer, setSkillLevelData, selectedShop, player } = useStore();
   const [shopItems, setShopItems] = useState<IShopItem[]>([]);
   const [shopName, setShopName] = useState<string>("");
   const [cart, setCart] = useState<IShopItem[]>([]);
   const [playerGold, setPlayerGold] = useState<number>(player.gold || 0);
   const { convertSkillsToRuntime } = useSkill();
+  const { resolveShopItems, getShop } = useShop();
+
+  const allSkills = useMemo(() => {
+    const skillsArray: SkillDefinition[] = Object.values(classes).flatMap((cls) => cls.skills as SkillDefinition[]);
+    return skillsArray;
+  }, [classes]);
 
   useEffect(() => {
     getShopItems();
@@ -37,18 +45,14 @@ const Shop = () => {
       getShopItems();
     }
   }, [selectedShop]);
-  const getShopItems = () => {
-    const _shop = shops.find((shop) => shop.id === selectedShop);
-    if (_shop) {
-      setShopName(_shop.name);
-      const randomItemIndexes = getRandomThree(0, _shop.items.length - 1);
 
-      if (randomItemIndexes) {
-        const items = randomItemIndexes.map((i) => _shop.items[i]);
-        setShopItems(items);
-      }
-    } else {
-      console.log("No shop found");
+  const getShopItems = () => {
+    const allItems = resolveShopItems(selectedShop);
+    if (allItems.length > 0) {
+      const _shop = getShop(selectedShop);
+      if (_shop) setShopName(_shop.name);
+      const randomIndexes = getRandomThree(0, allItems.length - 1);
+      setShopItems(randomIndexes ? randomIndexes.map((i) => allItems[i]) : allItems);
     }
   };
 
@@ -66,52 +70,66 @@ const Shop = () => {
   };
   const handleCloseShop = () => {
     if (cart.length > 0) {
-      const newItems = [...player.items, ...cart];
+      // Read fresh state to avoid stale closure
+      const freshPlayer = useStore.getState().player;
+      const freshSkillLevelData = useStore.getState().skillLevelData;
+
+      const newItems = [...freshPlayer.items, ...cart];
 
       // Create a Set of existing skill keys for O(1) lookup
-      const existingSkillKeys = new Set(player.skills.map((s) => s.key));
+      const existingSkillKeys = new Set(freshPlayer.skills.map((s) => s.key));
 
-      // Collect all new unique skills from cart items
-      const newSkills = cart.flatMap((item) => item.skills.filter((skill) => !existingSkillKeys.has(skill.key)));
-      const runtimeSkills = convertSkillsToRuntime(newSkills as SkillDefinition[], skillLevelData);
+      // Collect all new unique skill keys from cart items
+      const newSkillKeys = cart.flatMap((item) => item.skills).filter((key) => !existingSkillKeys.has(key));
 
-      const newGold = playerGold;
+      // Build updated skillLevelData with new skills initialized at level 1
+      const updatedSkillLevelData = { ...freshSkillLevelData };
+      newSkillKeys.forEach((key) => {
+        updatedSkillLevelData[key] = { key, level: 1 };
+      });
+
+      // Look up SkillDefinition objects and convert using the updated level data
+      const newSkillDefs = allSkills.filter((skill) => newSkillKeys.includes(skill.key));
+      const runtimeSkills = convertSkillsToRuntime(newSkillDefs, updatedSkillLevelData);
+      setSkillLevelData(updatedSkillLevelData);
       updatePlayer({
-        ...player,
+        ...freshPlayer,
         items: newItems,
-        skills: [...player.skills, ...runtimeSkills],
-        gold: newGold,
+        skills: [...freshPlayer.skills, ...runtimeSkills],
+        gold: playerGold,
       });
     }
     router.push("/select-event");
   };
   return (
-    <div className="w-full h-full relative">
-      <div className="flex flex-col items-center w-160 m-auto absolute p-4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <div className="flex flex-col gap-4 justify-center items-center mb-20">
-          <div className="text-2xl font-bold mb-6">{shopName}</div>
-          <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
-            {shopItems.map((item, index) => {
-              return item ? (
-                <ItemBlock
-                  key={index}
-                  item={item}
-                  onItemSelect={addToCart}
-                  onItemRemove={removeItem}
-                  playerGold={player.gold}
-                />
-              ) : null;
-            })}
+    <SkillProvider>
+      <div className="w-full h-full relative">
+        <div className="flex flex-col items-center w-160 m-auto absolute p-4 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <div className="flex flex-col gap-4 justify-center items-center mb-20">
+            <div className="text-2xl font-bold mb-6">{shopName}</div>
+            <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
+              {shopItems.map((item, index) => {
+                return item ? (
+                  <ItemBlock
+                    key={index}
+                    item={item}
+                    onItemSelect={addToCart}
+                    onItemRemove={removeItem}
+                    playerGold={player.gold}
+                  />
+                ) : null;
+              })}
+            </div>
           </div>
+          <button
+            className={`${DEFAULT_BUTTON_CLASSES} w-2/3 md:w-full flex gap-2 items-center justify-center text-md bg-green-400 p-2`}
+            onClick={handleCloseShop}
+          >
+            <Swords className="size-5" /> To battle
+          </button>
         </div>
-        <button
-          className={`${DEFAULT_BUTTON_CLASSES} w-2/3 md:w-full flex gap-2 items-center justify-center text-md bg-green-400 p-2`}
-          onClick={handleCloseShop}
-        >
-          <Swords className="size-5" /> To battle
-        </button>
       </div>
-    </div>
+    </SkillProvider>
   );
 };
 

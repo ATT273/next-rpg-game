@@ -5,6 +5,9 @@ import IronShield from "@/public/images/items/Iron_Shield.png";
 import BroadSword from "@/public/images/items/broad_sword.jpeg";
 import PlateArmor from "@/public/images/items/plate_armor.jpeg";
 import HPPotion from "@/public/images/items/hp_potion.jpeg";
+import Oakwand from "@/public/images/items/oak_wand.jpeg";
+import Firebook from "@/public/images/items/fire_book.jpeg";
+import Icebook from "@/public/images/items/ice_book.jpeg";
 import { IShopItem } from "@/types/shop";
 
 const items: IShopItem[] = [
@@ -18,6 +21,8 @@ const items: IShopItem[] = [
     price: 10,
     qty: 0,
     maxQty: 1,
+    rarity: "common",
+    lvlRequired: 1,
     stats: {
       atk: 1,
     },
@@ -34,6 +39,8 @@ const items: IShopItem[] = [
     price: 20,
     qty: 0,
     maxQty: 1,
+    rarity: "common",
+    lvlRequired: 1,
     stats: {
       def: 3,
     },
@@ -50,6 +57,8 @@ const items: IShopItem[] = [
     price: 20,
     qty: 0,
     maxQty: 1,
+    rarity: "common",
+    lvlRequired: 1,
     stats: {
       def: 2,
       spd: 1,
@@ -67,6 +76,8 @@ const items: IShopItem[] = [
     price: 30,
     qty: 0,
     maxQty: 1,
+    rarity: "common",
+    lvlRequired: 1,
     stats: {
       def: 5,
     },
@@ -83,6 +94,8 @@ const items: IShopItem[] = [
     price: 30,
     qty: 0,
     maxQty: 1,
+    rarity: "common",
+    lvlRequired: 1,
     stats: {
       atk: 5,
     },
@@ -99,6 +112,8 @@ const items: IShopItem[] = [
     price: 50,
     qty: 0,
     maxQty: 1,
+    rarity: "common",
+    lvlRequired: 1,
     stats: {
       def: 10,
     },
@@ -115,6 +130,8 @@ const items: IShopItem[] = [
     price: 5,
     qty: 0,
     maxQty: 5,
+    rarity: "common",
+    lvlRequired: 1,
     stats: {
       hp: 10,
     },
@@ -131,11 +148,99 @@ const items: IShopItem[] = [
     price: 10,
     qty: 0,
     maxQty: 1,
+    rarity: "common",
+    lvlRequired: 1,
     stats: {
       def: 2,
     },
     skills: [],
     description: "",
+  },
+  {
+    id: 8,
+    image: "/images/items/iron_sword.jpeg",
+    key: "iron_sword",
+    name: "Iron Sword",
+    type: "weapon",
+    isConsumable: false,
+    price: 5,
+    qty: 0,
+    maxQty: 1,
+    rarity: "common",
+    lvlRequired: 1,
+    stats: {
+      atk: 3,
+    },
+    skills: [],
+    description: "A sword made of iron. It is a good weapon for beginners.",
+  },
+  {
+    id: 9,
+    image: "/images/items/iron_axe.jpeg",
+    key: "iron_axe",
+    name: "Iron Axe",
+    type: "weapon",
+    isConsumable: false,
+    price: 5,
+    qty: 0,
+    maxQty: 1,
+    rarity: "common",
+    lvlRequired: 1,
+    stats: {
+      atk: 4,
+    },
+    skills: [],
+    description: "An axe made of iron. It is a good weapon for beginners.",
+  },
+  {
+    id: 10,
+    image: Oakwand,
+    key: "oak_wand",
+    name: "Oak wood wand",
+    type: "weapon",
+    isConsumable: false,
+    price: 5,
+    qty: 0,
+    maxQty: 1,
+    rarity: "common",
+    lvlRequired: 1,
+    stats: {
+      atk: 2,
+    },
+    skills: [],
+    description: "A wand made of oak wood. It is a good weapon for beginners.",
+  },
+  {
+    id: 11,
+    image: Firebook,
+    key: "fire_book",
+    name: "Fire spell book",
+    type: "book",
+    isConsumable: false,
+    price: 5,
+    qty: 0,
+    maxQty: 1,
+    rarity: "common",
+    lvlRequired: 1,
+    stats: {},
+    skills: ["fireball"],
+    description: "Spell book that can cast fire spells.",
+  },
+  {
+    id: 12,
+    image: Icebook,
+    key: "ice_book",
+    name: "Ice spell book",
+    type: "book",
+    isConsumable: false,
+    price: 5,
+    qty: 0,
+    maxQty: 1,
+    rarity: "common",
+    lvlRequired: 1,
+    stats: {},
+    skills: ["ice_shard"],
+    description: "Spell book that can cast ice spells.",
   },
 ];
 

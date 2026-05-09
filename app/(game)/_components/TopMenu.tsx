@@ -1,9 +1,9 @@
 "use client";
 import { Button } from "@headlessui/react";
 import { useUIContext } from "./UIProvider";
-import LeftSideBar from "@/components/layouts/LeftSizebar";
-import RightSideBar from "@/components/layouts/RightSizebar";
-import { BookMarked, Menu, UserRound } from "lucide-react";
+import LeftSideBar from "@/components/layouts/LeftSidebar";
+import RightSideBar from "@/components/layouts/RightSidebar";
+import { Menu, UserRound } from "lucide-react";
 import { DEFAULT_BUTTON_CLASSES } from "@/constants/css.constants";
 
 const TopMenu = () => {
@@ -27,13 +27,7 @@ const TopMenu = () => {
             {/* <Button className={DEFAULT_BUTTON_CLASSES}>
               <BookMarked />
             </Button> */}
-            <Button
-              className={DEFAULT_BUTTON_CLASSES}
-              onClick={() => {
-                console.log("click menu");
-                setShowRightSidebar(!showRightSidebar);
-              }}
-            >
+            <Button className={DEFAULT_BUTTON_CLASSES} onClick={() => setShowRightSidebar(!showRightSidebar)}>
               <Menu />
             </Button>
           </div>

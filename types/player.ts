@@ -99,6 +99,8 @@ type SkillTreeNode = {
   data: SkillDefinition;
 };
 
+export type SkillLevel = Record<string, { key: string; level: number }>;
+
 export type {
   Stats,
   BuffStat,
@@ -111,5 +113,3 @@ export type {
   SkillType,
   SkillTreeNode,
 };
-
-export type SkillLevel = Record<string, { key: string; level: number }>;
