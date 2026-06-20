@@ -1,20 +1,10 @@
-import RustySword from "@/public/images/items/rusty_sword.jpeg";
-import WoodenShield from "@/public/images/items/wooden_shield.jpeg";
-import LeatherBoots from "@/public/images/items/leather_boots.jpeg";
-import IronShield from "@/public/images/items/Iron_Shield.png";
-import BroadSword from "@/public/images/items/broad_sword.jpeg";
-import PlateArmor from "@/public/images/items/plate_armor.jpeg";
-import HPPotion from "@/public/images/items/hp_potion.jpeg";
-import Oakwand from "@/public/images/items/oak_wand.jpeg";
-import Firebook from "@/public/images/items/fire_book.jpeg";
-import Icebook from "@/public/images/items/ice_book.jpeg";
 import { IShopItem } from "@/types/shop";
 
 const items: IShopItem[] = [
   // Common items (itemLevel: 1)
   {
     id: 0,
-    image: RustySword,
+    image: "/images/items/rusty_sword.webp",
     key: "rusty_sword",
     name: "Rusty Sword",
     type: "sword",
@@ -31,7 +21,7 @@ const items: IShopItem[] = [
   },
   {
     id: 1,
-    image: WoodenShield,
+    image: "/images/items/wooden_shield.webp",
     key: "wooden_shield",
     name: "Wooden shield",
     type: "shield",
@@ -48,7 +38,7 @@ const items: IShopItem[] = [
   },
   {
     id: 2,
-    image: LeatherBoots,
+    image: "/images/items/leather_boots.webp",
     key: "leather_boots",
     name: "Leather boots",
     type: "boots",
@@ -65,7 +55,7 @@ const items: IShopItem[] = [
   },
   {
     id: 3,
-    image: IronShield,
+    image: "/images/items/iron_shield.webp",
     key: "iron_shield",
     name: "Iron shield",
     type: "shield",
@@ -82,7 +72,7 @@ const items: IShopItem[] = [
   },
   {
     id: 5,
-    image: PlateArmor,
+    image: "/images/items/plate_armor.webp",
     key: "plate-armor",
     name: "Plate armor",
     type: "armor",
@@ -99,7 +89,7 @@ const items: IShopItem[] = [
   },
   {
     id: 6,
-    image: HPPotion,
+    image: "/images/items/hp_potion.webp",
     key: "health-potion",
     name: "HP potion",
     type: "hp_potion",
@@ -201,7 +191,7 @@ const items: IShopItem[] = [
   },
   {
     id: 12,
-    image: Icebook,
+    image: "/images/items/ice_book.webp",
     key: "ice_book",
     name: "Ice spell book",
     type: "book",
