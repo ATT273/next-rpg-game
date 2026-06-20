@@ -1,5 +1,6 @@
 import { StaticImageData } from "next/image";
 import { BonusStats, Stats } from "./player";
+import { ItemRarity } from "./shop";
 
 type Enemy = {
   type: string;
@@ -13,6 +14,7 @@ type Enemy = {
   matchLvl: number[];
   stats: Stats;
   bonusStats: BonusStats;
+  dropRarity: ItemRarity;
 };
 
 export type { Enemy };

@@ -1,5 +1,5 @@
 "use client";
-import useStore from "@/store/store";
+import useGameStore from "@/store/store";
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -8,7 +8,7 @@ import { useUIContext } from "@/app/(game)/_components/UIProvider";
 
 const IngameMenu = () => {
   const { showLeftSidebar, showRightSidebar, setShowLeftSidebar, setShowRightSidebar } = useUIContext();
-  const { player } = useStore();
+  const { player } = useGameStore();
   const [open, setOpen] = useState(false);
   const router = useRouter();
 

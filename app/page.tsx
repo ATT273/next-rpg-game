@@ -5,13 +5,13 @@ import OpenningBackGround from "@/public/images/background/back_ground.jpg";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import useStore from "@/store/store";
+import useGameStore from "@/store/store";
 import { Button } from "@headlessui/react";
 
 export default function Home() {
   const [isContinueGame, setIsContinueGame] = useState(false);
   const router = useRouter();
-  const { updatePlayer } = useStore();
+  const { updatePlayer } = useGameStore();
 
   const continueGame = () => {
     router.push("/select-event");

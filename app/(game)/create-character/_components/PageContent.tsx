@@ -4,7 +4,7 @@ import NameForm from "./NameForm";
 import ClassesSelection from "./ClassesSelection";
 import BounusStatsPointScreen from "./BounusStatsPointScreen";
 import { useCreateCharacterContext } from "./CreateCharacterProvider";
-import useStore from "@/store/store";
+import useGameStore from "@/store/store";
 import { useRouter } from "next/navigation";
 
 const PageContent = () => {
@@ -16,7 +16,7 @@ const PageContent = () => {
     handleNextStep,
   } = useCreateCharacterContext();
   const router = useRouter();
-  const { createPlayer } = useStore();
+  const { createPlayer } = useGameStore();
   
   useEffect(() => {
     if (creatingPlayer && step === 3) {

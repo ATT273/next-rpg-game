@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { IShopItem } from "@/types/shop";
 import Game from "../../../game";
 import { useRouter } from "next/navigation";
-import useStore from "@/store/store";
+import useGameStore from "@/store/store";
 import Image from "next/image";
 import { BATTLE_EVENT, LOOT_EVENT, SHOP_EVENT } from "@/data/data";
 
@@ -26,8 +26,8 @@ const initialItem = {
 const LootScreen = () => {
   const [item, setItem] = useState(initialItem);
   const router = useRouter();
-  const createPlayerStore = useStore((state) => state.createPlayer);
-  const player = useStore((state) => state.player);
+  const createPlayerStore = useGameStore((state) => state.createPlayer);
+  const player = useGameStore((state) => state.player);
 
   useEffect(() => {
     getLootData();

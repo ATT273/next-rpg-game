@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import useStore from "@/store/store";
+import useGameStore from "@/store/store";
 import { Enemy } from "@/types/enemy";
 import { ActionType, BuffCounter, Player } from "@/types/player";
 import PopUp from "@/components/shared/popup";
@@ -15,6 +15,11 @@ import { delay } from "@/utils";
 import BattleProvider from "./_components/BattleProvider";
 import { Bug } from "lucide-react";
 import { DEFAULT_BUTTON_CLASSES } from "@/constants/css.constants";
+import SkillProvider from "../_components/SkillProvider";
+import useShop from "@/hooks/use-shop";
+import { IShopItem } from "@/types/shop";
+import DropItemDialog from "@/components/dialogs/DropItemDialog";
+import { toast } from "sonner";
 
 const APP_ENV = process.env.NEXT_PUBLIC_ENVIRONMENT;
 const BattleScreen = () => {
@@ -28,10 +33,18 @@ const BattleScreen = () => {
     skillUsing,
     calculateCurrentLvlExp,
     calculateLvlFromExp,
+    takeItem,
   } = useGame();
-  const { player: playerStore, selectedEnemy, updatePlayer, setScore } = useStore();
+  const { player: playerStore, selectedEnemy, updatePlayer, setScore } = useGameStore();
+  const { getRandomItemByRarity } = useShop();
+
   const [player, setPlayer] = useState<Player>(playerStore);
   const [enemy, setEnemy] = useState<Enemy>(initialEnemies);
+
+  // Drop Item Dialog
+  const [dropItem, setDropItem] = useState<IShopItem>();
+  const [isDropDialogOpen, setIsDropDialogOpen] = useState<boolean>(false);
+
   const [state, setState] = useState({
     display: "block",
     intrOpacity: 1,
@@ -103,6 +116,14 @@ const BattleScreen = () => {
       enemyTurn();
     }
   }, [isPlayerTurn]);
+
+  useEffect(() => {
+    if (state.showNextBtn) {
+      const dropItem = getRandomItemByRarity(enemy.dropRarity);
+      setDropItem(dropItem);
+      setIsDropDialogOpen(true);
+    }
+  }, [state.showNextBtn]);
 
   const playerTurn = async () => {
     let _player = { ...player } as Player;
@@ -269,14 +290,36 @@ const BattleScreen = () => {
       _player.levelExp = newLevelExp;
       _player.skillPoints += 1;
     }
+
     if (_player.stats.hp > 0) {
       setScore(enemy.score);
     }
+
     updatePlayer(_player);
     setState((prevState) => ({ ...prevState, showNextBtn: false }));
     router.push("/select-event");
   };
 
+  const handleLeaveItem = () => {
+    setIsDropDialogOpen(false);
+    setDropItem(undefined);
+  };
+
+  const handleTakeItem = () => {
+    if (!dropItem) return;
+    const _player = { ...playerStore };
+
+    const { newInventory, message, isAdded } = takeItem(dropItem, _player.items);
+    if (isAdded) {
+      _player.items = newInventory;
+      updatePlayer(_player);
+    }
+    toast.info(message);
+    setIsDropDialogOpen(false);
+    setDropItem(undefined);
+  };
+
+  // DEBUG
   const showDebug = () => {
     const debugInfo = {
       player: player,
@@ -288,75 +331,86 @@ const BattleScreen = () => {
     console.log("DEBUG INFO:", debugInfo);
   };
   return (
-    <BattleProvider
-      actions={actions}
-      actionIndex={actionIndex}
-      player={player}
-      enemy={enemy}
-      currentTurn={currentTurn}
-      isPlayerTurn={isPlayerTurn}
-      battleLogs={state.battleLogs}
-    >
-      <div className="relative w-full h-full text-slate-900 pt-12">
-        {/* <audio id='audioPlayer' ref={audioPlayer} src="/music/dungeon_theme_ost.mp3" autoPlay loop /> */}
-        {player && enemy && (
-          <div className="fight-screen w-full h-full">
-            <AnimatePresence>
-              {state.showReadyPopup && enemy.key && (
-                <motion.div
-                  className="container"
-                  key={"container"}
-                  initial={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <PopUp
-                    title={"Ready for the battle"}
-                    content={`${player.name} vs ${enemy.name}`}
-                    display={state.display}
-                    size={"big"}
-                    renderButtons={true}
-                    renderInfo={true}
-                    handleReady={handleReady}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-            <AnimatePresence>
-              {state.showBattleScreen && (
-                <motion.div
-                  className="lg:w-[calc(100vw-400px)] 2xl:w-[calc(100vw-800px)] h-full m-auto px-4 py-2 md:p-6"
-                  key={"main-content"}
-                  initial={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <FighterStatsBlockPC />
-                  <FighterStatsBlockMobile />
-                  {state.showNextBtn && (
-                    <div className="w-full text-center p-2 mt-6">
-                      <button
-                        className={`${DEFAULT_BUTTON_CLASSES} bg-stone-700 w-1/4 p-2 text-white rounded-lg`}
-                        style={{ margin: "auto" }}
-                        onClick={handleEndMatch}
-                      >
-                        Next
-                      </button>
-                    </div>
-                  )}
-                </motion.div>
-              )}
-            </AnimatePresence>
+    <SkillProvider>
+      <BattleProvider
+        actions={actions}
+        actionIndex={actionIndex}
+        player={player}
+        enemy={enemy}
+        currentTurn={currentTurn}
+        isPlayerTurn={isPlayerTurn}
+        battleLogs={state.battleLogs}
+      >
+        <div className="relative w-full h-full text-slate-900 pt-12">
+          {/* <audio id='audioPlayer' ref={audioPlayer} src="/music/dungeon_theme_ost.mp3" autoPlay loop /> */}
+          {player && enemy && (
+            <div className="fight-screen w-full h-full">
+              <AnimatePresence>
+                {state.showReadyPopup && enemy.key && (
+                  <motion.div
+                    className="container"
+                    key={"container"}
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <PopUp
+                      title={"Ready for the battle"}
+                      content={`${player.name} vs ${enemy.name}`}
+                      display={state.display}
+                      size={"big"}
+                      renderButtons={true}
+                      renderInfo={true}
+                      handleReady={handleReady}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <AnimatePresence>
+                {state.showBattleScreen && (
+                  <motion.div
+                    className="lg:w-[calc(100vw-400px)] 2xl:w-[calc(100vw-800px)] h-full m-auto px-4 py-2 md:p-6"
+                    key={"main-content"}
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                  >
+                    <FighterStatsBlockPC />
+                    <FighterStatsBlockMobile />
+                    {state.showNextBtn && (
+                      <div className="w-full text-center p-2 mt-6">
+                        <button
+                          className={`${DEFAULT_BUTTON_CLASSES} bg-stone-700 w-1/4 p-2 text-white rounded-lg`}
+                          style={{ margin: "auto" }}
+                          onClick={handleEndMatch}
+                        >
+                          Next
+                        </button>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
+        {dropItem && (
+          <DropItemDialog
+            item={dropItem}
+            isOpen={isDropDialogOpen}
+            setIsOpen={setIsDropDialogOpen}
+            handleLeave={handleLeaveItem}
+            handleTake={handleTakeItem}
+          />
+        )}
+        {APP_ENV === "development" && (
+          <div className="fixed bottom-0 right-0 text-center p-2 mt-6">
+            <button onClick={showDebug} className="bg-violet-700 text-white p-2 rounded-md">
+              <Bug />
+            </button>
           </div>
         )}
-      </div>
-      {APP_ENV === "development" && (
-        <div className="fixed bottom-0 right-0 text-center p-2 mt-6">
-          <button onClick={showDebug} className="bg-violet-700 text-white p-2 rounded-md">
-            <Bug />
-          </button>
-        </div>
-      )}
-    </BattleProvider>
+      </BattleProvider>
+    </SkillProvider>
   );
 };
 

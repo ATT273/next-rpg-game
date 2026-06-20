@@ -52,6 +52,12 @@ A turn-based RPG game built with Next.js, featuring character customization, aut
 ### 2025/12/21 - [Chore] Production Optimization
 > Removed console logs, cleaned up unused fields, and updated Next.js to latest version
 
+### 2026/06/18 - [Feature] Item Drop & Rarity System
+> Added item rarity data, drop item mechanics, and updated shop page and useGame:takeItem to support the new system
+
+### 2026/06/20 - [Feature] Forge Item System
+> Implemented item forging: combine 2 copies of the same item and rarity into 1 upgraded item, with gold cost validation and a hold-to-forge interaction
+
 ## Getting Started
 
 First, run the development server:
