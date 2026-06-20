@@ -1,12 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import {
-  BonusStats,
-  Stats,
-  Player,
-  BuffStat,
-  SkillLevel,
-} from "@/types/player";
+import { BonusStats, Stats, Player, BuffStat, SkillLevel } from "@/types/player";
 import { IShopItem } from "@/types/shop";
 import player_img from "@/public/images/player/player.png";
 import { initialPlayer } from "@/data/data";
@@ -29,7 +23,7 @@ interface Store {
   setSkillLevelData: (payload: SkillLevel) => void;
 }
 
-const useStore = create<Store>()((set) => ({
+const useGameStore = create<Store>()((set) => ({
   player: {
     type: "player",
     name: "",
@@ -75,8 +69,7 @@ const useStore = create<Store>()((set) => ({
     set((state: any) => ({ ...state, player: payload }));
   },
   resetPlayer: () => set((state: any) => ({ ...state, player: initialPlayer })),
-  updateStats: (payload: Stats) =>
-    set((state: any) => ({ player: { ...state.player, stats: payload } })),
+  updateStats: (payload: Stats) => set((state: any) => ({ player: { ...state.player, stats: payload } })),
   updateBonusStats: (payload: BonusStats) =>
     set((state: any) => ({
       player: { ...state.player, bonusStats: payload },
@@ -85,14 +78,10 @@ const useStore = create<Store>()((set) => ({
     set((state: any) => ({
       player: { ...state.player, buffStats: payload },
     })),
-  setScore: (payload: number) =>
-    set((state: any) => ({ ...state, score: state.score + payload })),
-  updateItems: (payload: IShopItem[]) =>
-    set((state: any) => ({ player: { ...state.player, items: payload } })),
-  updatePlayer: (payload: Player) =>
-    set((state: any) => ({ player: { ...state.player, ...payload } })),
-  setSkillLevelData: (payload: SkillLevel) =>
-    set((state: any) => ({ skillLevelData: payload })),
+  setScore: (payload: number) => set((state: any) => ({ ...state, score: state.score + payload })),
+  updateItems: (payload: IShopItem[]) => set((state: any) => ({ player: { ...state.player, items: payload } })),
+  updatePlayer: (payload: Player) => set((state: any) => ({ player: { ...state.player, ...payload } })),
+  setSkillLevelData: (payload: SkillLevel) => set((state: any) => ({ skillLevelData: payload })),
 }));
 
-export default useStore;
+export default useGameStore;

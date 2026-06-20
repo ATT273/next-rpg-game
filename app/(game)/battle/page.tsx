@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import useStore from "@/store/store";
+import useGameStore from "@/store/store";
 import { Enemy } from "@/types/enemy";
 import { ActionType, BuffCounter, Player } from "@/types/player";
 import PopUp from "@/components/shared/popup";
@@ -35,7 +35,7 @@ const BattleScreen = () => {
     calculateLvlFromExp,
     takeItem,
   } = useGame();
-  const { player: playerStore, selectedEnemy, updatePlayer, setScore } = useStore();
+  const { player: playerStore, selectedEnemy, updatePlayer, setScore } = useGameStore();
   const { getRandomItemByRarity } = useShop();
 
   const [player, setPlayer] = useState<Player>(playerStore);

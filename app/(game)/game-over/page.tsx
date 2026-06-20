@@ -1,10 +1,10 @@
 'use client'
-import useStore from '@/store/store';
+import useGameStore from '@/store/store';
 import Link from 'next/link'
 import { useEffect } from 'react'
 
 const GameOver = () => {
-  const resetPlayer = useStore(state => state.resetPlayer);
+  const resetPlayer = useGameStore(state => state.resetPlayer);
   useEffect(() => {
     localStorage.removeItem('rpg_game')
     resetPlayer()

@@ -1,13 +1,13 @@
 "use client";
 
-import useStore from "@/store/store";
+import useGameStore from "@/store/store";
 import CharacterStats from "./CharacterStats";
 import { useUIContext } from "@/app/(game)/_components/UIProvider";
 import SkillProvider from "@/app/(game)/_components/SkillProvider";
 
 const LeftSideBar = () => {
   const { showLeftSidebar } = useUIContext();
-  const playerStore = useStore((state: any) => state.player);
+  const playerStore = useGameStore((state: any) => state.player);
 
   return (
     <SkillProvider>

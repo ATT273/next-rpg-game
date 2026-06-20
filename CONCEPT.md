@@ -209,14 +209,14 @@ XP cần để lên level N = 50 × 2^(N-1)
 
 ### Duplicate Item Logic
 
-**Loot** (`game.ts — takeItem`): **Đã có logic**, hoạt động đúng:
-- Nếu item đã có trong inventory → tăng `qty` thay vì push item mới
-- Nếu `qty >= maxQty` → chặn, báo "You can only have X of this item"
-- ⚠️ **Bug**: Điều kiện kiểm tra inventory full dùng `< 6` và `> 6`, bỏ sót trường hợp `=== 6` — không trả về message lỗi
+**Loot** (`use-game.ts — takeItem`):
+- Mỗi lần nhặt item → push 1 instance mới vào inventory (không stack)
+- Mỗi item trong inventory có `instanceId` riêng (dùng cho forge)
+- Inventory full (>= 6) → chặn, báo lỗi
 
 **Shop** (`shop/page.tsx — handleCloseShop`): **Chưa có logic**, cần fix:
 - Hiện tại push thẳng toàn bộ cart vào inventory (`[...player.items, ...cart]`)
-- Không kiểm tra duplicate, không kiểm tra `maxQty` → có thể sở hữu nhiều bản sao của cùng 1 equipment
+- Không kiểm tra inventory full
 
 ### Item Types
 | Type | Tác dụng |
@@ -228,22 +228,78 @@ XP cần để lên level N = 50 × 2^(N-1)
 | book | Unlock skill |
 | hp_potion | Consumable, hồi HP |
 
-### Items Catalog (13 items)
-| Item | Type | Stats | Price | Rarity | Lvl Req |
-|---|---|---|---|---|---|
-| Rusty Sword | sword | ATK+1 | 10 | common | 1 |
-| Iron Sword | weapon | ATK+3 | 5 | common | 1 |
-| Iron Axe | weapon | ATK+4 | 5 | common | 1 |
-| Broadsword | sword | ATK+5 | 30 | common | 1 |
-| Oak Wand | weapon | ATK+2 | 5 | common | 1 |
-| Wooden Shield | shield | DEF+3 | 20 | common | 1 |
-| Iron Shield | shield | DEF+5 | 30 | common | 1 |
-| Leather Boots | boots | DEF+2, SPD+1 | 20 | common | 1 |
-| Chainmail Vest | armor | DEF+2 | 10 | common | 1 |
-| Plate Armor | armor | DEF+10 | 50 | common | 1 |
-| HP Potion | hp_potion | HP+10 | 5 | common | 1 |
-| Fire Spell Book | book | Unlock Fireball | 5 | common | 1 |
-| Ice Spell Book | book | Unlock Ice Shard | 5 | common | 1 |
+### Rarity System
+
+| Rarity | Drop Weight | Color |
+|---|---|---|
+| common | rất cao | trắng / xám |
+| uncommon | cao | xanh lá |
+| rare | trung bình | xanh dương |
+| epic | thấp | tím |
+| legendary | rất thấp | cam / vàng |
+
+- `dropRarity` trên mỗi enemy quyết định rarity của item drop sau battle
+- `rarity` **không thay đổi** sau forge — chỉ phản ánh nguồn gốc/độ hiếm của item
+- `lvlRequired` — field đã có, **chưa có enforcement** (chưa kiểm tra khi equip/nhặt)
+
+### Forge System
+
+- Forge 2 instance cùng key + cùng `itemLevel` → 1 item `itemLevel + 1`
+- `itemLevel` tối đa là **5**, mọi item bắt đầu từ `itemLevel: 1`
+- `rarity` **không thay đổi** khi forge (Rusty Sword forge lv5 vẫn là common)
+- **Công thức stat:**
+  ```
+  newStat = round(baseStat × (1 + 0.25 × newItemLevel)) + newItemLevel
+  ```
+  `baseStat` lấy từ data gốc trong `items.ts` (không dùng stat hiện tại của item)
+- Item có stat = 0 (sách kỹ năng) không được hưởng lợi từ forge stat
+- Chi phí forge: **10G** (chưa implement enforcement)
+
+### Items Catalog (22 items)
+
+> Cột **itemLevel** là level forge bắt đầu (tất cả = 1). Cột **Lvl Req** là level player cần để equip (chưa enforce).
+
+#### Common (itemLevel: 1, lvlRequired: 1)
+| Item | Type | Base Stats | Price |
+|---|---|---|---|
+| Rusty Sword | sword | ATK+1 | 10 |
+| Iron Sword | weapon | ATK+3 | 5 |
+| Iron Axe | weapon | ATK+4 | 5 |
+| Broadsword | sword | ATK+5 | 30 |
+| Oak Wand | weapon | ATK+2 | 5 |
+| Wooden Shield | shield | DEF+3 | 20 |
+| Iron Shield | shield | DEF+5 | 30 |
+| Leather Boots | boots | DEF+2, SPD+1 | 20 |
+| Chainmail Vest | armor | DEF+2 | 10 |
+| Plate Armor | armor | DEF+10 | 50 |
+| HP Potion | hp_potion | HP+10 | 5 |
+| Fire Spell Book | book | Unlock Fireball | 5 |
+| Ice Spell Book | book | Unlock Ice Shard | 5 |
+
+#### Uncommon (itemLevel: 1, lvlRequired: 2)
+| Item | Type | Base Stats | Price |
+|---|---|---|---|
+| Steel Sword | sword | ATK+7 | 40 |
+| Knight Shield | shield | DEF+8 | 50 |
+| Elixir | hp_potion | HP+30 | 20 |
+
+#### Rare (itemLevel: 1, lvlRequired: 3)
+| Item | Type | Base Stats | Price |
+|---|---|---|---|
+| Battle Axe | axe | ATK+12 | 120 |
+| Arcane Tome | book | INT+5, Unlock Fire Breath | 100 |
+| Shadow Cloak | armor | DEF+6, SPD+3 | 90 |
+
+#### Epic (itemLevel: 1, lvlRequired: 5)
+| Item | Type | Base Stats | Price |
+|---|---|---|---|
+| Dragonbone Sword | sword | ATK+20, INT+5 | 300 |
+| Storm Tome | book | INT+10, Unlock Fire Storm | 280 |
+
+#### Legendary (itemLevel: 1, lvlRequired: 8)
+| Item | Type | Base Stats | Price |
+|---|---|---|---|
+| Excalibur | sword | ATK+35, DEF+5, SPD+5, INT+5 | 999 |
 
 ### Bonus Stats Calculation
 ```
@@ -336,9 +392,13 @@ Player {
 
 ## Kế hoạch mở rộng (chưa implement)
 
-- **Rarity system** (`ItemRarity`: common / uncommon / rare / epic / legendary) — type đã có, chưa có logic
-- **lvlRequired** cho item — field đã có, chưa có enforcement
+- **Forge UI hoàn chỉnh** — `forgeItems` đã có trong `use-game.ts`, cần gọi trong `onItemForged` ở `select-event/page.tsx` và update store; chưa trừ 10G chi phí
+- **UI hiển thị itemLevel** — hiện không có badge/icon nào thể hiện item level sau forge
+- **UI màu theo rarity** — data rarity đã có, chưa có color mapping ở UI
+- **lvlRequired enforcement** — field đã có, chưa kiểm tra khi nhặt/equip item
+- **Shop duplicate check** — `handleCloseShop` push thẳng cart vào inventory, chưa kiểm tra full
+- **Timeline / Event system** — thêm enemy type (normal / miniboss / boss), drop item theo loại quái
 - **Skill Point spending UI** — Skill Points cộng lên nhưng chưa có màn hình dùng
-- **Item consumption trong battle** — `Game.consumeItem` đã có nhưng chưa gắn vào battle UI
+- **Item consumption trong battle** — `consumeItem` đã có nhưng chưa gắn vào battle UI
 - **Score leaderboard** — Score được tính nhưng chưa hiển thị
-- **Divine Barrier skill** (Knight) — Có ảnh trong assets nhưng chưa có trong data
+- **Cân bằng chỉ số item** — stat hiện tại là tạm thời, cần pass balance sau khi có đủ gameplay loop

@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import InventoryBlock from "./Inventory";
 import * as _ from "lodash";
-import useStore from "@/store/store";
+import useGameStore from "@/store/store";
 import StatBlock from "../../app/(game)/battle/_components/StatBlock";
 import { IShopItem } from "@/types/shop";
 import { motion } from "framer-motion";
@@ -17,7 +17,7 @@ import ItemInfoPanel from "@/app/(game)/shop/_components/ItemInfoPanel";
 
 const CharacterStats = () => {
   const pathName = usePathname();
-  const { updatePlayer, setSkillLevelData, skillLevelData, player: playerStore } = useStore();
+  const { updatePlayer, setSkillLevelData, skillLevelData, player: playerStore } = useGameStore();
   const [player, setPlayer] = useState(playerStore);
   const [hoverInfo, setHoverInfo] = useState<IShopItem | null>(null);
   const [isOpen, setIsOpen] = useState(false);

@@ -9,7 +9,7 @@ import useGame from "@/hooks/use-game";
 import useSkill from "@/hooks/use-skill";
 import { useCreateCharacterContext, MAX_SKILL_POINTS } from "./CreateCharacterProvider";
 import BasicStats from "./BasicStats";
-import useStore from "@/store/store";
+import useGameStore from "@/store/store";
 import SkillTreeDialog from "@/components/dialogs/SkillTreeDialog";
 import { Button } from "@headlessui/react";
 import { DEFAULT_BUTTON_CLASSES } from "@/constants/css.constants";
@@ -34,7 +34,7 @@ const ClassesSelection = ({
   }) => void;
 }) => {
   const { errors, creatingPlayer, skillPoints, setSkillPoints, handleNextStep } = useCreateCharacterContext();
-  const { setSkillLevelData, skillLevelData } = useStore();
+  const { setSkillLevelData, skillLevelData } = useGameStore();
   const [currentSkillTree, setCurrentSkillTree] = useState<SkillTreeNodeType[]>([]);
   const [tempSkillLevelData, setTempSkillLevelData] = useState<SkillLevel>(skillLevelData);
   const [isOpen, setIsOpen] = useState(false);

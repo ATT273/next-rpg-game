@@ -24,6 +24,7 @@ export interface IShopItem {
   skills: string[] | [];
   rarity: ItemRarity;
   lvlRequired: number;
+  itemLevel: number;
 }
 
 export interface IItemStat {

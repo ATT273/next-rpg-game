@@ -1,6 +1,6 @@
 "use client";
 
-import useStore from "@/store/store";
+import useGameStore from "@/store/store";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { IShopItem } from "@/types/shop";
@@ -17,7 +17,7 @@ import SkillProvider from "../_components/SkillProvider";
 
 const Shop = () => {
   const router = useRouter();
-  const { updatePlayer, setSkillLevelData, selectedShop, player } = useStore();
+  const { updatePlayer, setSkillLevelData, selectedShop, player } = useGameStore();
   const [shopItems, setShopItems] = useState<IShopItem[]>([]);
   const [shopName, setShopName] = useState<string>("");
   const [cart, setCart] = useState<IShopItem[]>([]);
@@ -71,10 +71,14 @@ const Shop = () => {
   const handleCloseShop = () => {
     if (cart.length > 0) {
       // Read fresh state to avoid stale closure
-      const freshPlayer = useStore.getState().player;
-      const freshSkillLevelData = useStore.getState().skillLevelData;
+      const freshPlayer = useGameStore.getState().player;
+      const freshSkillLevelData = useGameStore.getState().skillLevelData;
 
-      const newItems = [...freshPlayer.items, ...cart];
+      const createInventoryItems = cart.map((item) => ({
+        ...item,
+        instanceId: new Date().getTime(),
+      }));
+      const newItems = [...freshPlayer.items, ...createInventoryItems];
 
       // Create a Set of existing skill keys for O(1) lookup
       const existingSkillKeys = new Set(freshPlayer.skills.map((s) => s.key));
