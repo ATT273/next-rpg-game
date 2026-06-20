@@ -1,5 +1,6 @@
 import { StaticImageData } from "next/image";
 import { IShopItem } from "./shop";
+import { extendWith } from "lodash";
 
 type Player = {
   type: string;
@@ -13,11 +14,18 @@ type Player = {
   bonusStats: BonusStats;
   buffStats: BuffStat[];
   // buffs: Record<string, number>,
-  items: IShopItem[];
+  items: IInventoryItem[];
   skills: Skills[];
   gold: number;
   skillPoints: number;
 };
+
+// ITEM
+export interface IInventoryItem extends IShopItem {
+  instanceId: number;
+}
+
+// STATS
 type BuffStat = {
   name: string;
   value: number;
@@ -46,6 +54,7 @@ type BonusStats = {
   mp?: number;
 };
 
+// SKILL
 // Base skill definition stored in classes.ts (static data)
 type SkillDefinition = {
   key: string;
@@ -99,6 +108,8 @@ type SkillTreeNode = {
   data: SkillDefinition;
 };
 
+export type SkillLevel = Record<string, { key: string; level: number }>;
+
 export type {
   Stats,
   BuffStat,
@@ -111,5 +122,3 @@ export type {
   SkillType,
   SkillTreeNode,
 };
-
-export type SkillLevel = Record<string, { key: string; level: number }>;

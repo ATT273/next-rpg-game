@@ -12,7 +12,7 @@ interface SkillTreeDialogProps {
   skillLevelData: SkillLevel;
   setIsOpen: (open: boolean) => void;
   handleCloseSkillDialog: () => void;
-  handleConfirmSkillelection: () => void;
+  handleConfirmSkillSelection: () => void;
   handleDecreaseLevel: (key: string) => void;
   handleIncreaseLevel: (key: string) => void;
 }
@@ -24,7 +24,7 @@ const SkillTreeDialog = ({
   skillLevelData,
   setIsOpen,
   handleCloseSkillDialog,
-  handleConfirmSkillelection,
+  handleConfirmSkillSelection,
   handleIncreaseLevel,
   handleDecreaseLevel,
 }: SkillTreeDialogProps) => {
@@ -65,7 +65,7 @@ const SkillTreeDialog = ({
             </Button>
             <Button
               className={`${DEFAULT_BUTTON_CLASSES} px-6 py-2 bg-slate-900 text-white rounded-md`}
-              onClick={handleConfirmSkillelection}
+              onClick={handleConfirmSkillSelection}
             >
               Done
             </Button>

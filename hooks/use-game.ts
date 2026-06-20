@@ -1,10 +1,20 @@
 import enemies from "@/data/enemies";
 import items from "@/data/items";
-import { ActionType, BuffCounter, Player, SkillDefinition, Skills, SkillTreeNode, SkillType } from "@/types/player";
+import {
+  ActionType,
+  BuffCounter,
+  IInventoryItem,
+  Player,
+  SkillDefinition,
+  Skills,
+  SkillTreeNode,
+  SkillType,
+} from "@/types/player";
 import { IShopItem } from "@/types/shop";
 import { Enemy } from "@/types/enemy";
 import * as _ from "lodash";
 import { SKILL_TARGET, WIN_CONDITION_STATUS } from "@/data/data";
+import { MAX_ITEM_LEVEL } from "@/constants/items.constants";
 
 function useGame() {
   const isPlayer = (object: Player | Enemy): object is Player => {
@@ -153,8 +163,9 @@ function useGame() {
       target.stats.hp = Math.round(newHp * 10) / 10;
       attacker.stats.mp -= skill.cost;
       // attacker.stats.mp -= 0;
+      const actionType = skill.type === "magical" ? "int" : "atk";
       actions.push({
-        type: "atk",
+        type: actionType,
         value: dmgDealed,
         source: attacker.type,
       });
@@ -337,34 +348,45 @@ function useGame() {
     return bonusStats;
   };
 
-  const takeItem = (item: IShopItem, itemList: IShopItem[]) => {
+  const takeItem = (
+    item: IShopItem,
+    itemList: IInventoryItem[],
+  ): { newInventory: IInventoryItem[]; message: string; isMaxQty: boolean; isAdded: boolean } => {
     let newInventory = _.cloneDeep(itemList);
     let message = "";
     let isMaxQty = false;
+    let isAdded = false;
     if (newInventory.length < 6) {
-      const itemIndex = _.findIndex(newInventory, (pItem) => pItem.key === item.key);
-      if (itemIndex > -1) {
-        if (newInventory[itemIndex].qty === newInventory[itemIndex].maxQty) {
-          isMaxQty = true;
-          message = `You can only have ${newInventory[itemIndex].maxQty} of this item`;
-        } else {
-          newInventory[itemIndex].qty ? (newInventory[itemIndex].qty += 1) : 1;
-          message = `${item.name} is added to your inventory`;
-          return { newInventory, message, isMaxQty };
-        }
-      } else {
-        if (!isMaxQty) {
-          item.qty ? (item.qty += 1) : 1;
-          newInventory.push(item);
-          message = `${item.name} is added to your inventory`;
-        }
-      }
-    } else if (itemList.length > 6) {
-      message = "Please remove 1 of your items";
+      // const itemIndex = _.findIndex(newInventory, (pItem) => pItem.key === item.key);
+      message = "item added";
+      newInventory.push({
+        ...item,
+        instanceId: new Date().getTime(),
+      });
+      isAdded = true;
+
+      // if (itemIndex > -1) {
+      //   if (newInventory[itemIndex].qty === newInventory[itemIndex].maxQty) {
+      //     isMaxQty = true;
+      //     message = `You can only have ${newInventory[itemIndex].maxQty} of this item`;
+      //   } else {
+      //     newInventory[itemIndex].qty ? (newInventory[itemIndex].qty += 1) : 1;
+      //     message = `${item.name} is added to your inventory`;
+      //     return { newInventory, message, isMaxQty };
+      //   }
+      // } else {
+      //   if (!isMaxQty) {
+      //     item.qty ? (item.qty += 1) : 1;
+      //     newInventory.push(item);
+      //     message = `${item.name} is added to your inventory`;
+      //   }
+      // }
+    } else {
+      message = "Inventory is full. Please remove an item first";
       isMaxQty = true;
     }
 
-    return { newInventory, message, isMaxQty };
+    return { newInventory, message, isMaxQty, isAdded };
   };
 
   const consumeItem = (player: Player, key: string) => {
@@ -479,6 +501,75 @@ function useGame() {
     return rootNodes;
   };
 
+  const validateForgeItems = ({
+    itemsInForgeSlot,
+    selectedItem,
+  }: {
+    itemsInForgeSlot: IInventoryItem[];
+    selectedItem: IInventoryItem;
+  }): { goodToForge: boolean; message: string } => {
+    if (itemsInForgeSlot.length >= 2) {
+      return { goodToForge: false, message: "Forge slots are full. Remove an item first" };
+    }
+
+    if (selectedItem.itemLevel >= MAX_ITEM_LEVEL) {
+      return { goodToForge: false, message: "This item is already at max level and cannot be forged further" };
+    }
+
+    if (itemsInForgeSlot.length === 0) {
+      return { goodToForge: true, message: "good to forge" };
+    }
+
+    const firstItem = itemsInForgeSlot[0];
+
+    if (firstItem.instanceId === selectedItem.instanceId) {
+      return { goodToForge: false, message: "You selected this copy. Please select another copy" };
+    }
+
+    if (firstItem.key !== selectedItem.key) {
+      return { goodToForge: false, message: "Please select 2 copies of the same item" };
+    }
+
+    if (firstItem.itemLevel !== selectedItem.itemLevel) {
+      return { goodToForge: false, message: "Both items must have the same item level" };
+    }
+
+    return { goodToForge: true, message: "good to forge" };
+  };
+
+  const forgeItems = (
+    itemsToForge: IInventoryItem[],
+    inventory: IInventoryItem[],
+  ): { newInventory: IInventoryItem[]; forgedItem: IInventoryItem; message: string } => {
+    const [itemA] = itemsToForge;
+    const newItemLevel = itemA.itemLevel + 1;
+    const baseItem = items.find((i) => i.key === itemA.key);
+
+    const upgradedStats = Object.fromEntries(
+      Object.entries(itemA.stats).map(([stat, _value]) => {
+        const base = baseItem?.stats[stat as keyof typeof baseItem.stats] ?? 1;
+        const newStat = Math.round(base * (1 + 0.25 * newItemLevel)) + newItemLevel;
+        return [stat, newStat];
+      }),
+    ) as typeof itemA.stats;
+
+    const forgedItem: IInventoryItem = {
+      ...itemA,
+      instanceId: new Date().getTime(),
+      itemLevel: newItemLevel,
+      stats: upgradedStats,
+    };
+
+    const newInventory = inventory
+      .filter((i) => i.instanceId !== itemA.instanceId && i.instanceId !== itemsToForge[1].instanceId)
+      .concat(forgedItem);
+
+    return {
+      newInventory,
+      forgedItem,
+      message: `${itemA.name} forged to level ${newItemLevel}!`,
+    };
+  };
   return {
     isPlayer,
     getPlayerItems,
@@ -495,6 +586,8 @@ function useGame() {
     calculateLvlFromExp,
     buildSkillTree,
     getGameEvent: getEvent,
+    validateForgeItems,
+    forgeItems,
   };
 }
 

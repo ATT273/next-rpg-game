@@ -1,24 +1,29 @@
 "use client";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import useEnemy from "@/hooks/use-enemy";
 import useShop from "@/hooks/use-shop";
-import useStore from "@/store/store";
-import { IShop } from "@/types/shop";
+import useGameStore from "@/store/store";
+import { IShopConfig, IShopItem } from "@/types/shop";
 import { Enemy } from "@/types/enemy";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Bug } from "lucide-react";
 import EventCard from "./_components/EventCard";
+import AnvilImage from "@/public/images/others/anvil.jpg";
+import ForgeItemDialog from "@/components/dialogs/forge-item-dialog/ForgeItemDialog";
+import useGame from "@/hooks/use-game";
+import { IInventoryItem } from "@/types/player";
 
 const APP_ENV = process.env.NEXT_PUBLIC_ENVIRONMENT;
 const SelectEvents = () => {
   const router = useRouter();
-  const [shop, setShop] = useState<IShop>();
+  const [shop, setShop] = useState<IShopConfig>();
   const [enemy, setEnemy] = useState<Enemy>();
-  const { selectEnemy, selectShop, player, selectedEnemy } = useStore();
+  const [openForgeDialog, setOpenForgeDialog] = useState<boolean>(false);
+  const { selectEnemy, selectShop, updateItems, player, selectedEnemy } = useGameStore();
   const { getRandomShop } = useShop();
   const { getRandomEnemy } = useEnemy();
+  const { forgeItems } = useGame();
 
   useEffect(() => {
     const _shop = getRandomShop();
@@ -42,11 +47,16 @@ const SelectEvents = () => {
     router.push("/shop");
   };
 
+  const handleOpenForgeDialog = () => {
+    setOpenForgeDialog(true);
+  };
+
   const debugInfo = () => {
     console.log("👤 Player Info:", player);
     console.log("🛒 Selected Shop:", shop);
     console.log("🤖 Selected Enemy:", enemy);
   };
+
   return (
     <div className="flex flex-col gap-8 justify-center items-center w-full h-full">
       <h2 className="text-2xl font-semibold">Choose your path</h2>
@@ -67,16 +77,15 @@ const SelectEvents = () => {
             handleOnClick={() => onSelectBattle(enemy?.key || "")}
           />
           {/* TODO: new feature */}
-          {/* <motion.div
-          key="event-3"
-          id="event-3"
-          transition={{ duration: 0.3 }}
-          whileHover={{ scale: 1.5, zIndex: 10 }}
-          className="relative w-[200px] h-[300px] border p-4 cursor-pointer bg-white  rounded-xl"
-          >
-          Event 3
-          </motion.div> */}
+          <EventCard
+            key="forge-item-event"
+            title={"Forge your item"}
+            image={AnvilImage}
+            description={"Here you can forge 2 same item into upgraded 1"}
+            handleOnClick={handleOpenForgeDialog}
+          />
         </AnimatePresence>
+        <ForgeItemDialog isOpen={openForgeDialog} setIsOpen={setOpenForgeDialog} />
         {APP_ENV === "development" && (
           <div className="fixed bottom-4 right-4 z-20">
             <button

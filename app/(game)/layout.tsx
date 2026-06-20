@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/public/styles.css";
-import LeftSideBar from "@/components/layouts/LeftSizebar";
-import RightSideBar from "@/components/layouts/RightSizebar";
 import { Toaster } from "sonner";
 import UIProvider from "./_components/UIProvider";
 import TopMenu from "./_components/TopMenu";
