@@ -253,7 +253,7 @@ XP cần để lên level N = 50 × 2^(N-1)
   ```
   `baseStat` lấy từ data gốc trong `items.ts` (không dùng stat hiện tại của item)
 - Item có stat = 0 (sách kỹ năng) không được hưởng lợi từ forge stat
-- Chi phí forge: **10G** (chưa implement enforcement)
+- Chi phí forge: **10G**, đã trừ vào `player.gold` khi forge thành công; nút forge bị disable nếu không đủ gold
 
 ### Items Catalog (22 items)
 
@@ -392,7 +392,7 @@ Player {
 
 ## Kế hoạch mở rộng (chưa implement)
 
-- **Forge UI hoàn chỉnh** — `forgeItems` đã có trong `use-game.ts`, cần gọi trong `onItemForged` ở `select-event/page.tsx` và update store; chưa trừ 10G chi phí
+- **Forge UI** — đã hoàn chỉnh: dialog chọn item, hold-to-forge, trừ 10G, hiển thị kết quả so sánh stat. Còn thiếu: không loại item đã chọn khỏi danh sách chọn, slot không tự dịch chuyển khi xóa slot đầu
 - **UI hiển thị itemLevel** — hiện không có badge/icon nào thể hiện item level sau forge
 - **UI màu theo rarity** — data rarity đã có, chưa có color mapping ở UI
 - **lvlRequired enforcement** — field đã có, chưa kiểm tra khi nhặt/equip item
