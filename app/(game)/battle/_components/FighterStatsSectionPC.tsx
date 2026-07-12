@@ -21,7 +21,7 @@ function FighterStatsBlockPC() {
         <div className="relative flex flex-col justify-between items-stretch">
           <div className="flex">
             <div className="mb-3">
-              <Image className="grayscale size-64" src={player.image} alt="player_avatar" />
+              <Image className="grayscale size-64" src={player.image} width={256} height={256} alt="player_avatar" />
             </div>
             <div className="relative flex flex-1">
               <div className="absolute left-4 top-1/2 -translate-y-1/2 w-20 h-12.5">
@@ -40,7 +40,7 @@ function FighterStatsBlockPC() {
               </div>
             </div>
             <div className="mb-3">
-              <Image className="size-64" src={enemy.image} alt="enemy_avatar" />
+              <Image className="grayscale size-64" src={enemy.image} width={256} height={256} alt="enemy_avatar" />
             </div>
           </div>
           <div className="flex justify-center items-center p-2 bg-neutral-200 rounded-md font-bold text-xl text-gray-400">
