@@ -1,9 +1,3 @@
-import tiger from "@/public/images/enemies/tiger.png";
-import orc from "@/public/images/enemies/orc.png";
-import dragon from "@/public/images/enemies/dragon.png";
-import Slime from "@/public/images/enemies/slime.png";
-import Cobra from "@/public/images/enemies/king_cobra.png";
-import Rat from "@/public/images/enemies/rat2.png";
 import { Enemy } from "@/types/enemy";
 import { ItemRarity } from "@/types/shop";
 
@@ -14,7 +8,7 @@ const enemies: Enemy[] = [
     name: "Tiger",
     description:
       "In the forgotten depths of Ashen Vale, there prowls a creature spoken of only in whispers — the Dread Tiger. Once a guardian spirit of the ancient forest, it was twisted by forbidden sorcery and centuries of bloodshed into a monstrous beast of shadow and flame.",
-    image: tiger,
+    image: "/images/enemies/big_tiger.webp",
     xp: 20,
     score: 20,
     gold: 5,
@@ -43,7 +37,7 @@ const enemies: Enemy[] = [
     key: "orc",
     name: "Orc",
     description: "",
-    image: orc,
+    image: "/images/enemies/orc.webp",
     matchLvl: [3, 4, 5],
     xp: 40,
     score: 50,
@@ -72,7 +66,7 @@ const enemies: Enemy[] = [
     key: "dragon",
     name: "Dragon",
     description: "",
-    image: dragon,
+    image: "/images/enemies/dragon.webp",
     matchLvl: [5, 6, 7, 8],
     xp: 255,
     score: 100,
@@ -101,7 +95,7 @@ const enemies: Enemy[] = [
     key: "Slime",
     name: "Demon Slime",
     description: "",
-    image: Slime,
+    image: "/images/enemies/slime.webp",
     matchLvl: [1, 2],
     xp: 5,
     score: 3,
@@ -130,7 +124,7 @@ const enemies: Enemy[] = [
     key: "cobra",
     name: "King Cobra",
     description: "",
-    image: Cobra,
+    image: "/images/enemies/king_cobra.webp",
     matchLvl: [2, 3],
     xp: 16,
     score: 10,
@@ -159,7 +153,7 @@ const enemies: Enemy[] = [
     key: "rat",
     name: "Zombie rat",
     description: "",
-    image: Rat,
+    image: "/images/enemies/zombie_rat.webp",
     matchLvl: [1, 2],
     xp: 7,
     score: 5,
@@ -190,7 +184,7 @@ const initialEnemies = {
   key: "",
   name: "",
   description: "",
-  image: Rat,
+  image: "/images/enemies/zombie_rat.webp",
   matchLvl: [1, 2],
   xp: 7,
   score: 5,
