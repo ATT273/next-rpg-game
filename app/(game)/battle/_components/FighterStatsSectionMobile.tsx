@@ -25,7 +25,7 @@ function FighterStatsBlockPC() {
           </div>
           <div className="flex gap-4">
             <div className="mb-3">
-              <Image className="grayscale size-40" src={player.image} alt="player_avatar" />
+              <Image className="grayscale size-40" src={player.image} width={160} height={160} alt="player_avatar" />
             </div>
             <div className="flex flex-col justify-start w-60 text-lg">
               <StatBlock values={{ stats: player.stats, bonusStats: player.bonusStats }} statKey="hp" showBar={true} />
@@ -90,7 +90,7 @@ function FighterStatsBlockPC() {
               </div>
             </div>
             <div className="mb-3">
-              <Image className="size-40" src={enemy.image} alt="enemy_avatar" />
+              <Image className="grayscale size-40" src={enemy.image} width={160} height={160} alt="enemy_avatar" />
             </div>
           </div>
         </div>

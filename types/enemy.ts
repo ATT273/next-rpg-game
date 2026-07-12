@@ -1,4 +1,3 @@
-import { StaticImageData } from "next/image";
 import { BonusStats, Stats } from "./player";
 import { ItemRarity } from "./shop";
 
@@ -7,7 +6,7 @@ type Enemy = {
   key: string;
   name: string;
   description: string;
-  image: StaticImageData;
+  image: string;
   xp: number;
   score: number;
   gold: number;
