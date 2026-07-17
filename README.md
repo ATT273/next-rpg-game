@@ -52,11 +52,23 @@ A turn-based RPG game built with Next.js, featuring character customization, aut
 ### 2025/12/21 - [Chore] Production Optimization
 > Removed console logs, cleaned up unused fields, and updated Next.js to latest version
 
+### 2026/01/07 - [Feature] Player Skill Tree & Level-Up Logic
+> Added skill tree dialog and level-up skill selection logic, refined class skill data and related type definitions
+
+### 2026/01/31 - [Improve] UI Upgrade & Asset Refresh
+> Reworked character stats, inventory, and layout UI, and replaced class artwork with new source images
+
+### 2026/02/28 - [Chore] Remove Unused Code
+> Cleaned up unused logic in use-game.ts
+
 ### 2026/06/18 - [Feature] Item Drop & Rarity System
 > Added item rarity data, drop item mechanics, and updated shop page and useGame:takeItem to support the new system
 
 ### 2026/06/20 - [Feature] Forge Item System
 > Implemented item forging: combine 2 copies of the same item and rarity into 1 upgraded item, with gold cost validation and a hold-to-forge interaction
+
+### 2026/07/17 - [Feature] Run Timeline System
+> Introduced a per-run timeline (minion, shop, forge, and boss stages) driving the select-event flow, with a boss enemy pool, random boss selection, and a timeline UI to track run progress
 
 ## Getting Started
 
