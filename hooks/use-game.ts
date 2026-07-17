@@ -15,6 +15,7 @@ import { Enemy } from "@/types/enemy";
 import * as _ from "lodash";
 import { SKILL_TARGET, WIN_CONDITION_STATUS } from "@/data/data";
 import { MAX_ITEM_LEVEL } from "@/constants/items.constants";
+import { RunConfig } from "@/data/run-config";
 
 function useGame() {
   const isPlayer = (object: Player | Enemy): object is Player => {
@@ -570,6 +571,12 @@ function useGame() {
       message: `${itemA.name} forged to level ${newItemLevel}!`,
     };
   };
+
+  // Run stages
+  const getStageData = (index: number) => {
+    const stageData = RunConfig.stages[index];
+    return stageData;
+  };
   return {
     isPlayer,
     getPlayerItems,
@@ -588,6 +595,7 @@ function useGame() {
     getGameEvent: getEvent,
     validateForgeItems,
     forgeItems,
+    getStageData,
   };
 }
 

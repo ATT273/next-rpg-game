@@ -34,9 +34,9 @@ export const initialPlayer = {
 };
 
 export const WIN_CONDITION_STATUS = {
-  WIN: 0,
-  LOSE: 1,
-  CONTINUE: 2,
+  WIN: "win",
+  LOSE: "lose",
+  CONTINUE: "continue",
 };
 
 export const SKILL_TARGET = {

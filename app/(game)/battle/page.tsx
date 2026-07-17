@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useTime } from "framer-motion";
 import { useRouter } from "next/navigation";
 import useGameStore from "@/store/store";
 import { Enemy } from "@/types/enemy";
@@ -20,6 +20,7 @@ import useShop from "@/hooks/use-shop";
 import { IShopItem } from "@/types/shop";
 import DropItemDialog from "@/components/dialogs/DropItemDialog";
 import { toast } from "sonner";
+import useTimelineStore from "@/store/timeline-store";
 
 const APP_ENV = process.env.NEXT_PUBLIC_ENVIRONMENT;
 const BattleScreen = () => {
@@ -34,7 +35,11 @@ const BattleScreen = () => {
     calculateCurrentLvlExp,
     calculateLvlFromExp,
     takeItem,
+    getStageData,
   } = useGame();
+  const { setCurrentStage, setStageData } = useTimelineStore();
+  const currentStage = useTimelineStore((state) => state.currentStage);
+
   const { player: playerStore, selectedEnemy, updatePlayer, setScore } = useGameStore();
   const { getRandomItemByRarity } = useShop();
 
@@ -60,6 +65,7 @@ const BattleScreen = () => {
     initState: {},
     turnCt: 0,
     currentTurn: "",
+    matchResult: "",
   });
 
   const [currentTurn, setCurrentTurn] = useState<{
@@ -118,7 +124,7 @@ const BattleScreen = () => {
   }, [isPlayerTurn]);
 
   useEffect(() => {
-    if (state.showNextBtn) {
+    if (state.showNextBtn && state.matchResult === WIN_CONDITION_STATUS.WIN) {
       const dropItem = getRandomItemByRarity(enemy.dropRarity);
       setDropItem(dropItem);
       setIsDropDialogOpen(true);
@@ -271,6 +277,7 @@ const BattleScreen = () => {
         ...prev,
         battleLogs: [...prev.battleLogs, winStatus.message],
         showNextBtn: true,
+        matchResult: winStatus.status,
       }));
       return true;
     }
@@ -297,6 +304,12 @@ const BattleScreen = () => {
 
     updatePlayer(_player);
     setState((prevState) => ({ ...prevState, showNextBtn: false }));
+    const nextStage = currentStage + 1;
+
+    setCurrentStage(nextStage);
+    const nextStageData = getStageData(nextStage);
+    setStageData(nextStageData);
+
     router.push("/select-event");
   };
 

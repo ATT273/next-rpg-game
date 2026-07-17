@@ -20,10 +20,12 @@ const BounusStatsPointScreen = ({
   selectedClass,
   handleUpdateStats,
   handlePrevStep,
+  handleCreatePlayer,
 }: {
   selectedClass: string;
   handleUpdateStats: (data: any) => void;
   handlePrevStep: () => void;
+  handleCreatePlayer: () => void;
 }) => {
   const [statsState, setStatsState] = useState<Stats>(initialState);
   const [classStats, setClassStats] = useState<Stats>(initialState);
@@ -62,6 +64,11 @@ const BounusStatsPointScreen = ({
     }
     setStatsState(_stats);
     setPoints(points + 1);
+  };
+
+  const handleCreate = () => {
+    handleUpdateStats({ stats: statsState });
+    setTimeout(() => handleCreatePlayer(), 500);
   };
 
   return (
@@ -123,7 +130,7 @@ const BounusStatsPointScreen = ({
           </div>
         </div>
       ) : (
-        <div></div>
+        <div />
       )}
       <div className="flex gap-3">
         <button
@@ -136,7 +143,7 @@ const BounusStatsPointScreen = ({
         <button
           type="submit"
           className={`${DEFAULT_BUTTON_CLASSES} bg-neutral-300 hover:bg-neutral-400 p-2`}
-          onClick={() => handleUpdateStats({ stats: statsState })}
+          onClick={handleCreate}
         >
           Finish
         </button>

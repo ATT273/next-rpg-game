@@ -36,11 +36,17 @@ export default function useShop() {
     return randomItem;
   };
 
+  const getRandomItems = (count: number = 3): IShopItem[] => {
+    const shuffled = _.shuffle(items);
+    return _.cloneDeep(shuffled.slice(0, count));
+  };
+
   return {
     shop,
     getRandomShop,
     getShop,
     resolveShopItems,
     getRandomItemByRarity,
+    getRandomItems,
   };
 }
