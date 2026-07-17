@@ -14,6 +14,7 @@ const enemies: Enemy[] = [
     gold: 5,
     matchLvl: [1, 2, 3],
     dropRarity: "common",
+    isBoss: false,
     stats: {
       hp: 20,
       maxHP: 20,
@@ -38,11 +39,12 @@ const enemies: Enemy[] = [
     name: "Orc",
     description: "",
     image: "/images/enemies/orc.webp",
-    matchLvl: [3, 4, 5],
+    matchLvl: [1, 2, 3],
     xp: 40,
     score: 50,
     gold: 10,
     dropRarity: "uncommon",
+    isBoss: true,
     stats: {
       hp: 45,
       maxHP: 45,
@@ -72,6 +74,7 @@ const enemies: Enemy[] = [
     score: 100,
     gold: 20,
     dropRarity: "epic",
+    isBoss: true,
     stats: {
       hp: 100,
       mp: 30,
@@ -101,6 +104,7 @@ const enemies: Enemy[] = [
     score: 3,
     gold: 5,
     dropRarity: "common",
+    isBoss: false,
     stats: {
       hp: 10,
       mp: 10,
@@ -130,6 +134,7 @@ const enemies: Enemy[] = [
     score: 10,
     gold: 5,
     dropRarity: "common",
+    isBoss: false,
     stats: {
       hp: 15,
       mp: 10,
@@ -159,6 +164,7 @@ const enemies: Enemy[] = [
     score: 5,
     gold: 5,
     dropRarity: "common",
+    isBoss: false,
     stats: {
       hp: 10,
       mp: 10,
@@ -207,6 +213,7 @@ const initialEnemies = {
     def: 0,
     spd: 0,
   },
+  isBoss: false,
 };
 
 export { initialEnemies };

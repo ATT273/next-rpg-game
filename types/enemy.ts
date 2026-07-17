@@ -14,6 +14,7 @@ type Enemy = {
   stats: Stats;
   bonusStats: BonusStats;
   dropRarity: ItemRarity;
+  isBoss: boolean;
 };
 
 export type { Enemy };

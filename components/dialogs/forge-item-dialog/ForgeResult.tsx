@@ -17,13 +17,13 @@ const ForgeResult = ({ forgedItem, currentItem }: ForgeResultProps) => {
         <Image
           src={currentItem.image}
           alt={`${currentItem.name}-icon-forge-result`}
-          width={200}
+          width={260}
           objectFit="cover"
           className="object-cover"
         />
       </div>
-      <div className="flex flex-col gap-2 items-start text-lg">
-        <h3 className="text-2xl font-bold w-full text-center">{forgedItem.name}</h3>
+      <div className="flex flex-col gap-2 items-start text-xl">
+        <h3 className="text-3xl font-bold w-full text-center">{forgedItem.name}</h3>
         <p>
           <span className="font-semibold">Item level: </span>
           {currentItem?.itemLevel} - <span className="text-amber-300">{forgedItem.itemLevel}</span>

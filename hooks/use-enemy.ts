@@ -12,7 +12,25 @@ export default function useEnemy() {
     return _enemy as Enemy;
   };
 
+  const getRandomEnemies = (playerLvl: number, count: number = 3): Enemy[] => {
+    const eligible = enemies.filter((enemy) => enemy.matchLvl.includes(playerLvl));
+    const shuffled = _.shuffle(eligible);
+    return _.cloneDeep(shuffled.slice(0, count));
+  };
+
+  const getRandomBoss = (playerLvl: number): Enemy | undefined => {
+    const eligibleBosses = enemies.filter(
+      (enemy) => enemy.isBoss && enemy.matchLvl.includes(playerLvl)
+    );
+    const randomIdx = Math.floor(Math.random() * eligibleBosses.length);
+    const boss = eligibleBosses[randomIdx];
+
+    return boss && (_.cloneDeep(boss) as Enemy);
+  };
+
   return {
     getRandomEnemy,
+    getRandomEnemies,
+    getRandomBoss,
   };
 }
