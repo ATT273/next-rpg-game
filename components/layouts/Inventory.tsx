@@ -35,7 +35,7 @@ function InventoryBlock({
 
   return (
     <div
-      className="relative group border-2 border-stone-800"
+      className="relative group border-2 border-stone-800 overflow-hidden"
       onMouseEnter={() => onHover(item)}
       onMouseLeave={() => onHover(null)}
       onClick={() => onHover(item)}
@@ -51,7 +51,7 @@ function InventoryBlock({
         <Ellipsis className="size-4" />
       </div>
       {isShowItemMenu && (
-        <ul className="absolute top-5  w-20 bg-stone-300 p-1 rounded-md cursor-pointer">
+        <ul className="absolute top-5 w-20 bg-stone-300 p-1 rounded-md cursor-pointer">
           {item.isConsumable && <li onClick={handleUseItem}>Use item</li>}
           <li onClick={handleDropItem}>Drop item</li>
         </ul>

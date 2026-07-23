@@ -158,7 +158,7 @@ const CharacterStats = () => {
               onHover={setHoverInfo}
             />
           ) : (
-            <div key={x} className="h-16 w-16 border-2 border-stone-800" onMouseEnter={() => setHoverInfo(null)} />
+            <div key={x} className="size-17 border-2 border-stone-800" onMouseEnter={() => setHoverInfo(null)} />
           );
         })}
         {hoverInfo && (
