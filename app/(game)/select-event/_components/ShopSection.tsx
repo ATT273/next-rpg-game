@@ -13,7 +13,7 @@ import useSkill from "@/hooks/use-skill";
 import { SkillDefinition } from "@/types/player";
 import { classes } from "@/data/classes";
 import { useRouter } from "next/navigation";
-import useGame from "@/hooks/use-game";
+import { getStageData } from "@/hooks/use-game";
 import useTimelineStore from "@/store/timeline-store";
 import { useTime } from "framer-motion";
 
@@ -28,7 +28,6 @@ const ShopSection = () => {
   const { convertSkillsToRuntime } = useSkill();
   const { setCurrentStage, setStageData } = useTimelineStore();
   const currentStage = useTimelineStore((state) => state.currentStage);
-  const { getStageData } = useGame();
 
   const allSkills = useMemo(() => {
     const skillsArray: SkillDefinition[] = Object.values(classes).flatMap((cls) => cls.skills as SkillDefinition[]);

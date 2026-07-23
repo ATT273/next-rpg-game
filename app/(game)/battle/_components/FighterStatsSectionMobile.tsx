@@ -20,7 +20,7 @@ function FighterStatsBlockPC() {
       {player.stats !== undefined && (
         <div className="relative flex flex-col justify-between items-stretch gap-2">
           <div className="flex flex-col items-center justify-between flex-1 gap-2 h-50">
-            <div className="font-bold text-3xl">Turn: {currentTurn?.player}</div>
+            <div className="font-bold text-3xl">Round: {currentTurn?.player}</div>
             {/* <div className="font-bold text-3xl">VS.</div> */}
           </div>
           <div className="flex gap-4">

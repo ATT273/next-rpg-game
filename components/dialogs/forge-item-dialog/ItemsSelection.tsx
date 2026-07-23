@@ -6,7 +6,7 @@ import { Anvil, X } from "lucide-react";
 import Image from "next/image";
 import HoldButton from "@/components/shared/HoldButton";
 import { IInventoryItem } from "@/types/player";
-import useGame from "@/hooks/use-game";
+import { validateForgeItems, forgeItems } from "@/hooks/use-game";
 import { toast } from "sonner";
 
 const FORGE_COST = 10;
@@ -25,7 +25,6 @@ const ItemsSelection = ({
 }: ItemsSelectionProps) => {
   const player = useGameStore((s) => s.player);
   const updatePlayer = useGameStore((s) => s.updatePlayer);
-  const { validateForgeItems, forgeItems } = useGame();
   const isFirstSlotOccupied = itemsToForge.length >= 1;
   const isSecondSlotOccupied = itemsToForge.length === 2;
   const canAffordForge = player.gold >= FORGE_COST;

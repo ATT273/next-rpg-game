@@ -25,7 +25,7 @@ const BounusStatsPointScreen = ({
   selectedClass: string;
   handleUpdateStats: (data: any) => void;
   handlePrevStep: () => void;
-  handleCreatePlayer: () => void;
+  handleCreatePlayer: (finalStats: Stats) => void;
 }) => {
   const [statsState, setStatsState] = useState<Stats>(initialState);
   const [classStats, setClassStats] = useState<Stats>(initialState);
@@ -68,7 +68,7 @@ const BounusStatsPointScreen = ({
 
   const handleCreate = () => {
     handleUpdateStats({ stats: statsState });
-    setTimeout(() => handleCreatePlayer(), 500);
+    setTimeout(() => handleCreatePlayer(statsState), 500);
   };
 
   return (

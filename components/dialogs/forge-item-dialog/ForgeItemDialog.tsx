@@ -5,7 +5,7 @@ import { Dialog, DialogPanel, DialogTitle, DialogBackdrop, Button } from "@headl
 import { useState } from "react";
 import { toast } from "sonner";
 import { IInventoryItem } from "@/types/player";
-import useGame from "@/hooks/use-game";
+import { validateForgeItems } from "@/hooks/use-game";
 import ForgeResult from "./ForgeResult";
 import ItemsSelection from "./ItemsSelection";
 
@@ -15,7 +15,6 @@ interface ForgeItemDialogProps {
 }
 
 const ForgeItemDialog = ({ isOpen, setIsOpen }: ForgeItemDialogProps) => {
-  const { validateForgeItems } = useGame();
   const [itemsToForge, setItemsToForge] = useState<IInventoryItem[]>([]);
   const [forgeResult, setForgeResult] = useState<{ forgedItem: IInventoryItem; sourceItem: IInventoryItem }>();
   const [showForgeResult, setShowForgeResult] = useState<boolean>(false);

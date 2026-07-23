@@ -30,7 +30,7 @@ function FighterStatsBlockPC() {
                 )}
               </div>
               <div className="flex flex-col items-center justify-between flex-1 gap-2 h-50">
-                <div className="font-bold text-3xl">Turn: {currentTurn?.player}</div>
+                <div className="font-bold text-3xl">Round: {currentTurn?.player}</div>
                 <div className="font-bold text-3xl">VS.</div>
               </div>
               <div className="absolute right-0 top-1/2 -translate-y-1/2 w-20 h-12.5">

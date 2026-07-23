@@ -5,7 +5,7 @@ import { classes, classKeys, MAX_LEVEL, skillLevel } from "@/data/classes";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { SkillLevel, SkillTreeNode as SkillTreeNodeType, Skills, Stats, SkillDefinition } from "@/types/player";
-import useGame from "@/hooks/use-game";
+import { buildSkillTree } from "@/hooks/use-game";
 import useSkill from "@/hooks/use-skill";
 import { useCreateCharacterContext, MAX_SKILL_POINTS } from "./CreateCharacterProvider";
 import BasicStats from "./BasicStats";
@@ -38,7 +38,6 @@ const ClassesSelection = ({
   const [currentSkillTree, setCurrentSkillTree] = useState<SkillTreeNodeType[]>([]);
   const [tempSkillLevelData, setTempSkillLevelData] = useState<SkillLevel>(skillLevelData);
   const [isOpen, setIsOpen] = useState(false);
-  const { buildSkillTree } = useGame();
   const { convertSkillsToRuntime } = useSkill();
   // Slider
   const [loaded, setLoaded] = useState(false);
