@@ -3,14 +3,14 @@ import { useState } from "react";
 import * as _ from "lodash";
 import { IShopConfig, IShopItem, ItemRarity } from "@/types/shop";
 import items from "@/data/items";
+import { getRandomIndex } from "@/utils";
 
 export default function useShop() {
   const [shop, setShop] = useState<IShopConfig>(shops[0]);
 
   const getRandomShop = () => {
-    const _shop = _.cloneDeep(shops[1]);
-    setShop(_shop);
-    return _shop;
+    const randomIndex = getRandomIndex(shops.length);
+    return randomIndex;
   };
 
   const getShop = (id: number) => {

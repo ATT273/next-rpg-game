@@ -15,3 +15,8 @@ export function getRandomThree(min: number, max: number): number[] | null {
 
   return Array.from(result);
 }
+
+export function getRandomIndex(size: number) {
+  if (size <= 0) return -1;
+  return Math.floor(Math.random() * size);
+}

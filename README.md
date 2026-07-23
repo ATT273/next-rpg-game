@@ -70,6 +70,9 @@ A turn-based RPG game built with Next.js, featuring character customization, aut
 ### 2026/07/17 - [Feature] Run Timeline System
 > Introduced a per-run timeline (minion, shop, forge, and boss stages) driving the select-event flow, with a boss enemy pool, random boss selection, and a timeline UI to track run progress
 
+### 2026/07/23 - [Feature] Skill Point Spending & Forge Item Level Display
+> Added the skill tree dialog for spending skill points (increase/decrease skill level, confirm selection) and item level comparison display in the forge result screen
+
 ## Getting Started
 
 First, run the development server:

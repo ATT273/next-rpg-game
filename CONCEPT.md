@@ -393,12 +393,16 @@ Player {
 ## Kế hoạch mở rộng (chưa implement)
 
 - **Forge UI** — đã hoàn chỉnh: dialog chọn item, hold-to-forge, trừ 10G, hiển thị kết quả so sánh stat. Còn thiếu: không loại item đã chọn khỏi danh sách chọn, slot không tự dịch chuyển khi xóa slot đầu
-- **UI hiển thị itemLevel** — hiện không có badge/icon nào thể hiện item level sau forge
 - **UI màu theo rarity** — data rarity đã có, chưa có color mapping ở UI
 - **lvlRequired enforcement** — field đã có, chưa kiểm tra khi nhặt/equip item
 - **Shop duplicate check** — `handleCloseShop` push thẳng cart vào inventory, chưa kiểm tra full
-- **Timeline / Event system** — thêm enemy type (normal / miniboss / boss), drop item theo loại quái
-- **Skill Point spending UI** — Skill Points cộng lên nhưng chưa có màn hình dùng
 - **Item consumption trong battle** — `consumeItem` đã có nhưng chưa gắn vào battle UI
 - **Score leaderboard** — Score được tính nhưng chưa hiển thị
 - **Cân bằng chỉ số item** — stat hiện tại là tạm thời, cần pass balance sau khi có đủ gameplay loop
+- **Item Effect (trigger theo điều kiện)** — item không chỉ cộng stat tĩnh mà có thể mang hiệu ứng kích hoạt theo điều kiện cụ thể, ví dụ:
+  - Đầu trận (`on_battle_start`): buff/debuff ngay khi vào battle
+  - Theo chỉ số (`hp_below_x%`, `mp_above_x`, ...): kích hoạt khi stat đạt ngưỡng
+  - Theo turn (`on_turn_n`, `every_n_turns`): lặp lại theo chu kỳ
+  - Khi bị tấn công / gây damage (`on_hit`, `on_taken_damage`): phản đòn, hồi máu, né...
+  - Khi kết thúc trận (`on_battle_end`): hồi phục, cộng thêm reward
+  - Cần thiết kế: cấu trúc data effect trên `IShopItem` (loại trigger, điều kiện, hiệu ứng), engine kiểm tra & kích hoạt effect trong vòng lặp battle (`use-game.ts`)

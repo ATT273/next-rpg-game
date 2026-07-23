@@ -24,9 +24,8 @@ const ShopSection = () => {
   const [shopName, setShopName] = useState<string>("");
   const [cart, setCart] = useState<IShopItem[]>([]);
   const [playerGold, setPlayerGold] = useState<number>(player.gold || 0);
-  const { resolveShopItems, getShop } = useShop();
+  const { resolveShopItems, getShop, getRandomShop } = useShop();
   const { convertSkillsToRuntime } = useSkill();
-  const { getRandomShop } = useShop();
   const { setCurrentStage, setStageData } = useTimelineStore();
   const currentStage = useTimelineStore((state) => state.currentStage);
   const { getStageData } = useGame();
@@ -37,8 +36,8 @@ const ShopSection = () => {
   }, []);
 
   useEffect(() => {
-    const shop = getRandomShop();
-    selectShop(shop.id);
+    const shopIndex = getRandomShop();
+    selectShop(shopIndex);
   }, []);
 
   useEffect(() => {
