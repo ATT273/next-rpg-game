@@ -1,16 +1,17 @@
 "use client";
 import { useState, useEffect, useRef, useMemo } from "react";
-import { motion, AnimatePresence, useTime } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import useGameStore from "@/store/store";
 import { Enemy } from "@/types/enemy";
-import { ActionType, BuffCounter, Player } from "@/types/player";
+import { ActionType, Player } from "@/types/player";
 import PopUp from "@/components/shared/popup";
 import FighterStatsBlockPC from "./_components/FighterStatsSectionPC";
 import FighterStatsBlockMobile from "./_components/FighterStatsSectionMobile";
 import { initialEnemies } from "@/data/enemies";
-import { ACTION_DELAY, ROUND_DELAY, SKILL_TARGET, WIN_CONDITION_STATUS } from "@/data/data";
-import useGame from "@/hooks/use-game";
+import { ACTION_DELAY, ROUND_DELAY, WIN_CONDITION_STATUS } from "@/data/data";
+import { getEnemy, calculateCurrentLvlExp, calculateLvlFromExp, takeItem, getStageData } from "@/hooks/use-game";
+import { simulateBattle } from "@/hooks/use-simulate-battle";
 import { delay } from "@/utils";
 import BattleProvider from "./_components/BattleProvider";
 import { Bug } from "lucide-react";
@@ -24,22 +25,12 @@ import useTimelineStore from "@/store/timeline-store";
 import useSkill from "@/hooks/use-skill";
 import { SkillDefinition } from "@/types/player";
 import { classes } from "@/data/classes";
+import { BattleTimeline } from "@/types/battle-timeline";
 
 const APP_ENV = process.env.NEXT_PUBLIC_ENVIRONMENT;
 const BattleScreen = () => {
   const audioPlayer = useRef<HTMLAudioElement>(null);
 
-  const {
-    getEnemy,
-    calculateBuff,
-    winCondition,
-    normalAttack,
-    skillUsing,
-    calculateCurrentLvlExp,
-    calculateLvlFromExp,
-    takeItem,
-    getStageData,
-  } = useGame();
   const { setCurrentStage, setStageData } = useTimelineStore();
   const currentStage = useTimelineStore((state) => state.currentStage);
 
@@ -63,26 +54,17 @@ const BattleScreen = () => {
     display: "block",
     intrOpacity: 1,
     mainOpacity: 0,
-    comKey: "",
     battleLogs: ["Start!!!"],
-    displayCombatLog: {
-      display: "none",
-    },
     showReadyPopup: true,
     showBattleScreen: false,
     showNextBtn: false,
-    initState: {},
-    turnCt: 0,
-    currentTurn: "",
     matchResult: "",
   });
 
-  const [currentTurn, setCurrentTurn] = useState<{
-    player: number;
-    enemy: number;
-  }>({ player: 0, enemy: 0 });
+  const [battleTimeline, setBattleTimeline] = useState<BattleTimeline>();
+  const [eventCursor, setEventCursor] = useState(-1);
+  const [currentTurn, setCurrentTurn] = useState<{ player: number; enemy: number }>({ player: 0, enemy: 0 });
   const [isPlayerTurn, setIsPlayerTurn] = useState<boolean>();
-  const [buffCounter, setBuffCounter] = useState<BuffCounter>({});
   const [actions, setActions] = useState<(ActionType | null)[]>([]);
   const actionIndex = useMemo(() => {
     return !state.showNextBtn ? actions.length - 1 : -1;
@@ -103,165 +85,61 @@ const BattleScreen = () => {
       }
     }
   }, [selectedEnemy]);
-  // useEffect(() => {
-  //   if (audioPlayer.current) {
-  //     audioPlayer.current.volume = 0.5;
-  //   }
-  // }, [audioPlayer]);
 
+  // Generate the full battle outcome once, right before playback starts
   useEffect(() => {
-    if (player.name && enemy.key && state.showBattleScreen) {
-      if (currentTurn.player === 0) {
-        // Choose first attacker
-        async () => {
-          await delay(500);
-        };
-        setIsPlayerTurn(player.stats.spd >= enemy.stats.spd);
-      }
+    if (player.name && enemy.key && state.showBattleScreen && !battleTimeline) {
+      const timeline = simulateBattle(player, enemy);
+      setBattleTimeline(timeline);
+      setEventCursor(0);
     }
-  }, [enemy, player, state]);
+  }, [player, enemy, state.showBattleScreen, battleTimeline]);
 
+  // Replay the generated timeline, one event at a time
   useEffect(() => {
-    if (isPlayerTurn === undefined) return;
-    if (isPlayerTurn) {
-      setCurrentTurn((prev) => ({ ...prev, player: prev.player + 1 }));
-      playerTurn();
-    } else {
-      setCurrentTurn((prev) => ({ ...prev, enemy: prev.enemy + 1 }));
-      enemyTurn();
-    }
-  }, [isPlayerTurn]);
-
-  useEffect(() => {
-    if (state.showNextBtn && state.matchResult === WIN_CONDITION_STATUS.WIN) {
-      const dropItem = getRandomItemByRarity(enemy.dropRarity);
-      setDropItem(dropItem);
-      setIsDropDialogOpen(true);
-    }
-  }, [state.showNextBtn]);
-
-  const playerTurn = async () => {
-    let _player = { ...player } as Player;
-    let _enemy = { ...enemy } as Enemy;
-    let _buffCounter = { ...buffCounter };
-
-    // Player normal attack
-    const afterAtk = await normalAttack(_player, _enemy);
-    _player = { ...(afterAtk.attacker as Player) };
-    _enemy = { ...(afterAtk.target as Enemy) };
-    await updateState({
-      player: _player,
-      enemy: _enemy,
-      battlelog: afterAtk.combatLog,
-      actionLogs: afterAtk.actions,
-    });
-    await delay(ACTION_DELAY);
-    if (await checkWinCondition(_player, _enemy)) return;
-
-    // Player use all available skills sequentially
-    for (const skill of _player.skills) {
-      // Check if player has enough MP for this skill
-      if (_player.stats.mp >= skill.cost) {
-        const isNewCasted = _buffCounter[skill.key] ? false : true;
-        const afterUsingSkill = await skillUsing(_player, _enemy, skill, isNewCasted);
-        _player = { ...afterUsingSkill.attacker };
-        _enemy = { ...afterUsingSkill.target };
-
-        let newBuff: { duration: number; turnCasted: number } | undefined;
-        if (skill.target === SKILL_TARGET.SELF) {
-          newBuff = {
-            duration: !isNaN(Number(skill.duration)) ? Number(skill.duration) : 0,
-            turnCasted: currentTurn.player,
-          };
-        }
-
-        // Update buff counter for this skill
-        if (isNewCasted && newBuff) {
-          _buffCounter = {
-            ..._buffCounter,
-            [skill.key]: newBuff,
-          };
-        }
-
-        await updateState({
-          player: { ..._player },
-          enemy: _enemy,
-          battlelog: afterUsingSkill.combatLog,
-          buffCounters: isNewCasted && newBuff ? _buffCounter : undefined,
-          actionLogs: afterUsingSkill.actions,
-        });
-        await delay(ACTION_DELAY);
-        if (await checkWinCondition(_player, _enemy)) return;
-      }
-    }
-
-    handleEndturn("player");
-  };
-  const enemyTurn = async () => {
-    let _player = { ...player } as Player;
-    let _enemy = { ...enemy } as Enemy;
-    const afterAtk = await normalAttack(_enemy, _player);
-
-    _player = { ...(afterAtk.target as Player) };
-    _enemy = { ...(afterAtk.attacker as Enemy) };
-    await updateState({
-      player: { ...player },
-      enemy: enemy,
-      battlelog: afterAtk.combatLog,
-      actionLogs: afterAtk.actions,
-    });
-    await delay(ACTION_DELAY);
-    if (await checkWinCondition(_player, _enemy)) return;
-
-    if (_player.buffStats.length > 0) {
-      await buffCalculation(_player, _enemy);
-    }
-    handleEndturn("enemy");
-  };
-
-  const buffCalculation = async (player: Player, enemy: Enemy) => {
-    const { player: _player, buffCounter: _counter, combatLog } = await calculateBuff(player, buffCounter);
-    await updateState({
-      player: _player,
-      enemy: enemy,
-      buffCounters: _counter,
-      battlelog: combatLog,
-    });
-    await delay(ACTION_DELAY);
-  };
-
-  const updateState = async ({
-    player,
-    enemy,
-    battlelog,
-    buffCounters,
-    actionLogs,
-  }: {
-    player: Player;
-    enemy: Enemy;
-    battlelog?: string;
-    buffCounters?: BuffCounter;
-    actionLogs?: (ActionType | null)[];
-  }) => {
-    if (buffCounters) {
-      setBuffCounter({
-        ...buffCounters,
-      });
-    }
-    if (battlelog) {
+    if (!battleTimeline || eventCursor < 0) return;
+    if (eventCursor >= battleTimeline.events.length) {
+      const winStatus = battleTimeline.result;
       setState((prev) => ({
         ...prev,
-        battleLogs: [...prev.battleLogs, battlelog],
+        battleLogs: [...prev.battleLogs, winStatus.message],
+        showNextBtn: true,
+        matchResult: winStatus.status,
       }));
+      return;
     }
-    if (actionLogs) {
-      setActions((prev) => [...prev, ...actionLogs]);
-      // setActionIndex((prev) => actions.length + 1);
-    }
-    setPlayer(player);
-    setEnemy(enemy);
-    return true;
-  };
+
+    let cancelled = false;
+    const event = battleTimeline.events[eventCursor];
+    const previousEvent = eventCursor > 0 ? battleTimeline.events[eventCursor - 1] : undefined;
+    const isNewRound = previousEvent !== undefined && previousEvent.roundActor !== event.roundActor;
+
+    (async () => {
+      if (isNewRound) {
+        await delay(ROUND_DELAY);
+        if (cancelled) return;
+      }
+
+      setPlayer(event.playerSnapshot);
+      setEnemy(event.enemySnapshot);
+      setIsPlayerTurn(event.roundActor === "player");
+      setCurrentTurn((prev) => ({ ...prev, [event.roundActor]: event.turn }));
+      if (event.combatLog) {
+        setState((prev) => ({ ...prev, battleLogs: [...prev.battleLogs, event.combatLog] }));
+      }
+      if (event.actions.length > 0) {
+        setActions((prev) => [...prev, ...event.actions]);
+      }
+
+      await delay(ACTION_DELAY);
+      if (cancelled) return;
+      setEventCursor((prev) => prev + 1);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [battleTimeline, eventCursor]);
 
   const handleReady = () => {
     setState((prev) => ({
@@ -274,41 +152,23 @@ const BattleScreen = () => {
     }));
   };
 
-  const handleEndturn = async (atkerType: string) => {
-    await delay(ROUND_DELAY);
-    setIsPlayerTurn(!isPlayerTurn);
-  };
-
-  const checkWinCondition = async (player: Player, enemy: Enemy) => {
-    let winStatus = await winCondition(player, enemy);
-    if (winStatus.status === WIN_CONDITION_STATUS.WIN || winStatus.status === WIN_CONDITION_STATUS.LOSE) {
-      setState((prev) => ({
-        ...prev,
-        battleLogs: [...prev.battleLogs, winStatus.message],
-        showNextBtn: true,
-        matchResult: winStatus.status,
-      }));
-      return true;
-    }
-    return false;
-  };
-
   const handleEndMatch = () => {
+    const finalEnemy = battleTimeline?.events.at(-1)?.enemySnapshot ?? enemy;
     const _player = { ...player };
     _player.buffStats = [];
-    _player.exp = player.exp + enemy.xp;
-    _player.gold = player.gold + enemy.gold;
-    if (player.exp + enemy.xp >= player.levelExp) {
-      const nextLvl = calculateLvlFromExp(player.exp + enemy.xp);
+    _player.exp = player.exp + finalEnemy.xp;
+    _player.gold = player.gold + finalEnemy.gold;
+    if (player.exp + finalEnemy.xp >= player.levelExp) {
+      const nextLvl = calculateLvlFromExp(player.exp + finalEnemy.xp);
       const newLevelExp = calculateCurrentLvlExp(Math.floor(nextLvl) + 1);
       _player.level = Math.floor(nextLvl);
-      _player.exp = player.exp + enemy.xp - player.levelExp;
+      _player.exp = player.exp + finalEnemy.xp - player.levelExp;
       _player.levelExp = newLevelExp;
       _player.skillPoints += 1;
     }
 
     if (_player.stats.hp > 0) {
-      setScore(enemy.score);
+      setScore(finalEnemy.score);
     }
 
     updatePlayer(_player);
@@ -321,6 +181,15 @@ const BattleScreen = () => {
 
     router.push("/select-event");
   };
+
+  useEffect(() => {
+    if (state.showNextBtn && state.matchResult === WIN_CONDITION_STATUS.WIN) {
+      const finalEnemy = battleTimeline?.events.at(-1)?.enemySnapshot ?? enemy;
+      const dropItem = getRandomItemByRarity(finalEnemy.dropRarity);
+      setDropItem(dropItem);
+      setIsDropDialogOpen(true);
+    }
+  }, [state.showNextBtn]);
 
   const handleLeaveItem = () => {
     setIsDropDialogOpen(false);
@@ -365,7 +234,8 @@ const BattleScreen = () => {
     const debugInfo = {
       player: player,
       enemy: enemy,
-      buffCounter: buffCounter,
+      battleTimeline: battleTimeline,
+      eventCursor: eventCursor,
       actions: actions,
       battleLogs: state.battleLogs,
     };

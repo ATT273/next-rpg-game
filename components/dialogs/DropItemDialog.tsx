@@ -1,6 +1,5 @@
 import { useSkillContext } from "@/app/(game)/_components/SkillProvider";
 import { DEFAULT_BUTTON_CLASSES } from "@/constants/css.constants";
-import useGame from "@/hooks/use-game";
 import { IShopItem } from "@/types/shop";
 import { Dialog, DialogPanel, DialogTitle, DialogBackdrop, Button } from "@headlessui/react";
 import Image from "next/image";

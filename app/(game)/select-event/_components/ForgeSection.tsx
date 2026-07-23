@@ -4,14 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DEFAULT_BUTTON_CLASSES } from "@/constants/css.constants";
 import { IInventoryItem } from "@/types/player";
-import useGame from "@/hooks/use-game";
+import { getStageData } from "@/hooks/use-game";
 import useTimelineStore from "@/store/timeline-store";
 import ForgeResult from "@/components/dialogs/forge-item-dialog/ForgeResult";
 import ItemsSelection from "@/components/dialogs/forge-item-dialog/ItemsSelection";
 
 const ForgeSection = () => {
   const router = useRouter();
-  const { getStageData } = useGame();
   const { setCurrentStage, setStageData } = useTimelineStore();
   const currentStage = useTimelineStore((state) => state.currentStage);
 

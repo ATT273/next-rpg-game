@@ -7,16 +7,16 @@ import { useCreateCharacterContext } from "./CreateCharacterProvider";
 import useGameStore from "@/store/store";
 import { useRouter } from "next/navigation";
 import useTimelineStore from "@/store/timeline-store";
-import useGame from "@/hooks/use-game";
+import { getStageData } from "@/hooks/use-game";
+import { Stats } from "@/types/player";
 
 const PageContent = () => {
   const { step, creatingPlayer, handleUpdatePlayer, handlePrevStep } = useCreateCharacterContext();
   const router = useRouter();
   const { createPlayer } = useGameStore();
   const { setCurrentStage, setStageData } = useTimelineStore();
-  const { getStageData } = useGame();
-  const handleCreatePlayer = () => {
-    createPlayer(creatingPlayer);
+  const handleCreatePlayer = (finalStats: Stats) => {
+    createPlayer({ ...creatingPlayer, stats: finalStats });
     const stageData = getStageData(0);
     setCurrentStage(0);
     setStageData(stageData);

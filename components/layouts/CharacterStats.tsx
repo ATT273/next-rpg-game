@@ -8,7 +8,7 @@ import { IShopItem } from "@/types/shop";
 import { motion } from "framer-motion";
 import { Button } from "@headlessui/react";
 import SkillTreeDialog from "../dialogs/SkillTreeDialog";
-import useGame from "@/hooks/use-game";
+import { buildSkillTree, getBonusStats } from "@/hooks/use-game";
 import useSkill from "@/hooks/use-skill";
 import { SkillDefinition, SkillLevel, SkillTreeNode } from "@/types/player";
 import { classes, MAX_LEVEL } from "@/data/classes";
@@ -25,7 +25,6 @@ const CharacterStats = () => {
   const [skillPoints, setSkillPoints] = useState(playerStore.skillPoints);
   const [tempSkillLevelData, setTempSkillLevelData] = useState<SkillLevel>();
 
-  const { buildSkillTree, getBonusStats } = useGame();
   const { convertSkillsToRuntime } = useSkill();
 
   const skillsTree: Map<string, SkillTreeNode[]> = useMemo(() => {

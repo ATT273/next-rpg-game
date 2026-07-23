@@ -18,6 +18,7 @@ const ForgeResult = ({ forgedItem, currentItem }: ForgeResultProps) => {
           src={currentItem.image}
           alt={`${currentItem.name}-icon-forge-result`}
           width={260}
+          height={260}
           objectFit="cover"
           className="object-cover"
         />
