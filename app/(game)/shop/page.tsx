@@ -8,6 +8,7 @@ import ItemBlock from "./_components/ItemBlock";
 import { Swords } from "lucide-react";
 import { getRandomThree } from "@/utils";
 import useShop from "@/hooks/use-shop";
+import { getBonusStats } from "@/hooks/use-game";
 import { toast } from "sonner";
 import useSkill from "@/hooks/use-skill";
 import { SkillDefinition } from "@/types/player";
@@ -79,6 +80,7 @@ const Shop = () => {
         instanceId: new Date().getTime(),
       }));
       const newItems = [...freshPlayer.items, ...createInventoryItems];
+      const bonusStats = getBonusStats(newItems);
 
       // Create a Set of existing skill keys for O(1) lookup
       const existingSkillKeys = new Set(freshPlayer.skills.map((s) => s.key));
@@ -99,6 +101,7 @@ const Shop = () => {
       updatePlayer({
         ...freshPlayer,
         items: newItems,
+        bonusStats,
         skills: [...freshPlayer.skills, ...runtimeSkills],
         gold: playerGold,
       });
