@@ -1,5 +1,6 @@
 import { IShopItem } from "@/types/shop";
 import { useSkillContext } from "../../_components/SkillProvider";
+import { ChevronRight } from "lucide-react";
 
 interface Props {
   item: IShopItem;
@@ -12,9 +13,9 @@ const ItemInfoPanel = ({ item }: Props) => {
     for (const stat in item.stats) {
       if (item.stats.hasOwnProperty(stat)) {
         stats.push(
-          <p className="pl-2" key={stat}>
-            -{`${stat}: ${item.stats[stat as keyof typeof item.stats]}`}
-          </p>,
+          <div className="pl-2 flex gap-1 items-center" key={stat}>
+            <ChevronRight className="size-4 pt-1" /> <p>{`${stat}: ${item.stats[stat as keyof typeof item.stats]}`}</p>
+          </div>,
         );
       }
     }
@@ -39,7 +40,10 @@ const ItemInfoPanel = ({ item }: Props) => {
           <p className="font-semibold">Skills granted: </p>
           <ul>
             {item.skills.map((skill) => (
-              <li key={skill}> - {allSkillsMap[skill]?.name || skill}</li>
+              <li key={skill} className="flex gap-1 items-center">
+                {" "}
+                <ChevronRight className="size-4 pt-1" /> {allSkillsMap[skill]?.name || skill}
+              </li>
             ))}
           </ul>
         </div>

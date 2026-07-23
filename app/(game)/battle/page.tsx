@@ -21,6 +21,9 @@ import { IShopItem } from "@/types/shop";
 import DropItemDialog from "@/components/dialogs/DropItemDialog";
 import { toast } from "sonner";
 import useTimelineStore from "@/store/timeline-store";
+import useSkill from "@/hooks/use-skill";
+import { SkillDefinition } from "@/types/player";
+import { classes } from "@/data/classes";
 
 const APP_ENV = process.env.NEXT_PUBLIC_ENVIRONMENT;
 const BattleScreen = () => {
@@ -40,8 +43,14 @@ const BattleScreen = () => {
   const { setCurrentStage, setStageData } = useTimelineStore();
   const currentStage = useTimelineStore((state) => state.currentStage);
 
-  const { player: playerStore, selectedEnemy, updatePlayer, setScore } = useGameStore();
+  const { player: playerStore, selectedEnemy, updatePlayer, setScore, setSkillLevelData } = useGameStore();
   const { getRandomItemByRarity } = useShop();
+  const { convertSkillsToRuntime } = useSkill();
+
+  const allSkills = useMemo(() => {
+    const skillsArray: SkillDefinition[] = Object.values(classes).flatMap((cls) => cls.skills as SkillDefinition[]);
+    return skillsArray;
+  }, []);
 
   const [player, setPlayer] = useState<Player>(playerStore);
   const [enemy, setEnemy] = useState<Enemy>(initialEnemies);
@@ -325,6 +334,25 @@ const BattleScreen = () => {
     const { newInventory, message, isAdded } = takeItem(dropItem, _player.items);
     if (isAdded) {
       _player.items = newInventory;
+
+      // Grant skills carried by the item, mirroring the shop purchase flow
+      const freshSkillLevelData = useGameStore.getState().skillLevelData;
+      const existingSkillKeys = new Set(_player.skills.map((s) => s.key));
+      const newSkillKeys = dropItem.skills.filter((key) => !existingSkillKeys.has(key));
+
+      if (newSkillKeys.length > 0) {
+        const updatedSkillLevelData = { ...freshSkillLevelData };
+        newSkillKeys.forEach((key) => {
+          updatedSkillLevelData[key] = { key, level: 1 };
+        });
+
+        const newSkillDefs = allSkills.filter((skill) => newSkillKeys.includes(skill.key));
+        const runtimeSkills = convertSkillsToRuntime(newSkillDefs, updatedSkillLevelData);
+
+        setSkillLevelData(updatedSkillLevelData);
+        _player.skills = [..._player.skills, ...runtimeSkills];
+      }
+
       updatePlayer(_player);
     }
     toast.info(message);
