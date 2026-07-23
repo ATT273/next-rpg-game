@@ -8,9 +8,9 @@ import { getRandomIndex } from "@/utils";
 export default function useShop() {
   const [shop, setShop] = useState<IShopConfig>(shops[0]);
 
-  const getRandomShop = () => {
+  const getRandomShopId = () => {
     const randomIndex = getRandomIndex(shops.length);
-    return randomIndex;
+    return shops[randomIndex].id;
   };
 
   const getShop = (id: number) => {
@@ -43,7 +43,7 @@ export default function useShop() {
 
   return {
     shop,
-    getRandomShop,
+    getRandomShopId,
     getShop,
     resolveShopItems,
     getRandomItemByRarity,

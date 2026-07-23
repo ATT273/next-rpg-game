@@ -6,7 +6,7 @@ import { Anvil, X } from "lucide-react";
 import Image from "next/image";
 import HoldButton from "@/components/shared/HoldButton";
 import { IInventoryItem } from "@/types/player";
-import { validateForgeItems, forgeItems } from "@/hooks/use-game";
+import { validateForgeItems, forgeItems, getBonusStats } from "@/hooks/use-game";
 import { toast } from "sonner";
 
 const FORGE_COST = 10;
@@ -45,7 +45,8 @@ const ItemsSelection = ({
     }
     const forgeResult = forgeItems(itemsToForge, player.items);
     onItemForged(forgeResult.forgedItem, itemsToForge[0]);
-    updatePlayer({ ...player, items: forgeResult.newInventory, gold: player.gold - FORGE_COST });
+    const bonusStats = getBonusStats(forgeResult.newInventory);
+    updatePlayer({ ...player, items: forgeResult.newInventory, bonusStats, gold: player.gold - FORGE_COST });
   };
   return (
     <div className="w-full flex flex-col gap-4 justify-center items-center">

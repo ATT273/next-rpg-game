@@ -141,6 +141,7 @@ const CharacterStats = () => {
             <StatBlock values={{ stats: player.stats, bonusStats: player.bonusStats }} statKey="atk" />
             <StatBlock values={{ stats: player.stats, bonusStats: player.bonusStats }} statKey="def" />
             <StatBlock values={{ stats: player.stats, bonusStats: player.bonusStats }} statKey="spd" />
+            <StatBlock values={{ stats: player.stats, bonusStats: player.bonusStats }} statKey="int" />
           </div>
         </div>
       </div>

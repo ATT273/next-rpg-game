@@ -13,7 +13,7 @@ import useSkill from "@/hooks/use-skill";
 import { SkillDefinition } from "@/types/player";
 import { classes } from "@/data/classes";
 import { useRouter } from "next/navigation";
-import { getStageData } from "@/hooks/use-game";
+import { getStageData, getBonusStats } from "@/hooks/use-game";
 import useTimelineStore from "@/store/timeline-store";
 import { useTime } from "framer-motion";
 
@@ -24,7 +24,7 @@ const ShopSection = () => {
   const [shopName, setShopName] = useState<string>("");
   const [cart, setCart] = useState<IShopItem[]>([]);
   const [playerGold, setPlayerGold] = useState<number>(player.gold || 0);
-  const { resolveShopItems, getShop, getRandomShop } = useShop();
+  const { resolveShopItems, getShop, getRandomShopId } = useShop();
   const { convertSkillsToRuntime } = useSkill();
   const { setCurrentStage, setStageData } = useTimelineStore();
   const currentStage = useTimelineStore((state) => state.currentStage);
@@ -35,8 +35,8 @@ const ShopSection = () => {
   }, []);
 
   useEffect(() => {
-    const shopIndex = getRandomShop();
-    selectShop(shopIndex);
+    const shopId = getRandomShopId();
+    selectShop(shopId);
   }, []);
 
   useEffect(() => {
@@ -77,6 +77,7 @@ const ShopSection = () => {
         instanceId: new Date().getTime(),
       }));
       const newItems = [...freshPlayer.items, ...createInventoryItems];
+      const bonusStats = getBonusStats(newItems);
 
       const existingSkillKeys = new Set(freshPlayer.skills.map((s) => s.key));
       const newSkillKeys = cart.flatMap((item) => item.skills).filter((key) => !existingSkillKeys.has(key));
@@ -92,6 +93,7 @@ const ShopSection = () => {
       updatePlayer({
         ...freshPlayer,
         items: newItems,
+        bonusStats,
         skills: [...freshPlayer.skills, ...runtimeSkills],
         gold: playerGold,
       });

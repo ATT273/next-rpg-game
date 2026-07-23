@@ -10,7 +10,14 @@ import FighterStatsBlockPC from "./_components/FighterStatsSectionPC";
 import FighterStatsBlockMobile from "./_components/FighterStatsSectionMobile";
 import { initialEnemies } from "@/data/enemies";
 import { ACTION_DELAY, ROUND_DELAY, WIN_CONDITION_STATUS } from "@/data/data";
-import { getEnemy, calculateCurrentLvlExp, calculateLvlFromExp, takeItem, getStageData } from "@/hooks/use-game";
+import {
+  getEnemy,
+  calculateCurrentLvlExp,
+  calculateLvlFromExp,
+  takeItem,
+  getStageData,
+  getBonusStats,
+} from "@/hooks/use-game";
 import { simulateBattle } from "@/hooks/use-simulate-battle";
 import { delay } from "@/utils";
 import BattleProvider from "./_components/BattleProvider";
@@ -203,6 +210,7 @@ const BattleScreen = () => {
     const { newInventory, message, isAdded } = takeItem(dropItem, _player.items);
     if (isAdded) {
       _player.items = newInventory;
+      _player.bonusStats = getBonusStats(newInventory);
 
       // Grant skills carried by the item, mirroring the shop purchase flow
       const freshSkillLevelData = useGameStore.getState().skillLevelData;
