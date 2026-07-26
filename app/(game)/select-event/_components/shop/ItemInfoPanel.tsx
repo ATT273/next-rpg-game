@@ -1,5 +1,5 @@
 import { IShopItem } from "@/types/shop";
-import { useSkillContext } from "../../_components/SkillProvider";
+import { useSkillContext } from "@/app/(game)/_components/SkillProvider";
 import { ChevronRight } from "lucide-react";
 
 interface Props {

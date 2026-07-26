@@ -4,8 +4,8 @@ import { persist, createJSONStorage } from "zustand/middleware";
 
 interface TimelineStore {
   currentStage: number;
-  stageData: StageConfig | null;
-  setStageData: (value: StageConfig) => void;
+  stageData: StageConfig | null | undefined;
+  setStageData: (value: StageConfig | undefined) => void;
   setCurrentStage: (value: number) => void;
 }
 const useTimelineStore = create<TimelineStore>()((set) => ({
