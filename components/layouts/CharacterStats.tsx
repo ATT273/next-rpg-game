@@ -13,7 +13,7 @@ import useSkill from "@/hooks/use-skill";
 import { SkillDefinition, SkillLevel, SkillTreeNode } from "@/types/player";
 import { classes, MAX_LEVEL } from "@/data/classes";
 import { usePathname } from "next/navigation";
-import ItemInfoPanel from "@/app/(game)/shop/_components/ItemInfoPanel";
+import ItemInfoPanel from "@/app/(game)/select-event/_components/shop/ItemInfoPanel";
 
 const CharacterStats = () => {
   const pathName = usePathname();

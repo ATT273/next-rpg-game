@@ -160,6 +160,11 @@ const BattleScreen = () => {
   };
 
   const handleEndMatch = () => {
+    if (state.matchResult === WIN_CONDITION_STATUS.LOSE) {
+      router.push("/game-over");
+      return;
+    }
+
     const finalEnemy = battleTimeline?.events.at(-1)?.enemySnapshot ?? enemy;
     const _player = { ...player };
     _player.buffStats = [];
@@ -174,9 +179,7 @@ const BattleScreen = () => {
       _player.skillPoints += 1;
     }
 
-    if (_player.stats.hp > 0) {
-      setScore(finalEnemy.score);
-    }
+    setScore(finalEnemy.score);
 
     updatePlayer(_player);
     setState((prevState) => ({ ...prevState, showNextBtn: false }));

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import useEnemy from "@/hooks/use-enemy";
 import useGameStore from "@/store/store";
 import { Enemy } from "@/types/enemy";
-import EventCard from "./EventCard";
+import EventCard from "../EventCard";
 import useTimelineStore from "@/store/timeline-store";
 
 interface Props {

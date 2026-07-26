@@ -7,6 +7,7 @@ import { initialPlayer } from "@/data/data";
 
 interface Store {
   player: Player;
+  score: number;
   selectedEnemy: string;
   selectedShop: number;
   skillLevelData: SkillLevel;
@@ -17,6 +18,7 @@ interface Store {
   updateBuffStats: (payload: BuffStat[]) => void;
   resetPlayer: () => void;
   setScore: (payload: number) => void;
+  resetScore: () => void;
   updatePlayer: (payload: Player) => void;
   selectEnemy: (key: string) => void;
   selectShop: (id: number) => void;
@@ -79,6 +81,7 @@ const useGameStore = create<Store>()((set) => ({
       player: { ...state.player, buffStats: payload },
     })),
   setScore: (payload: number) => set((state: any) => ({ ...state, score: state.score + payload })),
+  resetScore: () => set((state: any) => ({ ...state, score: 0 })),
   updateItems: (payload: IShopItem[]) => set((state: any) => ({ player: { ...state.player, items: payload } })),
   updatePlayer: (payload: Player) => set((state: any) => ({ player: { ...state.player, ...payload } })),
   setSkillLevelData: (payload: SkillLevel) => set((state: any) => ({ skillLevelData: payload })),

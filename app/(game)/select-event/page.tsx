@@ -5,10 +5,11 @@ import useGameStore from "@/store/store";
 import { useRouter } from "next/navigation";
 import { Bug } from "lucide-react";
 import useTimelineStore from "@/store/timeline-store";
-import EnemyPickingSection from "./_components/EnemyPickingSection";
-import ShopSection from "./_components/ShopSection";
-import ForgeSection from "./_components/ForgeSection";
+import EnemyPickingSection from "./_components/battle/EnemyPickingSection";
+import ShopSection from "./_components/shop/ShopSection";
+import ForgeSection from "./_components/forge/ForgeSection";
 import { RunConfig } from "@/data/run-config";
+import Link from "next/link";
 
 const APP_ENV = process.env.NEXT_PUBLIC_ENVIRONMENT;
 
@@ -21,7 +22,8 @@ const SelectEvents = () => {
   const mainTitle = useMemo(() => {
     if (stageData?.type == "battle") return "Choose your opponent";
     if (stageData?.type === "shop") return "Buy what you need";
-    return "Upgrade your item";
+    if (stageData?.type === "forge") return "Upgrade your item";
+    return "";
   }, [stageData]);
 
   useEffect(() => {
@@ -52,13 +54,20 @@ const SelectEvents = () => {
     if (stageData?.type === "forge") {
       return <ForgeSection />;
     }
-    // fallback: stageData not set yet
+    // fallback: stageData not set yet (end of Run)
+    // TODO: Create a select-new-run screen after defeat the boss.
+    // NOTE: This is for demo stage only
     return (
-      <>
-        <EnemyPickingSection onSelect={onSelectBattle} />
-        <ShopSection />
-        <ForgeSection />
-      </>
+      <div className="flex flex-col gap-3 justify-center">
+        <h2 className="text-3xl font-semibold text-center">End of demo</h2>
+        <p className="text-xl">
+          You can{" "}
+          <Link href={"/"} className="underline font-semibold">
+            start a new run{" "}
+          </Link>{" "}
+          here{" "}
+        </p>
+      </div>
     );
   };
 
