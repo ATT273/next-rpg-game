@@ -3,6 +3,8 @@
 import { IInventoryItem } from "@/types/player";
 import { IItemStat } from "@/types/shop";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
+import { RARITY_DATA } from "@/constants/items.constants";
 
 interface ForgeResultProps {
   forgedItem: IInventoryItem;
@@ -13,7 +15,7 @@ const ForgeResult = ({ forgedItem, currentItem }: ForgeResultProps) => {
   const statsKeys = forgedItem ? Object.keys(forgedItem.stats) : [];
   return (
     <div className="w-full flex flex-col gap-4 justify-center items-center">
-      <div className="w-70p overflow-hidden border-3 border-amber-300">
+      <div className={cn("w-70p overflow-hidden border-3", RARITY_DATA[forgedItem.rarity]?.borderColor)}>
         <Image
           src={currentItem.image}
           alt={`${currentItem.name}-icon-forge-result`}

@@ -114,7 +114,7 @@ const items: IShopItem[] = [
     price: 10,
     qty: 0,
     maxQty: 1,
-    rarity: "common",
+    rarity: "uncommon",
     lvlRequired: 1,
     itemLevel: 1,
     stats: { def: 2 },

@@ -8,6 +8,7 @@ import HoldButton from "@/components/shared/HoldButton";
 import { IInventoryItem } from "@/types/player";
 import { validateForgeItems, forgeItems, getBonusStats } from "@/hooks/use-game";
 import { toast } from "sonner";
+import { RARITY_DATA } from "@/constants/items.constants";
 
 const FORGE_COST = 10;
 
@@ -51,7 +52,12 @@ const ItemsSelection = ({
   return (
     <div className="w-full flex flex-col gap-4 justify-center items-center">
       <div className="flex gap-4 items-center">
-        <div className={cn("relative size-28 border-2 border-zinc-300", isFirstSlotOccupied && "border-amber-300")}>
+        <div
+          className={cn(
+            "relative size-28 border-2 border-zinc-300",
+            isFirstSlotOccupied && (RARITY_DATA[itemsToForge[0].rarity]?.borderColor ?? "border-amber-300")
+          )}
+        >
           {isFirstSlotOccupied && (
             <span
               role="button"
@@ -62,13 +68,7 @@ const ItemsSelection = ({
             </span>
           )}
           {isFirstSlotOccupied && (
-            <Image
-              src={itemsToForge[0].image}
-              alt={`${itemsToForge[0].name}-icon`}
-              width={112}
-              height={112}
-              className=""
-            />
+            <Image src={itemsToForge[0].image} alt={`${itemsToForge[0].name}-icon`} width={112} height={112} />
           )}
         </div>
         <HoldButton
@@ -80,7 +80,12 @@ const ItemsSelection = ({
         >
           <Anvil className="size-8 text-zinc-500" />
         </HoldButton>
-        <div className={cn("relative size-28 border-2 border-zinc-300", isSecondSlotOccupied && "border-amber-300")}>
+        <div
+          className={cn(
+            "relative size-28 border-2 border-zinc-300",
+            isSecondSlotOccupied && (RARITY_DATA[itemsToForge[1].rarity]?.borderColor ?? "border-amber-300")
+          )}
+        >
           {isSecondSlotOccupied && (
             <span
               role="button"
@@ -91,13 +96,7 @@ const ItemsSelection = ({
             </span>
           )}
           {isSecondSlotOccupied && (
-            <Image
-              src={itemsToForge[1].image}
-              alt={`${itemsToForge[1].name}-icon`}
-              width={112}
-              height={112}
-              className=""
-            />
+            <Image src={itemsToForge[1].image} alt={`${itemsToForge[1].name}-icon`} width={112} height={112} />
           )}
         </div>
       </div>
@@ -110,9 +109,27 @@ const ItemsSelection = ({
       <div className="flex gap-4">
         {player.items.length > 0 ? (
           player.items.map((item) => {
+            const isSelected = itemsToForge.map((i) => i.instanceId).includes(item.instanceId);
             return (
-              <div key={item.instanceId} onClick={() => handleSelectItemToForge(item)} className="cursor-pointer">
-                <Image src={item.image} alt={`${item.name}-icon`} width={112} height={112} className="" />
+              <div
+                key={item.instanceId}
+                onClick={() => handleSelectItemToForge(item)}
+                className={cn(
+                  "cursor-pointer relative border-2",
+                  RARITY_DATA[item.rarity]?.borderColor,
+                  isSelected && "pointer-events-none cursor-not-allowed"
+                )}
+              >
+                <Image
+                  src={item.image}
+                  alt={`${item.name}-icon`}
+                  width={112}
+                  height={112}
+                  className={cn(isSelected && "grayscale brightness-100 opacity-70 cursor-not-allowed")}
+                />
+                <div className="absolute right-1 bottom-1 size-4.5 rounded-full bg-zinc-100 grid place-items-center">
+                  <p className="text-sm leading-none">{item.itemLevel}</p>
+                </div>
               </div>
             );
           })

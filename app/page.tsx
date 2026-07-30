@@ -42,11 +42,9 @@ export default function Home() {
             Continue
           </Button>
         )}
-        <Link href={"/create-character"}>
-          <Button className="bg-white rounded-md h-[3em] w-36 p-2 cursor-pointer" onClick={navigateToCreatePlayer}>
-            New Game
-          </Button>
-        </Link>
+        <Button className="bg-white rounded-md h-[3em] w-36 p-2 cursor-pointer" onClick={navigateToCreatePlayer}>
+          New Game
+        </Button>
         {/* <Link href="/high-score">
           <Button className="bg-white rounded-md h-[3em] w-36 p-2 cursor-pointer">High scores</Button>
         </Link> */}

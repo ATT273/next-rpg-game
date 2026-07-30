@@ -4,6 +4,8 @@ import { IShopItem } from "@/types/shop";
 import Image from "next/image";
 import React, { useState } from "react";
 import { Ellipsis } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { RARITY_DATA } from "@/constants/items.constants";
 
 function InventoryBlock({
   itemIndex,
@@ -35,7 +37,7 @@ function InventoryBlock({
 
   return (
     <div
-      className="relative group border-2 border-stone-800 overflow-hidden"
+      className={cn("relative group border-2 overflow-hidden", RARITY_DATA[item.rarity]?.borderColor)}
       onMouseEnter={() => onHover(item)}
       onMouseLeave={() => onHover(null)}
       onClick={() => onHover(item)}
