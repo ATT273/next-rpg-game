@@ -13,7 +13,7 @@ const enemies: Enemy[] = [
     score: 20,
     gold: 5,
     matchLvl: [1, 2, 3],
-    dropRarity: "common",
+    dropRarity: "uncommon",
     isBoss: false,
     stats: {
       hp: 20,

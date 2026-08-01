@@ -70,6 +70,18 @@ const ShopSection = () => {
   const handleCloseShop = () => {
     if (cart.length > 0) {
       const freshPlayer = useGameStore.getState().player;
+
+      const playerGold = freshPlayer.gold;
+      const cartValue = cart.reduce((acc, cur) => {
+        acc += cur.price;
+        return acc;
+      }, 0);
+
+      if (cartValue > playerGold) {
+        toast.error("You don't have enough gold");
+        return;
+      }
+
       const freshSkillLevelData = useGameStore.getState().skillLevelData;
 
       const createInventoryItems = cart.map((item) => ({

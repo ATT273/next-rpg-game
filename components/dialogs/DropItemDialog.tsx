@@ -2,7 +2,7 @@ import { useSkillContext } from "@/app/(game)/_components/SkillProvider";
 import { DEFAULT_BUTTON_CLASSES } from "@/constants/css.constants";
 import { IShopItem } from "@/types/shop";
 import { Dialog, DialogPanel, DialogTitle, DialogBackdrop, Button } from "@headlessui/react";
-import Image from "next/image";
+import ItemImageBlock from "../shared/ItemImageBlock";
 
 interface DropItemDialogProps {
   item: IShopItem;
@@ -35,9 +35,7 @@ const DropItemDialog = ({ item, isOpen, setIsOpen, handleLeave, handleTake }: Dr
           <DialogTitle className="font-bold text-lg">Drop item</DialogTitle>
           <div className="w-full flex flex-col gap-4 justify-center items-center">
             <p>{item.name}</p>
-            <div className="size-20 md:size-37.5 overflow-hidden bg-white p-2 box-content">
-              <Image src={item.image} alt={item.name} width={300} height={300} className="object-cover size-37.5" />
-            </div>
+            <ItemImageBlock item={item} />
             <div>
               <p>
                 <span className="font-semibold">Price: </span>

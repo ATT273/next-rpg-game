@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { IShopItem } from "@/types/shop";
-import Image from "next/image";
 import { Check, X } from "lucide-react";
 import { DEFAULT_BUTTON_CLASSES } from "@/constants/css.constants";
 import ItemInfoPanel from "./ItemInfoPanel";
+import ItemImageBlock from "@/components/shared/ItemImageBlock";
 
 interface Props {
   item: IShopItem;
@@ -25,11 +25,7 @@ const ItemBlock = ({ item, onItemSelect, onItemRemove, playerGold }: Props) => {
       onClick={() => {}}
     >
       <div key={item.key} className="flex flex-row md:flex-col gap-2">
-        <div className="size-20 md:size-37.5 overflow-hidden bg-white p-2 box-content">
-          {item.image && (
-            <Image src={item.image} alt={item.name} width={300} height={300} className="object-cover size-37.5" />
-          )}
-        </div>
+        <ItemImageBlock item={item} />
         <div className="h-20">
           <p>{item.name.toUpperCase()}</p>
           <p>{`price: ${item.price}`}</p>
