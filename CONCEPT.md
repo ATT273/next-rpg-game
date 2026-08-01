@@ -13,12 +13,19 @@ Game nhập vai turn-based chạy trên trình duyệt, xây dựng bằng Next.
   ├─ Continue Game  → Load from localStorage → [Select Event]
   └─ New Game       → Xóa save               → [Create Character]
                                                      ↓
-                                              [Select Event]
-                                            ┌──────┴──────┐
-                                         [Shop]        [Battle]
-                                            └──────┬──────┘
-                                              [Select Event]  ← vòng lặp
+                                              [Select Event]  ← đọc RunConfig.stages[currentStage]
+                                            ┌──────┼──────┐
+                                       [Battle]  [Shop]  [Forge]
+                                            └──────┼──────┘
+                                            currentStage + 1
+                                              [Select Event]  ← vòng lặp theo timeline cố định
+                                                     ↓
+                                         (hết stage / thua trận)
+                                                     ↓
+                                              [Game Over]
 ```
+
+Run hiện tại (`data/run-config.ts — RunConfig`) là 1 timeline **cố định 10 stage**: battle, battle, shop, battle, battle, forge, battle, battle, shop, battle(boss). Không còn random 2 lựa chọn Shop/Battle như bản thiết kế cũ — mỗi stage có `type` xác định trước (`battle` | `shop` | `forge`), stage battle cuối cùng có `isBoss: true`.
 
 ---
 
@@ -37,27 +44,40 @@ Game nhập vai turn-based chạy trên trình duyệt, xây dựng bằng Next.
 - Lưu vào Zustand store → `/select-event`
 
 ### Select Event (`select-event/page.tsx`)
-- Mỗi lần vào: Random 1 shop + 1 enemy (khớp level player, không trùng enemy trước)
-- Hiển thị 2 event card để player chọn:
-  - **Shop Card**: Tên shop, ảnh shopkeeper
-  - **Battle Card**: Tên/ảnh enemy, stats sơ lược
+- Đọc `currentStage` từ `store/timeline-store.ts`, lấy `stageData = RunConfig.stages[currentStage]`
+- Render section tương ứng `stageData.type`:
+  - **`battle`** → `EnemyPickingSection` (`_components/battle/`)
+  - **`shop`** → `ShopSection` (`_components/shop/`)
+  - **`forge`** → `ForgeSection` (`_components/forge/`)
+- Hết stage (qua khỏi stage cuối) → hiển thị màn "End of demo" với link về Home (chưa có màn chọn run mới)
+- `RunTimeline` (`components/layouts/run-timeline/`) hiển thị thanh tiến trình toàn bộ 10 stage, ẩn ở các trang `create-character`, `high-score`, `battle`, `game-over`
+
+#### Battle stage — `EnemyPickingSection`
+- Nếu `stageData.isBoss`: hiển thị đúng 1 boss card (`getRandomBoss`)
+- Ngược lại: hiển thị 3 enemy card ngẫu nhiên khớp level (`getRandomEnemies`)
+- Chọn enemy → `selectEnemy(key)` → `/battle`
+
+#### Shop stage — `ShopSection`
+- Random 1 shop theo `stageData.shopId`, hiển thị 3 item ngẫu nhiên
+- Thêm/bớt cart, giới hạn inventory 6 slot
+- "Continue": kiểm tra đủ gold (chặn nếu cart vượt gold), áp dụng mua (items + bonus stats + skill unlock nếu có) → tăng `currentStage` → `/select-event`
+
+#### Forge stage — `ForgeSection`
+- `ItemsSelection`: chọn 2 item cùng `key` + cùng `itemLevel` để forge (xem **Forge System**)
+- `ForgeResult`: hiển thị so sánh stat trước/sau
+- "Done" → tăng `currentStage` → `/select-event`
 
 ### Battle (`battle/page.tsx`)
-- PopUp "Ready?" hiển thị thông tin enemy
-- Turn-based combat (xem mục **Battle System**)
-- Sau chiến đấu: Tính thưởng, kiểm tra level up → `/select-event`
+- Xem mục **Battle System** (generate-replay)
+- Thắng → popup nhặt item (`DropItemDialog`, rarity theo `enemy.dropRarity`), tính thưởng, kiểm tra level up, tăng `currentStage` → `/select-event`
+- Thua → `/game-over`
 
-### Shop (`shop/page.tsx`)
-- Hiển thị 3 item ngẫu nhiên từ shop hiện tại
-- Mua vào cart → Checkout khi nhấn "To Battle"
-- Inventory max 6 items
-- Item có skill → Unlock skill ở level 1
+### Game Over (`game-over/page.tsx`)
+- Hiển thị `Score` hiện tại
+- Nút **Restart**: xóa `localStorage["rpg_game"]`, reset player + score → `/`
+- Chưa có bảng thống kê chi tiết (thời gian chơi, số enemy đã hạ, v.v.)
 
-### Loot (`loot/page.tsx`)
-- Random 1 item từ toàn bộ items pool
-- Nhấn **Take** → Thêm vào inventory (theo `Game.takeItem`)
-- Nhấn **Leave** → Bỏ qua
-- Sau đó random sự kiện tiếp theo (Battle / Loot / Shop)
+> **Đã gộp**: `shop/page.tsx` và `loot/page.tsx` (2 trang độc lập cũ) không còn tồn tại. Logic shop chuyển vào `select-event/_components/shop/`; logic loot/drop-item chuyển thẳng vào `battle/page.tsx` (kích hoạt khi thắng trận, dùng `getRandomItemByRarity`).
 
 ---
 
@@ -116,10 +136,17 @@ Có 4 class, mỗi class có base stats và skill tree riêng.
 
 ## Battle System
 
+### Generate-Replay (không còn live turn-based)
+Battle giờ được **mô phỏng toàn bộ ngay khi vào màn hình** (`hooks/use-simulate-battle.ts — simulateBattle`), rồi **phát lại** dưới dạng animation, thay vì xử lý turn-based tương tác trực tiếp:
+- `simulateBattle(player, enemy)` chạy vòng lặp tối đa `MAX_TURNS = 200`, tạo ra `BattleTimeline = { events: BattleEvent[], result }`
+- Mỗi `BattleEvent` là 1 snapshot đầy đủ (player, enemy, buffCounter, combatLog, actions) sau 1 hành động
+- `battle/page.tsx` lưu toàn bộ timeline này, rồi dùng 1 effect để phát lại từng event một (set state theo snapshot, chờ `ACTION_DELAY`/`ROUND_DELAY`, tăng cursor) — người chơi xem lại kết quả đã định sẵn, không còn bấm nút hành động theo lượt
+- Khi phát hết event: hiện nút "Next" cùng kết quả thắng/thua
+
 ### Turn Order
-- So sánh `player.stats.spd` vs `enemy.stats.spd`
-- SPD cao hơn → đi trước
-- Bằng nhau → Player đi trước
+- So sánh `player.stats.spd` vs `enemy.stats.spd` **ở turn đầu tiên**
+- SPD cao hơn → đi trước; bằng nhau → Player đi trước
+- Từ turn thứ 2 trở đi: đơn giản luân phiên Player/Enemy (không re-check SPD mỗi turn)
 
 ### Cấu trúc 1 Turn
 
@@ -214,9 +241,9 @@ XP cần để lên level N = 50 × 2^(N-1)
 - Mỗi item trong inventory có `instanceId` riêng (dùng cho forge)
 - Inventory full (>= 6) → chặn, báo lỗi
 
-**Shop** (`shop/page.tsx — handleCloseShop`): **Chưa có logic**, cần fix:
-- Hiện tại push thẳng toàn bộ cart vào inventory (`[...player.items, ...cart]`)
-- Không kiểm tra inventory full
+**Shop** (`select-event/_components/shop/ShopSection.tsx — handleCloseShop`):
+- Cart giới hạn theo inventory 6 slot khi thêm item
+- Khi checkout: kiểm tra tổng giá cart vượt `player.gold` → chặn, báo lỗi toast (fix mới, trước đây không kiểm tra)
 
 ### Item Types
 | Type | Tác dụng |
@@ -230,16 +257,19 @@ XP cần để lên level N = 50 × 2^(N-1)
 
 ### Rarity System
 
-| Rarity | Drop Weight | Color |
-|---|---|---|
-| common | rất cao | trắng / xám |
-| uncommon | cao | xanh lá |
-| rare | trung bình | xanh dương |
-| epic | thấp | tím |
-| legendary | rất thấp | cam / vàng |
+| Rarity | Border Color (`RARITY_DATA`) |
+|---|---|
+| common | `border-gray-300` |
+| uncommon | `border-green-500` |
+| rare | `border-blue-500` |
+| epic | `border-violet-500` |
+| legendary | `border-orange-500` |
 
-- `dropRarity` trên mỗi enemy quyết định rarity của item drop sau battle
-- `rarity` **không thay đổi** sau forge — chỉ phản ánh nguồn gốc/độ hiếm của item
+- **UI**: border màu theo rarity đã áp dụng ở mọi nơi hiển thị icon item — shop, inventory, forge (2 slot + danh sách chọn), drop-item dialog, forge result — thông qua component dùng chung `components/shared/ItemImageBlock.tsx` (shop, drop dialog) hoặc trực tiếp `RARITY_DATA[item.rarity]?.borderColor` (inventory, forge, vì layout khác kích thước chuẩn)
+- **Drop Weight** (`hooks/use-shop.ts — rollDropRarity`): `dropRarity` trên enemy là **rarity trần** (mức cao nhất có thể rơi, không phải rarity cố định). Roll theo trọng số: mỗi bậc thấp hơn trần có xác suất gấp `RARITY_DROP_FALLOFF = 3` lần bậc kế trên (hằng số trong `constants/items.constants.ts`), rarity trần luôn là kết quả hiếm nhất có thể
+  - Ví dụ `dropRarity: epic` → tỉ lệ thực tế ≈ common 67%, uncommon 22.5%, rare 7.5%, epic 2.5%
+  - `dropRarity: common` → luôn ra common (100%, không có bậc thấp hơn để roll)
+- `rarity` **không thay đổi** sau forge — chỉ phản ánh nguồn gốc/độ hiếm của item (forge chỉ tăng `itemLevel`)
 - `lvlRequired` — field đã có, **chưa có enforcement** (chưa kiểm tra khi equip/nhặt)
 
 ### Forge System
@@ -318,48 +348,35 @@ bonusStats = Σ item.stats  (với mọi item trong inventory)
 | Melina - Enchanter | melina_enchantress | Oak Wand, Fire Book, Ice Book |
 
 ### Cơ chế mua hàng
-1. Mỗi lần vào shop: Hiển thị 3 item ngẫu nhiên từ danh sách của shop đó
-2. Click item → Thêm vào cart, trừ gold tạm
-3. Click lại → Bỏ khỏi cart, hoàn gold
-4. Nhấn "To Battle" → Xác nhận mua:
-   - Items vào inventory
-   - Skills (nếu có) unlock ở level 1
-   - `skillLevelData` được cập nhật
-   - Gold bị trừ chính thức
+Xem chi tiết ở **Select Event → Shop stage** (`ShopSection.tsx`). Tóm tắt:
+1. Vào shop stage: hiển thị 3 item ngẫu nhiên từ danh sách shop tương ứng `stageId`
+2. Click item → Thêm vào cart, trừ gold tạm; click lại → bỏ khỏi cart, hoàn gold
+3. Nhấn "Continue" → kiểm tra đủ gold → xác nhận mua: items vào inventory, skill (nếu có) unlock level 1, `skillLevelData` cập nhật, gold trừ chính thức, chuyển sang stage tiếp theo
 
 ---
 
 ## Enemy System
 
 ### Enemy Database (6 kẻ thù)
-| Enemy | Match Level | HP | ATK | DEF | SPD | XP | Gold | Score |
-|---|---|---|---|---|---|---|---|---|
-| Demon Slime | 1-2 | 10 | 10 | 3 | 1 | 5 | 5 | 3 |
-| Zombie Rat | 1-2 | 10 | 10 | 3 | 2 | 7 | 5 | 5 |
-| King Cobra | 2-3 | 15 | 7 | 3 | 3 | 16 | 5 | 10 |
-| Tiger | 1-3 | 20 | 10 | 5 | 3 | 20 | 5 | 20 |
-| Orc | 3-5 | 45 | 30 | 5 | 2 | 40 | 10 | 50 |
-| Dragon | 5-8 | 100 | 50 | 20 | 10 | 255 | 20 | 100 |
+| Enemy | Match Level | HP | ATK | DEF | SPD | XP | Gold | Score | Boss | Drop Rarity (trần) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Demon Slime | 1-2 | 10 | 10 | 3 | 1 | 5 | 5 | 3 | | common |
+| Zombie Rat | 1-2 | 10 | 10 | 3 | 2 | 7 | 5 | 5 | | common |
+| King Cobra | 2-3 | 15 | 7 | 3 | 3 | 16 | 5 | 10 | | common |
+| Tiger | 1-3 | 20 | 10 | 5 | 3 | 20 | 5 | 20 | | uncommon |
+| Orc | 3-5 | 45 | 30 | 5 | 2 | 40 | 10 | 50 | ✓ | uncommon |
+| Dragon | 5-8 | 100 | 50 | 20 | 10 | 255 | 20 | 100 | ✓ | epic |
 
 ### Enemy Selection
-- Lọc theo `matchLvl.includes(player.level)`
-- Loại trừ enemy vừa đánh (tránh repeat)
-- Random từ pool còn lại
+- **Stage thường** (`isBoss: false`): `getRandomEnemies` lọc `matchLvl.includes(player.level) && !enemy.isBoss`, hiển thị 3 lựa chọn ngẫu nhiên
+- **Stage boss** (`isBoss: true`): `getRandomBoss` lọc `enemy.isBoss && matchLvl.includes(player.level)`, hiển thị đúng 1 lựa chọn
+- Sau khi thắng: `enemy.dropRarity` là rarity trần cho item rơi ra (xem **Rarity System → Drop Weight**)
 
 ---
 
-## Event System
+## Event System (Run Timeline)
 
-### Event Types
-| ID | Loại |
-|---|---|
-| 1 | Battle |
-| 2 | Loot |
-| 3 | Shop |
-
-### Event Random
-- Loot page sau khi xử lý → Random 1 event **khác** event hiện tại
-- Select event page → Luôn hiển thị Shop + Battle để player chọn
+Đã thay thế bằng hệ thống timeline cố định — xem **Game Flow** và **Select Event** ở đầu tài liệu. Không còn khái niệm "Loot" là 1 stage riêng hay random giữa Shop/Battle: mỗi run có đúng 10 stage định trước trong `RunConfig.stages` (`data/run-config.ts`), loại stage là `battle` | `shop` | `forge`, tiến trình lưu ở `store/timeline-store.ts` (`currentStage` index).
 
 ---
 
@@ -392,12 +409,12 @@ Player {
 
 ## Kế hoạch mở rộng (chưa implement)
 
-- **Forge UI** — đã hoàn chỉnh: dialog chọn item, hold-to-forge, trừ 10G, hiển thị kết quả so sánh stat. Còn thiếu: không loại item đã chọn khỏi danh sách chọn, slot không tự dịch chuyển khi xóa slot đầu
-- **UI màu theo rarity** — data rarity đã có, chưa có color mapping ở UI
+- **Forge UI** — đã hoàn chỉnh: dialog chọn item, hold-to-forge, trừ 10G, hiển thị kết quả so sánh stat, border rarity. Còn thiếu: không loại item đã chọn khỏi danh sách chọn, slot không tự dịch chuyển khi xóa slot đầu
 - **lvlRequired enforcement** — field đã có, chưa kiểm tra khi nhặt/equip item
-- **Shop duplicate check** — `handleCloseShop` push thẳng cart vào inventory, chưa kiểm tra full
 - **Item consumption trong battle** — `consumeItem` đã có nhưng chưa gắn vào battle UI
 - **Score leaderboard** — Score được tính nhưng chưa hiển thị
+- **Sau khi hết Run** — hiện chỉ có màn "End of demo" tạm (link về Home), chưa có màn tổng kết run / chọn run tiếp theo
+- **Game Over screen** — mới chỉ hiển thị Score + nút Restart, chưa có thống kê chi tiết (thời gian, số enemy hạ, item đã nhặt...)
 - **Cân bằng chỉ số item** — stat hiện tại là tạm thời, cần pass balance sau khi có đủ gameplay loop
 - **Item Effect (trigger theo điều kiện)** — item không chỉ cộng stat tĩnh mà có thể mang hiệu ứng kích hoạt theo điều kiện cụ thể, ví dụ:
   - Đầu trận (`on_battle_start`): buff/debuff ngay khi vào battle
