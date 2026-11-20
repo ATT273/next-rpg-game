@@ -8,6 +8,7 @@ interface Props {
   };
   statKey: keyof Stats | keyof BonusStats;
   showBar?: boolean;
+  buffValue?: number;
 }
 
 interface Stat {
@@ -17,6 +18,7 @@ interface Stat {
   statKey: string;
   maxStatKey?: string;
   showBar?: boolean;
+  buffValue?: number;
 }
 export const PLAYER_STAT_KEYS = {
   ATK: "atk",
@@ -48,17 +50,17 @@ const StatWithBar = ({ stat, maxStat, bonusStat, statKey, showBar }: Stat) => {
   );
 };
 
-const StatNoBar = ({ stat, bonusStat, statKey }: Stat) => {
+const StatNoBar = ({ stat, bonusStat, statKey, buffValue }: Stat) => {
   return (
     <div className="flex text-">
       <p className="font-bold">{statKey.toUpperCase()}: </p> &nbsp; {stat}
-      <i className="txt-green">{bonusStat ? `(+ ${bonusStat})` : ""}</i>
-      <i className="txt-purple"></i>
+      <i className="text-emerald-400">{bonusStat ? `(+ ${bonusStat})` : ""}</i>
+      {buffValue !== undefined && <i className="text-violet-400">(+ {buffValue})</i>}
     </div>
   );
 };
 
-const StatBlock = ({ values, statKey, showBar }: Props) => {
+const StatBlock = ({ values, statKey, showBar, buffValue }: Props) => {
   const maxStatKey = statKey === "hp" ? "maxHP" : "maxMP";
 
   return (
@@ -73,7 +75,12 @@ const StatBlock = ({ values, statKey, showBar }: Props) => {
         />
       )}
       {statNoBar.includes(statKey) && (
-        <StatNoBar stat={values.stats[statKey]} bonusStat={values.bonusStats[statKey] || 0} statKey={statKey} />
+        <StatNoBar
+          stat={values.stats[statKey]}
+          bonusStat={values.bonusStats[statKey] || 0}
+          statKey={statKey}
+          buffValue={buffValue}
+        />
       )}
     </div>
   );

@@ -30,7 +30,7 @@ function FighterStatsBlockPC() {
                 )}
               </div>
               <div className="flex flex-col items-center justify-between flex-1 gap-2 h-50">
-                <div className="font-bold text-3xl">Turn: {currentTurn?.player}</div>
+                <div className="font-bold text-3xl">Round: {currentTurn?.player}</div>
                 <div className="font-bold text-3xl">VS.</div>
               </div>
               <div className="absolute right-0 top-1/2 -translate-y-1/2 w-20 h-12.5">
@@ -66,21 +66,22 @@ function FighterStatsBlockPC() {
                   showBar={true}
                 />
                 <div className="stats">
-                  <p>
-                    <b>ATK: </b> {player.stats.atk}
-                    <i className="txt-green">{player.bonusStats.atk > 0 ? `(+ ${player.bonusStats.atk})` : ""}</i>
-                    <i className="txt-purple">(+ {getStat("atk", player.buffStats).value})</i>
-                  </p>
-                  <p>
-                    <b>DEF: </b> {player.stats.def}
-                    <i className="txt-green">{player.bonusStats.def > 0 ? `(+ ${player.bonusStats.def})` : ""}</i>
-                    <i className="txt-purple">(+ {getStat("def", player.buffStats).value})</i>
-                  </p>
-                  <p>
-                    <b>SPD: </b> {player.stats.spd}
-                    <i className="txt-green">{player.bonusStats.spd > 0 ? `(+ ${player.bonusStats.spd})` : ""}</i>
-                    <i className="txt-purple">(+{getStat("spd", player.buffStats).value})</i>
-                  </p>
+                  <StatBlock
+                    values={{ stats: player.stats, bonusStats: player.bonusStats }}
+                    statKey="atk"
+                    buffValue={getStat("atk", player.buffStats).value}
+                  />
+                  <StatBlock
+                    values={{ stats: player.stats, bonusStats: player.bonusStats }}
+                    statKey="def"
+                    buffValue={getStat("def", player.buffStats).value}
+                  />
+                  <StatBlock
+                    values={{ stats: player.stats, bonusStats: player.bonusStats }}
+                    statKey="spd"
+                    buffValue={getStat("spd", player.buffStats).value}
+                  />
+                  <StatBlock values={{ stats: player.stats, bonusStats: player.bonusStats }} statKey="int" />
                 </div>
               </div>
             </div>
@@ -90,15 +91,9 @@ function FighterStatsBlockPC() {
                 <StatBlock values={{ stats: enemy.stats, bonusStats: enemy.bonusStats }} statKey="hp" showBar={true} />
                 <StatBlock values={{ stats: enemy.stats, bonusStats: enemy.bonusStats }} statKey="mp" showBar={true} />
                 <div className="stats">
-                  <p>
-                    <b>ATK: </b> {enemy.stats.atk}
-                  </p>
-                  <p>
-                    <b>DEF: </b> {enemy.stats.def}
-                  </p>
-                  <p>
-                    <b>SPD: </b> {enemy.stats.spd}
-                  </p>
+                  <StatBlock values={{ stats: enemy.stats, bonusStats: enemy.bonusStats }} statKey="atk" />
+                  <StatBlock values={{ stats: enemy.stats, bonusStats: enemy.bonusStats }} statKey="def" />
+                  <StatBlock values={{ stats: enemy.stats, bonusStats: enemy.bonusStats }} statKey="spd" />
                 </div>
               </div>
             </div>

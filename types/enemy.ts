@@ -1,4 +1,4 @@
-import { BonusStats, Stats } from "./player";
+import { BonusStats, BuffStat, IInventoryItem, Skills, Stats } from "./player";
 import { ItemRarity } from "./shop";
 
 type Enemy = {
@@ -13,7 +13,11 @@ type Enemy = {
   matchLvl: number[];
   stats: Stats;
   bonusStats: BonusStats;
+  buffStats: BuffStat[];
+  items: IInventoryItem[];
+  skills: Skills[];
   dropRarity: ItemRarity;
+  isBoss: boolean;
 };
 
 export type { Enemy };

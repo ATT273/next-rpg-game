@@ -52,11 +52,41 @@ A turn-based RPG game built with Next.js, featuring character customization, aut
 ### 2025/12/21 - [Chore] Production Optimization
 > Removed console logs, cleaned up unused fields, and updated Next.js to latest version
 
+### 2026/01/07 - [Feature] Player Skill Tree & Level-Up Logic
+> Added skill tree dialog and level-up skill selection logic, refined class skill data and related type definitions
+
+### 2026/01/31 - [Improve] UI Upgrade & Asset Refresh
+> Reworked character stats, inventory, and layout UI, and replaced class artwork with new source images
+
+### 2026/02/28 - [Chore] Remove Unused Code
+> Cleaned up unused logic in use-game.ts
+
 ### 2026/06/18 - [Feature] Item Drop & Rarity System
 > Added item rarity data, drop item mechanics, and updated shop page and useGame:takeItem to support the new system
 
 ### 2026/06/20 - [Feature] Forge Item System
 > Implemented item forging: combine 2 copies of the same item and rarity into 1 upgraded item, with gold cost validation and a hold-to-forge interaction
+
+### 2026/07/17 - [Feature] Run Timeline System
+> Introduced a per-run timeline (minion, shop, forge, and boss stages) driving the select-event flow, with a boss enemy pool, random boss selection, and a timeline UI to track run progress
+
+### 2026/07/23 - [Fix] Skill Grant From Dropped Items
+> Fixed dropped items not granting their skills to the player, matching the shop purchase flow
+
+### 2026/07/23 - [Refactor] Generate-Replay Battle System
+> Replaced the live auto-battle loop with a generate-then-replay system: the full battle is simulated up front and played back as an animated sequence
+
+### 2026/07/23 - [Fix] Battle Stat Display
+> Fixed the battle stat block to correctly show INT, active buff stats, and item bonus stats for both player and enemy
+
+### 2026/07/23 - [Feature] Skill Point Spending & Forge Item Level Display
+> Added the skill tree dialog for spending skill points (increase/decrease skill level, confirm selection) and item level comparison display in the forge result screen
+
+### 2026/07/26 - [Refactor] File Organization & Game Over Screen
+> Reorganized select-event components into battle/shop/forge subfolders, removed the standalone shop/loot pages, and rebuilt the game-over screen
+
+### 2026/07/30 - [Feature] Item Rarity Display & Weighted Drop
+> Added rarity-colored borders across all item displays (shop, inventory, forge, drop dialog) via a shared ItemImageBlock component, and replaced fixed-rarity loot drops with a weighted roll where each enemy's dropRarity acts as the rarity ceiling
 
 ## Getting Started
 

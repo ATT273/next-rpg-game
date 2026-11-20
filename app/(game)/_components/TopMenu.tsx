@@ -10,8 +10,8 @@ const TopMenu = () => {
   const { showLeftSidebar, showRightSidebar, setShowLeftSidebar, setShowRightSidebar } = useUIContext();
   return (
     <div>
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-        <div className="relative flex justify-between items-center px-4 h-12 bg-gray-300 z-10">
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="relative flex justify-between items-center px-4 h-12 bg-gray-300 z-10 pointer-events-auto">
           <div>
             <Button
               className={DEFAULT_BUTTON_CLASSES}
