@@ -44,5 +44,27 @@ export const SKILL_TARGET = {
   ENEMY: "enemy",
 };
 
+export const SKILL_TRIGGER_TYPE = {
+  CAN_USE: "can_use",
+  ON_BATTLE_START: "on_battle_start",
+  ON_TURN_START: "on_turn_start",
+  EVERY_N_TURN: "every_n_turn",
+  ON_HP_BELOW: "on_hp_below",
+  ON_HIT: "on_hit",
+  ON_ENEMY_BELOW: "on_enemy_below",
+};
+
+// Base priority per trigger type, low -> high. Combined with each skill's own
+// `priority` field to break ties between skills sharing the same trigger type.
+export const SKILL_TYPE_PRIORITY: Record<string, number> = {
+  [SKILL_TRIGGER_TYPE.CAN_USE]: 1,
+  [SKILL_TRIGGER_TYPE.ON_BATTLE_START]: 2,
+  [SKILL_TRIGGER_TYPE.EVERY_N_TURN]: 3,
+  [SKILL_TRIGGER_TYPE.ON_TURN_START]: 4,
+  [SKILL_TRIGGER_TYPE.ON_ENEMY_BELOW]: 5,
+  [SKILL_TRIGGER_TYPE.ON_HIT]: 6,
+  [SKILL_TRIGGER_TYPE.ON_HP_BELOW]: 7,
+};
+
 export const ACTION_DELAY = 700;
 export const ROUND_DELAY = 1000;

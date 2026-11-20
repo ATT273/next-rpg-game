@@ -32,6 +32,9 @@ const enemies: Enemy[] = [
       def: 0,
       spd: 0,
     },
+    buffStats: [],
+    items: [],
+    skills: [],
   },
   {
     type: "com",
@@ -62,6 +65,9 @@ const enemies: Enemy[] = [
       def: 0,
       spd: 0,
     },
+    buffStats: [],
+    items: [],
+    skills: [],
   },
   {
     type: "com",
@@ -92,6 +98,9 @@ const enemies: Enemy[] = [
       def: 0,
       spd: 0,
     },
+    buffStats: [],
+    items: [],
+    skills: [],
   },
   {
     type: "com",
@@ -122,6 +131,9 @@ const enemies: Enemy[] = [
       def: 0,
       spd: 0,
     },
+    buffStats: [],
+    items: [],
+    skills: [],
   },
   {
     type: "com",
@@ -152,6 +164,9 @@ const enemies: Enemy[] = [
       def: 0,
       spd: 0,
     },
+    buffStats: [],
+    items: [],
+    skills: [],
   },
   {
     type: "com",
@@ -182,6 +197,9 @@ const enemies: Enemy[] = [
       def: 0,
       spd: 0,
     },
+    buffStats: [],
+    items: [],
+    skills: [],
   },
 ];
 
@@ -213,6 +231,9 @@ const initialEnemies = {
     def: 0,
     spd: 0,
   },
+  buffStats: [],
+  items: [],
+  skills: [],
   isBoss: false,
 };
 
