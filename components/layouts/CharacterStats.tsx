@@ -27,6 +27,14 @@ const CharacterStats = () => {
 
   const { convertSkillsToRuntime } = useSkill();
 
+  const isInBattle = pathName.includes("/battle");
+  const hasSkillPoints = skillPoints > 0;
+  // All skill definitions across every class, so skills learned from items
+  // (which may belong to a different class' tree) are never dropped.
+  const allSkillDefs: SkillDefinition[] = useMemo(() => {
+    return Object.values(classes).flatMap((cls) => cls.skills as SkillDefinition[]);
+  }, []);
+
   const skillsTree: Map<string, SkillTreeNode[]> = useMemo(() => {
     const tree = new Map();
     const classSkill = buildSkillTree(classes[player.plClass as keyof typeof classes].skills as SkillDefinition[]);
@@ -96,14 +104,17 @@ const CharacterStats = () => {
   };
   const handleConfirmSkillSelection = () => {
     if (!tempSkillLevelData) return;
-    const selectedClass = classes[player.plClass as keyof typeof classes];
 
-    // Convert skill definitions to runtime skills with selected levels
-    const runtimeSkills = convertSkillsToRuntime(selectedClass.skills as SkillDefinition[], tempSkillLevelData);
+    // Convert every skill with level > 0 across ALL classes (not just the player's own
+    // class tree), so skills learned from items belonging to another class' tree
+    // (e.g. ice_shard from ice_book) are kept instead of being wiped out.
+    const runtimeSkills = convertSkillsToRuntime(allSkillDefs, tempSkillLevelData);
+
     setSkillLevelData(tempSkillLevelData);
     updatePlayer({
       ...player,
       skills: runtimeSkills,
+      skillPoints,
     });
     setIsOpen(false);
   };
@@ -121,7 +132,7 @@ const CharacterStats = () => {
               <Button
                 className="rounded-sm bg-emerald-300 p-1 size-8 text-white cursor-pointer hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => setIsOpen(true)}
-                disabled={pathName.includes("/battle")}
+                disabled={isInBattle || !hasSkillPoints}
               >
                 + {skillPoints}
               </Button>

@@ -36,6 +36,8 @@ const useSkill = () => {
           : Array.isArray(skillDef.duration)
           ? skillDef.duration[arrayIndex]
           : skillDef.duration,
+      trigger: skillDef.trigger,
+      priority: skillDef.priority,
     };
   };
 

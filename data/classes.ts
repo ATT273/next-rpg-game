@@ -36,6 +36,8 @@ export const classes = {
         duration: false,
         description: "",
         image: "/images/classes/divine_sword.webp",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 0,
       },
       {
         key: "thick_skin",
@@ -46,6 +48,8 @@ export const classes = {
         effects: [{ stats: "def", value: [3, 5, 8] }],
         duration: [3, 3, 3],
         description: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 0,
       },
       {
         key: "iron_skin",
@@ -59,6 +63,8 @@ export const classes = {
         effects: [{ stats: "def", value: [5, 10, 15] }],
         duration: [3, 3, 3],
         description: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 5,
       },
       {
         key: "holy_water",
@@ -74,6 +80,8 @@ export const classes = {
         ],
         duration: [1, 1, 1],
         description: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 0,
       },
       {
         key: "divine_sword",
@@ -87,6 +95,8 @@ export const classes = {
         effects: [{ stats: "hp", value: [-13, -15, -20] }],
         duration: false,
         description: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 5,
       },
     ],
   },
@@ -117,6 +127,8 @@ export const classes = {
         effects: [{ stats: "atk", value: [3, 5, 7] }],
         duration: [3, 3, 3],
         description: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 0,
       },
       {
         key: "rage",
@@ -131,6 +143,8 @@ export const classes = {
         ],
         duration: [3, 3, 3],
         description: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 5,
       },
       {
         key: "second_wind",
@@ -143,6 +157,8 @@ export const classes = {
         effects: [{ stats: "hp", value: [6, 7, 8] }],
         duration: [3, 3, 3],
         description: "",
+        trigger: { type: ["on_hp_below"], threshHold: 40 },
+        priority: 0,
       },
       {
         key: "battle_chop",
@@ -155,6 +171,8 @@ export const classes = {
         effects: [{ stats: "hp", value: [-10, -12, -17] }],
         duration: false,
         description: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 10,
       },
       {
         key: "spin_to_win",
@@ -167,6 +185,8 @@ export const classes = {
         effects: [{ stats: "hp", value: [-7, -10, -15] }],
         duration: false,
         description: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 5,
       },
     ],
   },
@@ -199,6 +219,8 @@ export const classes = {
         effects: [{ stats: "hp", value: [-15, -16, -17] }],
         duration: false,
         description: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 0,
       },
       {
         key: "double_backstab",
@@ -212,6 +234,8 @@ export const classes = {
         effects: [{ stats: "hp", value: [-18, -19, -20] }],
         duration: false,
         description: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 5,
       },
       {
         key: "cutthroat",
@@ -225,6 +249,8 @@ export const classes = {
         effects: [{ stats: "hp", value: [-20, -25, -28] }],
         duration: false,
         description: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 15,
       },
       {
         key: "ambush_and_assassinate",
@@ -237,6 +263,8 @@ export const classes = {
         effects: [{ stats: "hp", value: [-25, -27, -30] }],
         duration: false,
         description: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 15,
       },
       {
         key: "poison_dagger",
@@ -249,6 +277,8 @@ export const classes = {
         effects: [{ stats: "hp", value: [-3, -5, -7] }],
         duration: 3,
         description: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 0,
       },
     ],
   },
@@ -283,6 +313,8 @@ export const classes = {
         duration: false,
         description: "",
         image: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 0,
       },
       {
         key: "ice_shard",
@@ -296,6 +328,8 @@ export const classes = {
         effects: [{ stats: "hp", value: [-9, -10, -13] }],
         duration: false,
         description: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 0,
       },
       {
         key: "divine_light",
@@ -309,6 +343,8 @@ export const classes = {
         effects: [{ stats: "hp", value: [10, 12, 15] }],
         duration: 3,
         description: "",
+        trigger: { type: ["on_hp_below"], threshHold: 30 },
+        priority: 10,
       },
       {
         key: "fire_breath",
@@ -322,6 +358,8 @@ export const classes = {
         effects: [{ stats: "hp", value: [-15, -18, -20] }],
         duration: false,
         description: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 10,
       },
       {
         key: "fire_storm",
@@ -335,6 +373,8 @@ export const classes = {
         effects: [{ stats: "hp", value: [-18, -20, -25] }],
         duration: [1, 2, 3],
         description: "",
+        trigger: { type: ["can_use"], threshHold: 0 },
+        priority: 15,
       },
     ],
   },
