@@ -18,18 +18,6 @@ import { SKILL_TARGET, SKILL_TRIGGER_TYPE, SKILL_TYPE_PRIORITY, WIN_CONDITION_ST
 import { MAX_ITEM_LEVEL } from "@/constants/items.constants";
 import { RunConfig } from "@/data/run-config";
 
-export const isPlayer = (object: Player | Enemy): object is Player => {
-  return (object as Player).type === "player";
-};
-
-export const getPlayerItems = (attacker: Player | Enemy, target: Player | Enemy) => {
-  if ((attacker as Player).type === "player") {
-    return (attacker as Player).items;
-  } else if ((target as Player).type === "player") {
-    return (target as Player).items;
-  }
-};
-
 /** Both Player and Enemy now carry items/buffStats, so combat math (normalAttack,
  * skillUsing) can read bonus/buff stats off either side symmetrically. */
 const getCombatBonusStats = (actor: Player | Enemy) => getBonusStats(actor.items ?? []);
@@ -159,7 +147,6 @@ export const skillUsing = (
   skill: Skills,
   isNewCasted: boolean,
 ) => {
-  // debugger;
   let combatLog = "";
   const actions: (ActionType | null)[] = [];
   if (skill.target === SKILL_TARGET.ENEMY) {
